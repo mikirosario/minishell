@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/26 09:12:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/26 09:59:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ char	micli_loop(void)
 
 	shutdown = 0;
 
-	while (!shutdown)
+	while (!shutdown)//no parece que esté usando shutdown...
 	{
 		write(1, ":) ", 3);
 		line = micli_readline();
@@ -109,6 +109,8 @@ char	micli_loop(void)
 				line = NULL;
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
+		free(line);
+		line = NULL;
 	}
 
 	return (0);
