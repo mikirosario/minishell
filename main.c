@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/26 20:30:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/01/26 20:37:55 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ char	micli_loop(t_micli *micli)
 		write(1, "🚀 ", 6);
 		line = micli_readline(micli);//stays here...
 		//write(1, "TEST", 4);
-		if (!(strcmp(line, "exit")))
+		if (!(strcmp(line, "exit")) || !(strcmp(line, "quit")))
 		{
 				free(line);
 				line = NULL;
