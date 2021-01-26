@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/26 20:24:51 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/26 20:30:20 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ char	micli_loop(t_micli *micli)
 	while (!shutdown)//no parece que esté usando shutdown...
 	{
 		//write(1, "TEST", 4);
-		write(1, "micli> ", 7);
+		write(1, "🚀 ", 6);
 		line = micli_readline(micli);//stays here...
 		//write(1, "TEST", 4);
 		if (!(strcmp(line, "exit")))
