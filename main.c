@@ -6,11 +6,22 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/27 21:12:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/01/27 21:39:14 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Any program failure leading to program termination should immediately save
+** errno to the micli->syserror variable, clean up as needed, and then call this
+** function.
+**
+** This function will print the appropriate error message and kill the program.
+**
+** If the program fails due to an internal error, rather than a system error,
+** the message "Unknown fatal error" will be displayed.
+*/
 
 void	exit_failure(t_micli *micli)
 {
@@ -30,12 +41,13 @@ void	exit_failure(t_micli *micli)
 ** performed, so it's fine.
 **
 ** If the reallocation fails, the old memory block is destroyed and a null
-** pointer is returned.
+** pointer is returned. Errno at failure is saved to a variable in the micli
+** struct for use in subsequent error handling.
 **
 ** This function uses memcpy, which is not safe if dst and src overlap.
 **
 ** Behaviour is undefined if size is less than the memory to be reallocated.
-** Probably means segfault. ;)
+** Probably means segfault. So just don't do that. ;)
 */
 
 char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
@@ -44,18 +56,12 @@ char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
 
 	tmp = ptr;
 	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
-	{
 		micli->syserror = errno;
-		free(tmp);
-		tmp = NULL;
-	}
 	else
-	{
 		memcpy(ptr, tmp, size);
-		free(tmp);
-		tmp = NULL;
-		//printf("Bufsize: %zu\n", size);
-	}
+	//printf("Bufsize: %zu\n", size); (Debug code)
+	free(tmp);
+	tmp = NULL;
 	return (ptr);
 }
 
