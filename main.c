@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/26 20:41:47 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/01/27 20:36:04 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 /*
 ** This function reallocates the memory of the string pointed to by ptr to a
 ** new memory block of the size defined by size, freeing the old memory block.
+** 
+** If a null pointer is passed, a null pointer will be returned and nothing
+** will be freed. Freeing a null pointer results in no operation being
+** performed, so it's fine.
 **
 ** If the reallocation fails, the old memory block is destroyed and a null
 ** pointer is returned.
@@ -30,9 +34,8 @@ char	*ft_realloc(char *ptr, size_t size)
 	char *tmp;
 
 	tmp = ptr;
-	if (!(ptr = malloc(sizeof(char) * size)))
+	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
 	{
-		printf("\n%s\n", strerror(errno));
 		free(tmp);
 		tmp = NULL;
 	}
@@ -103,8 +106,11 @@ char	*micli_readline(t_micli *micli)
 		if (micli->position >= micli->bufsize)
 		{
 			micli->bufsize += READLINE_BUFSIZE;
-			if (!(micli->buffer = ft_realloc(micli->buffer, micli->bufsize)))
+			if (!(micli->buffer = ft_realloc(NULL, micli->bufsize)))
+			{
+				//printf("\n%s\n", strerror(errno)); //make ft_realloc set errno, or use internal error handling :p
 				exit(EXIT_FAILURE); //realloc failure gestionar con flags
+			}
 		}
 	}
 	
