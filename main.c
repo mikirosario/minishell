@@ -6,11 +6,20 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/27 20:36:04 by miki             ###   ########.fr       */
+/*   Updated: 2021/01/27 21:12:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	exit_failure(t_micli *micli)
+{
+	if (micli->syserror)
+		printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
+	else
+		printf("\nUnknown fatal error\n");
+	exit(EXIT_FAILURE);
+}
 
 /*
 ** This function reallocates the memory of the string pointed to by ptr to a
@@ -29,13 +38,14 @@
 ** Probably means segfault. ;)
 */
 
-char	*ft_realloc(char *ptr, size_t size)
+char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
 {
 	char *tmp;
 
 	tmp = ptr;
 	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
 	{
+		micli->syserror = errno;
 		free(tmp);
 		tmp = NULL;
 	}
@@ -82,10 +92,10 @@ char	*micli_readline(t_micli *micli)
 	micli->position = 0;
 	if (!(micli->buffer = malloc(sizeof(char) * micli->bufsize)))
 	{
-		printf("\n%s\n", strerror(errno));
+		micli->syserror = errno;
 		free(micli->buffer);
 		micli->buffer = NULL;
-		exit(EXIT_FAILURE); //gestionar con flags
+		exit_failure(micli); //gestionar con flags
 	}
 	while (1)
 	{
@@ -106,11 +116,8 @@ char	*micli_readline(t_micli *micli)
 		if (micli->position >= micli->bufsize)
 		{
 			micli->bufsize += READLINE_BUFSIZE;
-			if (!(micli->buffer = ft_realloc(NULL, micli->bufsize)))
-			{
-				//printf("\n%s\n", strerror(errno)); //make ft_realloc set errno, or use internal error handling :p
-				exit(EXIT_FAILURE); //realloc failure gestionar con flags
-			}
+			if (!(micli->buffer = ft_realloc(micli->buffer, micli->bufsize, micli)))
+				exit_failure(micli);
 		}
 	}
 	
