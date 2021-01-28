@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 14:48:30 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/01/28 19:35:09 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@
 void	exit_failure(t_micli *micli)
 {
 	if (micli->syserror)
-		printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
+		ft_printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
 	else
-		printf("\nUnknown fatal error\n");
+		ft_printf("\nUnknown fatal error\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -58,10 +58,9 @@ char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
 	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
 		micli->syserror = errno;
 	else
-		memcpy(ptr, tmp, size);
+		ft_memcpy(ptr, tmp, size);
 	//printf("Bufsize: %zu\n", size); (Debug code)
-	free(tmp);
-	tmp = NULL;
+	tmp = ft_del(tmp);
 	return (ptr);
 }
 
@@ -99,8 +98,7 @@ char	*micli_readline(t_micli *micli)
 	if (!(micli->buffer = malloc(sizeof(char) * micli->bufsize)))
 	{
 		micli->syserror = errno;
-		free(micli->buffer);
-		micli->buffer = NULL;
+		micli->buffer = ft_del(micli->buffer);
 		exit_failure(micli); //gestionar con flags
 	}
 	while (1)
@@ -110,7 +108,7 @@ char	*micli_readline(t_micli *micli)
 		if (micli->c == EOF || micli->c == '\n')
 		{
 			micli->buffer[micli->position] = '\0';
-			printf("%s\n", micli->buffer);
+			ft_printf("%s\n", micli->buffer); //esto imprime último comando a stdout
 			return (micli->buffer);
 		}
 		//Otherwise, add the character to our buffer and advance one byte.
@@ -146,26 +144,22 @@ char	micli_loop(t_micli *micli)
 		write(1, "🚀 ", 6);
 		line = micli_readline(micli);//stays here...
 		//write(1, "TEST", 4);
-		if (!(strcmp(line, "exit")) || !(strcmp(line, "quit")))
+		if (!(ft_strcmp(line, "exit")))
 		{
-				free(line);
-				line = NULL;
+				line = ft_del(line);
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
 		//ls "implementation" ;)
-		if (!(strcmp(line, "ls")))
+		if (!(ft_strcmp(line, "ls")))
 		{
 			if (d)
 			{
 				while ((dir = readdir(d)) != NULL)
-				{
-					printf("%s\n", dir->d_name);
-				}
+					ft_printf("%s\n", dir->d_name);
 				closedir(d);
 			}
 		}
-		free(line);
-		line = NULL;
+		line = ft_del(line);
 	}
 	return (0);
 }
@@ -174,7 +168,7 @@ int 	main(int argc, char **argv)
 {
 	t_micli micli;
 
-	bzero(&micli, sizeof(t_micli));
+	ft_bzero(&micli, sizeof(t_micli));
 	//config files
 	(void)argc;
 	(void)argv;

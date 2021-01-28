@@ -1,34 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_del.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:18:07 by mrosario         ###   ########.fr       */
+/*   Created: 2021/01/26 20:46:19 by mrosario          #+#    #+#             */
+/*   Updated: 2021/01/28 18:10:29 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-//#include <sys/types.h>
-//#include <sys/uio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <dirent.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
+/*
+** This function is a generic, run-of-the-mill "free this memory and set the
+** pointer to NULL" function. :p
+*/
 
-typedef struct	s_micli
+void	*ft_del(void *freethis)
 {
-	char	*buffer;
-	char	*tmp;
-	int		position;
-	int		bufsize;
-	int		c;
-	int		syserror;
-}				t_micli;
+	free(freethis);
+	return (NULL);
+}

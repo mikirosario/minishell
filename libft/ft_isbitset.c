@@ -1,34 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_isbitset.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:18:07 by mrosario         ###   ########.fr       */
+/*   Created: 2021/01/26 20:42:08 by mrosario          #+#    #+#             */
+/*   Updated: 2021/01/28 18:39:29 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-//#include <sys/types.h>
-//#include <sys/uio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <dirent.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
+/*
+** Simple function to tell you whether a given bit is set in a byte.
+**
+** Bit 0 is the rightmost bit. Returns !0 if set, 0 if not set.
+**
+** If the bitshift is set higher than 8, behaviour is undefined. Don't do it. ;)
+*/
 
-typedef struct	s_micli
+unsigned char	ft_isbitset(unsigned char byte, unsigned char bit)
 {
-	char	*buffer;
-	char	*tmp;
-	int		position;
-	int		bufsize;
-	int		c;
-	int		syserror;
-}				t_micli;
+	unsigned char	mask;
+
+	mask = (unsigned char)1 << bit;
+	return (mask & byte);
+}

@@ -1,34 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_setbit.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:18:07 by mrosario         ###   ########.fr       */
+/*   Created: 2021/01/26 20:40:29 by mrosario          #+#    #+#             */
+/*   Updated: 2021/01/28 18:49:05 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-//#include <sys/types.h>
-//#include <sys/uio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <dirent.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
+/*
+** Function to set a bit to 1. Returns bit-set variable.
+**
+** 0 is the rightmost bit.
+**
+** If bit is set higher than 8, behaviour is undefined.
+*/
 
-typedef struct	s_micli
+unsigned char	ft_setbit(unsigned char byte, unsigned char bit)
 {
-	char	*buffer;
-	char	*tmp;
-	int		position;
-	int		bufsize;
-	int		c;
-	int		syserror;
-}				t_micli;
+	unsigned char	mask;
+
+	mask = (unsigned char)1 << bit;
+	return (mask | byte);
+}

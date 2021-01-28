@@ -1,34 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:18:07 by mrosario         ###   ########.fr       */
+/*   Created: 2021/01/28 19:40:43 by mrosario          #+#    #+#             */
+/*   Updated: 2021/01/28 19:41:07 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-//#include <sys/types.h>
-//#include <sys/uio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <dirent.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
-
-typedef struct	s_micli
+int		ft_strcmp(const char *s1, const char *s2)
 {
-	char	*buffer;
-	char	*tmp;
-	int		position;
-	int		bufsize;
-	int		c;
-	int		syserror;
-}				t_micli;
+	while (*s1 == *s2)
+	{
+		if (!(*s1))
+			return (0);
+		s1++;
+		s2++;
+	}
+	return ((*(unsigned char *)s1 < *(unsigned char *)s2) ? -1 : 1);
+}
