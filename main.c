@@ -134,10 +134,7 @@ char	micli_loop(t_micli *micli)
 {
 	char shutdown;
 	char *line;
-	DIR *d;
-	struct dirent *dir;
 	
-	d = opendir(".");
 	shutdown = 0;
 
 	while (!shutdown)//no parece que esté usando shutdown...
@@ -152,24 +149,33 @@ char	micli_loop(t_micli *micli)
 				line = NULL;
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
+		// we dont have to do this :,(
+		//
 		if (!(strcmp(line, "ls")))
 		{
+			DIR *d;
+			struct dirent *dir;
+			d = opendir(".");
 			if (d)
 			{
 				while ((dir = readdir(d)) != NULL)
 					printf("%s\n", dir->d_name);
 				closedir(d);
 			}
-			else
-				perror("ls error");
 		}
 		if (!(strcmp(line, "pwd")))
 		{
 			char cwd[FILENAME_MAX];
 			if (getcwd(cwd, sizeof(cwd)) != NULL)
 				printf("%s\n", cwd);
-			else
-				perror("pwd error");
+		}
+		if (!(strcmp(line, "cd")))
+		{
+			chdir("..");
+		}
+		if (!(strcmp(line, "cd ..")))
+		{
+			chdir("..");
 		}
 		free(line);
 		line = NULL;
