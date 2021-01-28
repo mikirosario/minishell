@@ -165,14 +165,15 @@ char	micli_loop(t_micli *micli)
 			if (getcwd(cwd, sizeof(cwd)) != NULL)
 				ft_printf("%s\n", cwd);
 		}
-		if (!(ft_strcmp(line, "cd")))
+		if (!(ft_strcmp(line, "cd ..")))
 		{
 			chdir("..");
 		}
-		if (!(ft_strcmp(line, "cd ..")))
-		{
-			opendir("..");
-		}
+		// waiting for token
+		// if (!(ft_strcmp(line, "cd")))
+		// {
+		// 	opendir("..");
+		// }
 		line = ft_del(line);
 	}
 	return (0);
