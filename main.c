@@ -152,17 +152,24 @@ char	micli_loop(t_micli *micli)
 				line = NULL;
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
-		//ls "implementation" ;)
 		if (!(strcmp(line, "ls")))
 		{
 			if (d)
 			{
 				while ((dir = readdir(d)) != NULL)
-				{
 					printf("%s\n", dir->d_name);
-				}
 				closedir(d);
 			}
+			else
+				perror("ls error");
+		}
+		if (!(strcmp(line, "pwd")))
+		{
+			char cwd[FILENAME_MAX];
+			if (getcwd(cwd, sizeof(cwd)) != NULL)
+				printf("%s\n", cwd);
+			else
+				perror("pwd error");
 		}
 		free(line);
 		line = NULL;
