@@ -6,11 +6,32 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:53:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/28 20:53:19 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Frees all memory reserved for a character pointer array with ft_split, first
+** freeing the lines pointed to by each pointer, then freeing the pointer array
+** itself.
+*/
+
+char	**free_split(char **split)
+{
+	int	i;
+
+	i = 0;
+	while (split[i])
+	{
+		if (split)
+		split[i] = ft_del(split[i]);
+		i++;
+	}
+	free(split);
+	return (NULL);
+}
 
 /*
 ** Any program failure leading to program termination should immediately save
@@ -31,6 +52,30 @@ void	exit_failure(t_micli *micli)
 		ft_printf("\nUnknown fatal error\n");
 	exit(EXIT_FAILURE);
 }
+
+/*
+**
+*/
+
+ char	*str_tok(char *line, t_micli *micli)
+ {
+	char	**tokens;
+
+	tokens = ft_split(line, ' ');
+	micli->syserror = errno;
+	if (!tokens)
+	exit_failure(micli);
+
+	int	i; //temporal
+	i = 0;
+	while (tokens[i])
+		ft_printf("%s ", tokens[i++]);
+	write(1, "\n", 1);
+	tokens = free_split(tokens);
+	return(NULL);
+ }
+
+
 
 /*
 ** This function reallocates the memory of the string pointed to by ptr to a
@@ -108,7 +153,7 @@ char	*micli_readline(t_micli *micli)
 		if (micli->c == EOF || micli->c == '\n')
 		{
 			micli->buffer[micli->position] = '\0';
-			ft_printf("%s\n", micli->buffer); //esto imprime último comando a stdout
+			//ft_printf("%s\n", micli->buffer); //esto imprime último comando a stdout
 			return (micli->buffer);
 		}
 		//Otherwise, add the character to our buffer and advance one byte.
@@ -146,6 +191,11 @@ char	micli_loop(t_micli *micli)
 				line = ft_del(line);
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
+		else
+		{
+			str_tok(line, micli);
+		}
+		/*
 		//ls "implementation" ;)
 		if (!(ft_strcmp(line, "ls")))
 		{
@@ -173,7 +223,7 @@ char	micli_loop(t_micli *micli)
 		// if (!(ft_strcmp(line, "cd")))
 		// {
 		// 	opendir("..");
-		// }
+		// }*/
 		line = ft_del(line);
 	}
 	return (0);
