@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/27 21:39:14 by miki             ###   ########.fr       */
+/*   Updated: 2021/01/28 14:48:30 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,10 @@ char	micli_loop(t_micli *micli)
 {
 	char shutdown;
 	char *line;
-
+	DIR *d;
+	struct dirent *dir;
+	
+	d = opendir(".");
 	shutdown = 0;
 
 	while (!shutdown)//no parece que esté usando shutdown...
@@ -149,10 +152,21 @@ char	micli_loop(t_micli *micli)
 				line = NULL;
 				exit(EXIT_SUCCESS); //gestionar con flags
 		}
+		//ls "implementation" ;)
+		if (!(strcmp(line, "ls")))
+		{
+			if (d)
+			{
+				while ((dir = readdir(d)) != NULL)
+				{
+					printf("%s\n", dir->d_name);
+				}
+				closedir(d);
+			}
+		}
 		free(line);
 		line = NULL;
 	}
-
 	return (0);
 }
 

@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <dirent.h>
 
 #define READLINE_BUFSIZE 1
 
