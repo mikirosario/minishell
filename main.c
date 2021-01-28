@@ -175,7 +175,7 @@ char	micli_loop(t_micli *micli)
 		}
 		if (!(strcmp(line, "cd ..")))
 		{
-			chdir("..");
+			opendir("..");
 		}
 		free(line);
 		line = NULL;
