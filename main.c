@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 19:35:09 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/28 19:53:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,10 +132,7 @@ char	micli_loop(t_micli *micli)
 {
 	char shutdown;
 	char *line;
-	DIR *d;
-	struct dirent *dir;
 	
-	d = opendir(".");
 	shutdown = 0;
 
 	while (!shutdown)//no parece que esté usando shutdown...
@@ -152,12 +149,29 @@ char	micli_loop(t_micli *micli)
 		//ls "implementation" ;)
 		if (!(ft_strcmp(line, "ls")))
 		{
+			DIR *d;
+			struct dirent *dir;
+			d = opendir(".");
 			if (d)
 			{
 				while ((dir = readdir(d)) != NULL)
 					ft_printf("%s\n", dir->d_name);
 				closedir(d);
 			}
+		}
+		if (!(ft_strcmp(line, "pwd")))
+		{
+			char cwd[FILENAME_MAX];
+			if (getcwd(cwd, sizeof(cwd)) != NULL)
+				ft_printf("%s\n", cwd);
+		}
+		if (!(ft_strcmp(line, "cd")))
+		{
+			chdir("..");
+		}
+		if (!(ft_strcmp(line, "cd ..")))
+		{
+			opendir("..");
 		}
 		line = ft_del(line);
 	}
