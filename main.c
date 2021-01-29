@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 20:53:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/29 18:53:49 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	exit_failure(t_micli *micli)
 **
 */
 
- char	*str_tok(char *line, t_micli *micli)
+ /*char	*str_tok(char *line, t_micli *micli)
  {
 	char	**tokens;
 
@@ -73,6 +73,25 @@ void	exit_failure(t_micli *micli)
 	write(1, "\n", 1);
 	tokens = free_split(tokens);
 	return(NULL);
+ }*/
+
+/*
+** Finds first 'c' in line and return its address.
+**
+** If passed a null pointer, returns null.
+*/
+
+char	*find(char *line, char c)
+{
+	if (line)
+		while (*line && *line != c)
+			line++;
+	return (line);
+}
+
+ char	*str_tok(char *line, t_micli *micli)
+ {
+	
  }
 
 
