@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/29 18:53:49 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/30 17:38:29 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,19 @@ char	*find(char *line, char c)
 
  char	*str_tok(char *line, t_micli *micli)
  {
-	
+	char	*lstart;
+	char	*lindex;
+
+	//First skip any spaces
+	line = ft_skipspaces(line);
+	lindex = line;
+	lstart = line;
+	while (*lindex) //before NULL
+	{
+		if (ft_isspace(*lindex)) //If we find a space
+			lindex = ft_skipspaces(lindex); //Skip it and all consecutive spaces
+			micli->token.space
+	}
  }
 
 
