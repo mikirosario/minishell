@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/31 18:26:07 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/31 20:55:17 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,13 +161,69 @@ char	*find(char *line, char *line_end, char c)
 ** 11 (3) = Double quotes opened, single quotes opened.
 */
 
-unsigned char	check_quotes(char quotes, char quote_flag)
+unsigned char	toggle_quote_flag(char quotes, char quote_flag)
 {
 	if (quotes == '"')
 		quote_flag = ft_togglebit(quote_flag, 0);
 	else if (quotes == '\'')
 		quote_flag = ft_togglebit(quote_flag, 1);
 	return(quote_flag);
+}
+
+/*
+** Process character. If the character is special, set the appropriate flag.
+*/
+
+void			process_char(char chr, t_micli *micli)
+{
+	if ((micli->tokdata.quote_flag == 0 && (chr == '"' || chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
+		(micli->tokdata.quote_flag == 1 && chr == '"') || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
+		(micli->tokdata.quote_flag == 2 && chr == '\'')) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
+		{
+			if (micli->tokdata.quote_flag != 0)
+				micli->tokdata.quote = chr; //Copy the quotation type to a variable so we can delete it from the copy (for closing quotes only).
+			micli->tokdata.quote_flag = toggle_quote_flag(chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
+		}
+	else //we do not count micli->tokdata.toksize for opening/closing quotes for memory allocation purposes, as they are deleted.
+		micli->tokdata.toksize++; //NOTE: toksize always counts one more character than what will be saved, because micli->tokdata.tok_end (the index pointer, which is pointing to the character we sent as 'chr' in this function) stops on the character after the last character to be copied. Thus, we don't  need to increment micli->tokdata.toksize by 1 for the NULL. However, when we leave open quotes, the open quotes are printed... so we can leave 1 extra byte for that, just in case... :p
+		
+}
+
+void			process_token(t_token *token, t_micli *micli)
+{
+	char	*dst;
+
+	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
+	{
+		micli->tokdata.cmd_flag = 1;
+		token->cmd = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)); //From position 0 at startl to position of index on flag trigger is the size of the command name, plus 1 for null termination
+		
+		micli_cpy(token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote); //copy cmd and delete any enclosing quotations.
+		
+		micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl
+		micli->tokdata.tok_start = micli->tokdata.tok_end;
+		ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize + 1);
+		micli->tokdata.toksize = 0; //reset string size counter
+		ft_printf("%s\n", token->cmd);
+	}
+	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
+	{
+		micli->tokdata.args++;
+
+		if (micli->tokdata.args == 1)
+			token->arguments = ft_lstnew( dst = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)) );
+		else
+			ft_lstadd_back(&token->arguments, ( ft_lstnew( dst = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)) ) ) );
+
+		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote);
+		
+		micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl
+		micli->tokdata.tok_start = micli->tokdata.tok_end;
+		ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize + 1);
+		micli->tokdata.toksize = 0; //reset string size counter
+		ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);	
+	}
+	
 }
 
 
@@ -231,84 +287,30 @@ unsigned char	check_quotes(char quotes, char quote_flag)
 
 int		process_command(char *startl, char *endl, t_micli *micli)
 {
-	t_token	token;
-	char	*tok_start;
-	char	*tok_end;
-	char	*arg_start;
-	unsigned int		args;
-	char	cmd_flag;
-	size_t	strsize;
-
-	char *tmp_arg_ptr;
+	t_token			token;
 	
 	// Save line to array?? Not a requirement, but good feature to have...
 
-	strsize = 0;
-	args = 0;
-	cmd_flag = 0; //if this flag is set, everything else we find here is an argument.
-	tok_start = startl; //start of first token is at line start
-	tok_end = tok_start; //tok_end initialized at tok_start. It will be incremented until we find the end of the token. When we have a whole token, we process it and move tok_start to tok_end for next token.
+	micli->tokdata.toksize = 0;
+	micli->tokdata.args = 0;
+	micli->tokdata.cmd_flag = 0; //if this flag is set, everything else we find here is an argument.
+	micli->tokdata.tok_start = startl; //start of first token is at line start
+	micli->tokdata.tok_end = micli->tokdata.tok_start; //micli->tokdata.tok_end initialized at micli->tokdata.tok_start. It will be incremented until we find the end of the token. When we have a whole token, we process it and move micli->tokdata.tok_start to micli->tokdata.tok_end for next token.
 	//Looking for the end of cmds/arguments (aka. tokens)
-	while (tok_start < endl)
+	while (micli->tokdata.tok_start < endl)
 	{
-		if ((micli->token.quote_flag == 0 && (*tok_end == '"' || *tok_end == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
-			(micli->token.quote_flag == 1 && *tok_end == '"') || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
-			(micli->token.quote_flag == 2 && *tok_end == '\'')) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
-		{
-			if (micli->token.quote_flag != 0)
-				micli->token.quote = *tok_end; //Copy the quotation type to a variable so we can delete it from the copy (for closed quotes only).
-			micli->token.quote_flag = check_quotes(*tok_end, micli->token.quote_flag); //check for any quotes and toggle appropriate flag
-		}
-		else //we do not count strsize for opening/closing quotes for memory allocation purposes, as they are deleted.
-			strsize++; //NOTE: strsize always counts one more character than what will be saved, because tok_end stops on the character after the last character to be copied. Thus, we don't  need to increment strsize by 1 for the NULL. However, when we leave open quotes, the open quotes are printed... so we can leave 1 extra byte for that, just in case... :p
+		process_char(*micli->tokdata.tok_end, micli);
 		
 		//What defines the end of a cmd/argument?
-		if ( (micli->token.quote_flag == 0 && (ft_isspace(*tok_end))) || tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
+		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
 		{
-			if (!cmd_flag) //if cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
-			{
-				cmd_flag = 1;
-				token.cmd = ft_calloc(strsize + 1, sizeof(char)); //From position 0 at startl to position of index on flag trigger is the size of the command name, plus 1 for null termination
-				micli_cpy(token.cmd, tok_start, tok_end, micli->token.quote); //copy cmd and delete any enclosing quotations.
-				tok_end = ft_skipspaces(tok_end); //advance index pointer to beginning of next argument, unless it's endl
-				tok_start = tok_end;
-				arg_start = tok_start; //arguments start at the token following the first token
-				ft_printf("Bytes reserved: %u\n", strsize + 1);
-				strsize = 0; //reset string size counter
-				ft_printf("%s\n", token.cmd);
-			}
-			else //if cmd_flag has been triggered already, everything from index to &index[i] is an argument
-			{
-				args++;
-
-				if (args == 1)
-					token.arguments = ft_lstnew( tmp_arg_ptr = ft_calloc(strsize + 1, sizeof(char)) );
-				else
-					ft_lstadd_back(&token.arguments, ( ft_lstnew( tmp_arg_ptr = ft_calloc(strsize + 1, sizeof(char)) ) ) );
-				micli_cpy(tmp_arg_ptr, tok_start, tok_end, micli->token.quote);
-				tok_end = ft_skipspaces(tok_end); //advance index pointer to beginning of next argument, unless it's endl
-				tok_start = tok_end;
-				ft_printf("Bytes reserved: %u\n", strsize + 1);
-				strsize = 0; //reset string size counter
-				ft_printf("Argument %d: %s\n", args, tmp_arg_ptr);
-				/*if (tok_end != endl)
-				{
-					tok_start = ft_skipspaces(tok_end); //advance index pointer to beginning of next argument, unless it's endl
-					tok_end = tok_start;
-				}
-				else
-				{
-					token.arguments = malloc(sizeof(char *) * args);
-
-				}*/
-				//ft_printf("Here be %d arguments arrgh\n", args);		
-			}
+			process_token(&token, micli);
 		}
-		else //we handle tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
-			tok_end++;
+		else //we handle micli->tokdata.tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
+			micli->tokdata.tok_end++;
 	}
-	micli->token.quote_flag = 0; //reset quote flag
-	//ft_printf("%c\n", micli->token.quote_flag + 48); Debug code to check quote flag status :)
+	micli->tokdata.quote_flag = 0; //reset quote flag
+	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
 	return (0);	
 }
 
