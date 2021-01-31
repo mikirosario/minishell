@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
+#    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/01/28 19:16:41 by mrosario         ###   ########.fr        #
+#    Updated: 2021/01/30 20:00:19 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ CFLAG = -Wall -Werror -Wextra
 LIBS = -I ./libft/ -L ./libft -lft
 
 $(NAME): $(LIBFT)
-	gcc $(CFLAG) $(LIBS) $(SRC) -o $(NAME)
+	gcc $(CFLAG) $(SRC) -o $(NAME) $(LIBS) 
 
 $(LIBFT):
 	make -C ./libft
@@ -32,14 +32,14 @@ $(LIBFT):
 all: $(NAME)
 
 debug: $(LIBFT)
-	gcc $(CFLAG) $(LIBS) $(SRC) -g -o $(NAME)
+	gcc $(CFLAG) $(SRC) -g -o $(NAME) $(LIBS)
 
 clean:
 	rm -f *.o
 
 fclean: clean
 	rm -f $(NAME)
-	#make fclean -C ./libft
+	make fclean -C ./libft
 
 re: fclean all
 

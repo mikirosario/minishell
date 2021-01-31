@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   preppers.c                                         :+:      :+:    :+:   */
+/*   preppers_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 23:34:04 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/22 14:31:01 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/01/30 19:57:54 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int		ft_intprep(void)
 		if (g_flags.minwidth)
 			return (ft_spacesorzeros((g_flags.plus ? "+" : " "), 1, \
 			g_flags.minwidth));
-			write(1, (g_flags.plus ? "+" : " "), 1);
+		write(1, (g_flags.plus ? "+" : " "), 1);
 		return (1);
 	}
 	numstr = ft_intwrite(num);
