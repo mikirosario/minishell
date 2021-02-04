@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:34:24 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 19:06:24 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void	free_token(t_micli *micli)
 				lst->content = ft_del(lst->content);
 			lst = lst->next;
 		}
+	if (micli->token->arg_array)
+		micli->token->arg_array = ft_del(micli->token->arg_array);
 	//	ft_lstiter(micli->token->arguments, free); //My lstiter leads to unallocated pointers being freed... :p
 	ft_lstclear(&micli->token->arguments, free);
 	micli->token->arguments = NULL;

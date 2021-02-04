@@ -6,13 +6,14 @@
 #    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/02/04 12:35:21 by mrosario         ###   ########.fr        #
+#    Updated: 2021/02/04 20:54:19 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-SRC = main.c exit_handling.c memory_handling.c tokenize.c flag_toggles.c
+SRC = main.c exit_handling.c memory_handling.c tokenize.c flag_toggles.c \
+cmd_execution.c
 
 LIBFT = ./libft/libft.a
 

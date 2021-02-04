@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:53:09 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 20:18:56 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ void			process_token(t_micli *micli)
 		ft_printf("Command: %s\n", micli->token->cmd);
 	else
 		ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
+
 	micli->tokdata.toksize = 0; //reset string size counter, don't remove this
 }
 
@@ -235,6 +236,13 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 			micli->tokdata.tok_end++;
 	}
 	micli->tokdata.quote_flag = 0; //reset quote flag
+	micli->tokdata.escape_flag = 0; //reset escape flag
+	
+	//exec_cmd(micli->token->cmd, micli);
+
+	/*if (!fork())
+		execve
+	*/
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
 	free_token(micli); //Free token
 	return (0);	

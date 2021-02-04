@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:41:23 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 20:47:19 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ char	micli_loop(t_micli *micli)
 	return (0);
 }
 
-int 	main(int argc, char **argv)
+int 	main(int argc, char **argv, char **envp)
 {
 	t_micli micli;
 
@@ -174,6 +174,12 @@ int 	main(int argc, char **argv)
 	//config files
 	(void)argc;
 	(void)argv;
+
+	//SACAR PATH DE SU CARCEL EN ENVP
+	int i = 0;
+	while (ft_strncmp(envp[i], "PATH", 4))
+		i++;
+	printf("%s\n", envp[i]);
 
 	//command loop
 	micli_loop(&micli);

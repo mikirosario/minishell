@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:50:34 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 19:03:39 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,9 @@ typedef struct	s_tokendata
 
 typedef struct	s_token
 {
-	char				*cmd;
-	t_list				*arguments;
+	char	*cmd;
+	t_list	*arguments;
+	char	**arg_array;
 }				t_token;
 
 typedef struct	s_varlist
