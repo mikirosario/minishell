@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 14:44:45 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:14:53 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,9 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 ** quote of either kind is detected, and sets the quote status back to closed if
 ** it was open and a matching (closing) quote was found.
 **
-** The if quotes have been closed, the type of enclosing quote is saved to the
-** micli->tokdata.quote variable for subsequent parsing, as this will tell us
-** which quotes we need to delete from the resultant token. NOTE: Test bash behaviour with tokens with multiple quotes of different types...
+** If the quotes are changing the quote flag (opening or closing quotes) they
+** become unprintable, so they are replaced by 127, the ASCII delete flag, to be
+** flagged for deletion.
 **
 ** The micli->tokdata.toksize variable keeps track of the token size. For
 ** memory allocation purposes, opening and closing quotes do not count as they
@@ -66,7 +66,19 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 **
 ** An exception to this is if a quote is left open in a token. In bash this is
 ** handled with multiline commands. Since we don't do multiline commands, we
-** are accepting it as part of the argument... probably should just assume it's closed though. See  note about different types of quotes...
+** assume it is closed and delete it.
+**
+** If the escape character is used, the escape flag is activated for the next
+** character. The escape character is also flagged for deletion with 127.
+**
+** NOTE: micli->tokdata.toksize always counts one more character than what will
+** be saved, because micli->tokdata.tok_end (the index pointer, which is
+** pointing to the character we sent as 'chr' in this function) stops on the
+** character AFTER the last character to be copied. Thus, we don't need to
+** increment micli->tokdata.toksize by 1 for the NULL, as it is already
+** included.
+**
+** This function returns chr, which may be changed as desired.
 */
 
 char			process_char(char chr, t_micli *micli)
@@ -74,7 +86,7 @@ char			process_char(char chr, t_micli *micli)
 	if (!micli->tokdata.escape_flag && chr == '\\')
 	{
 		micli->tokdata.escape_flag = 1;
-		chr = 127; //Flag for deletion
+		chr = DEL; //Flag for deletion
 	}
 	else if (!micli->tokdata.escape_flag &&
 		( (micli->tokdata.quote_flag == 0 && (chr == '"' || chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
@@ -82,15 +94,12 @@ char			process_char(char chr, t_micli *micli)
 		(micli->tokdata.quote_flag == 2 && chr == '\'') ) ) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
 	{
 		micli->tokdata.quote_flag = toggle_quote_flag(chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
-		chr = 127; //Flag for deletion
+		chr = DEL; //Flag for deletion
 	}
 	else //we do not count micli->tokdata.toksize for opening/closing quotes for memory allocation purposes, as they are deleted.
 	{
 		micli->tokdata.escape_flag = 0; //reset escape flag
-		micli->tokdata.toksize++; //NOTE: toksize always counts one more character than what will be saved, because micli->tokdata.tok_end
-		//(the index pointer, which is pointing to the character we sent as 'chr' in this function) stops on the character after the last character to be copied.
-		//Thus, we don't  need to increment micli->tokdata.toksize by 1 for the NULL. However, when we leave open quotes, the open quotes are printed... 
-		//so we can leave 1 extra byte for that, just in case... :p	
+		micli->tokdata.toksize++; //Already counts the NULL, doesn't need to be incremented for null
 	}
 	return (chr);
 }
@@ -107,11 +116,6 @@ char			process_char(char chr, t_micli *micli)
 **
 ** I'm planning to create an argument pointer array also for quicker access.
 ** (NOT YET IMPLEMENTED)
-**
-** Stuff that will need to be freed:
-** token->cmd (with ft_del)
-** token->arguments->content * token->args (with that handy delete all the things in the argument list function from libft)
-** token->arguments * token->args (all members of the arguments list, not sure if there is a libft function for this or I have to create one)
 */
 
 void			process_token(t_micli *micli)
@@ -121,7 +125,7 @@ void			process_token(t_micli *micli)
 	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
 	{
 		micli->tokdata.cmd_flag = 1;
-		micli->token->cmd = clean_calloc(micli->tokdata.toksize + 1, sizeof(char), micli); //From position 0 at startl to position of index on flag trigger is the size of the command name, plus 1 for null termination		
+		micli->token->cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
 		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, (char)127); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
@@ -130,7 +134,7 @@ void			process_token(t_micli *micli)
 
 		//Your typical linked list instructions, for the first list member create the list, for subsequent members create the member and send to the back. The list pointer is at token->arguments.
 		//Will clean up the calloc stuff once the rest is cleaned up, I know it's not norm-friendly ;)
-		dst = clean_calloc(micli->tokdata.toksize + 1, sizeof(char), micli);
+		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
 		if (micli->tokdata.args == 1)
 			micli->token->arguments = ft_lstnew(dst);
 		else
@@ -141,7 +145,7 @@ void			process_token(t_micli *micli)
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
 	
 	//Debug code to ensure copy is correct, remove from final ver
-	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize + 1); //Debug code to ensure enough bytes were reserved
+	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
 	if (!micli->tokdata.args)
 		ft_printf("Command: %s\n", micli->token->cmd);
 	else

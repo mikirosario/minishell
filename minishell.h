@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 12:35:38 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:14:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
+#define DEL 127
 
 typedef struct	s_tokendata
 {
