@@ -6,61 +6,11 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/31 20:55:17 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 12:34:59 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*
-** Special micli copy function that deletes the character indicated in the
-** delete variable from the copy. Source isn't expected to be null terminated
-** here, so I don't bother checking for it. We work only with addresses.
-**
-** The beginning of the string to be copied must be sent as src, and the end as
-** src_end. From src to src_end will be copied into dst. Dst is expected to be
-** zeroed, so I don't null terminate anything either. Use calloc.
-**
-** If src is larger than dst your computer explodes.
-**
-** Not a friendly function. I wouldn't recommend copying it. ;)
-*/
-
-char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
-{
-	char		*d;
-	const char	*s;
-
-	d = dst;
-	s = src;
-	while (s != src_end)
-	{
-		if (*s != delete)
-			*d++ = *s++;
-		else
-			s++;
-	}
-	return (dst);
-}
-
-
-
-
-/*
-** Function to toggle a bit between 0 and 1. Returns bit-set variable.
-**
-** 0 is the rightmost bit.
-**
-** If bit is set higher than 8, behaviour is undefined.
-*/
-
-unsigned char	ft_togglebit(unsigned char byte, unsigned char bit)
-{
-	unsigned char	mask;
-
-	mask = (unsigned char)1 << bit;
-	return (mask ^ byte);
-}
 
 /*
 ** Frees all memory reserved for a character pointer array with ft_split, first
@@ -84,48 +34,6 @@ char	**free_split(char **split)
 }
 
 /*
-** Any program failure leading to program termination should immediately save
-** errno to the micli->syserror variable, clean up as needed, and then call this
-** function.
-**
-** This function will print the appropriate error message and kill the program.
-**
-** If the program fails due to an internal error, rather than a system error,
-** the message "Unknown fatal error" will be displayed.
-*/
-
-void	exit_failure(t_micli *micli)
-{
-	if (micli->syserror)
-		ft_printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
-	else
-		ft_printf("\nUnknown fatal error\n");
-	exit(EXIT_FAILURE);
-}
-
-/*
-**
-*/
-
- /*char	*str_tok(char *line, t_micli *micli)
- {
-	char	**tokens;
-
-	tokens = ft_split(line, ' ');
-	micli->syserror = errno;
-	if (!tokens)
-	exit_failure(micli);
-
-	int	i; //temporal
-	i = 0;
-	while (tokens[i])
-		ft_printf("%s ", tokens[i++]);
-	write(1, "\n", 1);
-	tokens = free_split(tokens);
-	return(NULL);
- }*/
-
-/*
 ** Finds first 'c' in line and return its address.
 **
 ** If passed a null pointer, returns null.
@@ -146,231 +54,6 @@ char	*find(char *line, char *line_end, char c)
 				line++;
 	}
 	return (line);
-}
-
-/*
-** Update the quotes flag if quotes are detected.
-**
-** The quote_flag is a two bit unsigned integer in the following format:
-**
-** single:double
-**
-** 00 (0) = All quotes closed.
-** 01 (1) = Double quotes opened, single quotes closed.
-** 10 (2) = Single quotes opened, double quotes closed.
-** 11 (3) = Double quotes opened, single quotes opened.
-*/
-
-unsigned char	toggle_quote_flag(char quotes, char quote_flag)
-{
-	if (quotes == '"')
-		quote_flag = ft_togglebit(quote_flag, 0);
-	else if (quotes == '\'')
-		quote_flag = ft_togglebit(quote_flag, 1);
-	return(quote_flag);
-}
-
-/*
-** Process character. If the character is special, set the appropriate flag.
-*/
-
-void			process_char(char chr, t_micli *micli)
-{
-	if ((micli->tokdata.quote_flag == 0 && (chr == '"' || chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
-		(micli->tokdata.quote_flag == 1 && chr == '"') || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
-		(micli->tokdata.quote_flag == 2 && chr == '\'')) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
-		{
-			if (micli->tokdata.quote_flag != 0)
-				micli->tokdata.quote = chr; //Copy the quotation type to a variable so we can delete it from the copy (for closing quotes only).
-			micli->tokdata.quote_flag = toggle_quote_flag(chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
-		}
-	else //we do not count micli->tokdata.toksize for opening/closing quotes for memory allocation purposes, as they are deleted.
-		micli->tokdata.toksize++; //NOTE: toksize always counts one more character than what will be saved, because micli->tokdata.tok_end (the index pointer, which is pointing to the character we sent as 'chr' in this function) stops on the character after the last character to be copied. Thus, we don't  need to increment micli->tokdata.toksize by 1 for the NULL. However, when we leave open quotes, the open quotes are printed... so we can leave 1 extra byte for that, just in case... :p
-		
-}
-
-void			process_token(t_token *token, t_micli *micli)
-{
-	char	*dst;
-
-	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
-	{
-		micli->tokdata.cmd_flag = 1;
-		token->cmd = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)); //From position 0 at startl to position of index on flag trigger is the size of the command name, plus 1 for null termination
-		
-		micli_cpy(token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote); //copy cmd and delete any enclosing quotations.
-		
-		micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl
-		micli->tokdata.tok_start = micli->tokdata.tok_end;
-		ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize + 1);
-		micli->tokdata.toksize = 0; //reset string size counter
-		ft_printf("%s\n", token->cmd);
-	}
-	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
-	{
-		micli->tokdata.args++;
-
-		if (micli->tokdata.args == 1)
-			token->arguments = ft_lstnew( dst = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)) );
-		else
-			ft_lstadd_back(&token->arguments, ( ft_lstnew( dst = ft_calloc(micli->tokdata.toksize + 1, sizeof(char)) ) ) );
-
-		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote);
-		
-		micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl
-		micli->tokdata.tok_start = micli->tokdata.tok_end;
-		ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize + 1);
-		micli->tokdata.toksize = 0; //reset string size counter
-		ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);	
-	}
-	
-}
-
-
-/*
-** Once we know where a command begins and ends, we can process it, separating
-** the command name from its arguments.
-**
-** If we want to save the lines of text issued to terminal in a list for later
-** retrieval, we can do that here before processing.
-**
-** Commands should always end in a ';' or null, which will be pointed to by
-** endl.
-**
-** To understand how this function works, it is important to understand the
-** quote_flag.
-**
-** The quote_flag is a two bit unsigned integer in the following format:
-**
-** single:double
-**
-** It records the state of quotes in a line as follows:
-**
-** 00 (0) = All quotes closed.
-** 01 (1) = Double quotes opened, single quotes closed.
-** 10 (2) = Single quotes opened, double quotes closed.
-** 11 (3) = Double quotes opened, single quotes opened.
-**
-** Note that we do not allow for state 11 (3) to exist. This is because if
-** either type of quotation is found in a string, its flag is set (01 or 10, as
-** appropriate), and then the only quote condition that may change the flag
-** state is for a corresponding closing quotation to be found in the string
-** (" or ', respectively).
-**
-** That is, if " is open, the only way to check for ' is first to close "", and
-** if ' is open, the only way to check for " is first to close ''.
-**
-** Currently, if quotes are left open, the opened quotes will be passed as an
-** argument if separated from the last argument by a space, or as part of the
-** current argument if not separated by a space. That is:
-**
-** '"command"'"		->	arg1: "command""
-**
-** '"command"' "	->	arg1: "command" arg2: "
-**
-** This isn't bash behaviour, as bash will wait for you to close commas in
-** terminal, but the subject specifically says not to implement multiline
-** commands, so this is the micli resolution for open quotes.
-**
-** This function first checks for an unescaped '='. If found, everything before
-** it is treated as a var name and everything after it is treated as the name's
-** assigned value. (NOTE: NOT YET IMPLEMENTED)
-**
-** Otherwise, it will parse the string to separate the command from its
-** arguments and execute the command.
-**
-** Any text within quotations will be considered a single argument/command.
-**
-** Any text after a $ will be considered a variable name (NOTE: NOT YET
-** IMPLEMENTED) unless the $ is escaped with '\'.
-*/
-
-int		process_command(char *startl, char *endl, t_micli *micli)
-{
-	t_token			token;
-	
-	// Save line to array?? Not a requirement, but good feature to have...
-
-	micli->tokdata.toksize = 0;
-	micli->tokdata.args = 0;
-	micli->tokdata.cmd_flag = 0; //if this flag is set, everything else we find here is an argument.
-	micli->tokdata.tok_start = startl; //start of first token is at line start
-	micli->tokdata.tok_end = micli->tokdata.tok_start; //micli->tokdata.tok_end initialized at micli->tokdata.tok_start. It will be incremented until we find the end of the token. When we have a whole token, we process it and move micli->tokdata.tok_start to micli->tokdata.tok_end for next token.
-	//Looking for the end of cmds/arguments (aka. tokens)
-	while (micli->tokdata.tok_start < endl)
-	{
-		process_char(*micli->tokdata.tok_end, micli);
-		
-		//What defines the end of a cmd/argument?
-		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
-		{
-			process_token(&token, micli);
-		}
-		else //we handle micli->tokdata.tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
-			micli->tokdata.tok_end++;
-	}
-	micli->tokdata.quote_flag = 0; //reset quote flag
-	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
-	return (0);	
-}
-
-/*
-** EOF or \n within line has been translated to \0 by this stage.
-*/
-
- char	*str_tok(char *line, t_micli *micli)
- {
-	char	*lstart;
-	char	*lindex;
-
-	(void)lstart;
-	lindex = line; //Start lindex at beginning of line
-	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command
-	{
-		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-		lindex = lstart; //set index at start of next command
-		while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command. 
-			lindex++;
-			//Everything from lstart to lindex is your kingdom, I mean is a whole token (command + arguments). ;) Must be executed before continuing...
-		micli->cmd_result = process_command(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
-		//Store command result in cmd_result variable...
-		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
-	}
-	return (lindex);
- }
-
-
-
-/*
-** This function reallocates the memory of the string pointed to by ptr to a
-** new memory block of the size defined by size, freeing the old memory block.
-** 
-** If a null pointer is passed, a null pointer will be returned and nothing
-** will be freed. Freeing a null pointer results in no operation being
-** performed, so it's fine.
-**
-** If the reallocation fails, the old memory block is destroyed and a null
-** pointer is returned. Errno at failure is saved to a variable in the micli
-** struct for use in subsequent error handling.
-**
-** This function uses memcpy, which is not safe if dst and src overlap.
-**
-** Behaviour is undefined if size is less than the memory to be reallocated.
-** Probably means segfault. So just don't do that. ;)
-*/
-
-char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
-{
-	char *tmp;
-
-	tmp = ptr;
-	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
-		micli->syserror = errno;
-	else
-		ft_memcpy(ptr, tmp, size);
-	//printf("Bufsize: %zu\n", size); (Debug code)
-	tmp = ft_del(tmp);
-	return (ptr);
 }
 
 /*
@@ -453,11 +136,11 @@ char	micli_loop(t_micli *micli)
 		if (!(ft_strcmp(line, "exit")))
 		{
 				line = ft_del(line);
-				exit(EXIT_SUCCESS); //gestionar con flags
+				exit_success(micli);
 		}
 		else
 		{
-			str_tok(line, micli);
+			tokenize(line, micli);
 		}
 		/*
 		//ls "implementation" ;)

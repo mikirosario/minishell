@@ -6,9 +6,12 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/31 20:32:56 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 12:35:38 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef _MINISHELL_
+# define _MINISHELL_
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -51,6 +54,7 @@ typedef struct	s_varlist
 typedef struct	s_micli
 {
 	t_tokendata	tokdata;
+	t_token		*token;
 	char		*buffer;
 	char		*tmp;
 	int			position;
@@ -59,3 +63,24 @@ typedef struct	s_micli
 	int			syserror;
 	int			cmd_result;
 }				t_micli;
+
+
+/* Flag Handling */
+unsigned char	toggle_quote_flag(char quotes, char quote_flag);
+
+/* String Parsing */
+char	*tokenize(char *line, t_micli *micli);
+
+/* Memory Handling */
+
+void	freeme(t_micli *micli);
+void	free_token(t_micli *micli);
+char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
+void	*clean_calloc(size_t count, size_t size, t_micli *micli);
+
+/* Exit Handling */
+
+void	exit_success(t_micli *micli);
+void	exit_failure(t_micli *micli);
+
+#endif
