@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 12:48:58 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 14:44:45 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,21 +69,30 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 ** are accepting it as part of the argument... probably should just assume it's closed though. See  note about different types of quotes...
 */
 
-void			process_char(char chr, t_micli *micli)
+char			process_char(char chr, t_micli *micli)
 {
-	if ((micli->tokdata.quote_flag == 0 && (chr == '"' || chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
+	if (!micli->tokdata.escape_flag && chr == '\\')
+	{
+		micli->tokdata.escape_flag = 1;
+		chr = 127; //Flag for deletion
+	}
+	else if (!micli->tokdata.escape_flag &&
+		( (micli->tokdata.quote_flag == 0 && (chr == '"' || chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
 		(micli->tokdata.quote_flag == 1 && chr == '"') || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
-		(micli->tokdata.quote_flag == 2 && chr == '\'')) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
-		{
-			if (micli->tokdata.quote_flag != 0)
-				micli->tokdata.quote = chr; //Copy the quotation type to a variable so we can delete it from the copy (for closing quotes only).
-			micli->tokdata.quote_flag = toggle_quote_flag(chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
-		}
+		(micli->tokdata.quote_flag == 2 && chr == '\'') ) ) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
+	{
+		micli->tokdata.quote_flag = toggle_quote_flag(chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
+		chr = 127; //Flag for deletion
+	}
 	else //we do not count micli->tokdata.toksize for opening/closing quotes for memory allocation purposes, as they are deleted.
+	{
+		micli->tokdata.escape_flag = 0; //reset escape flag
 		micli->tokdata.toksize++; //NOTE: toksize always counts one more character than what will be saved, because micli->tokdata.tok_end
 		//(the index pointer, which is pointing to the character we sent as 'chr' in this function) stops on the character after the last character to be copied.
 		//Thus, we don't  need to increment micli->tokdata.toksize by 1 for the NULL. However, when we leave open quotes, the open quotes are printed... 
 		//so we can leave 1 extra byte for that, just in case... :p	
+	}
+	return (chr);
 }
 
 /*
@@ -113,7 +122,7 @@ void			process_token(t_micli *micli)
 	{
 		micli->tokdata.cmd_flag = 1;
 		micli->token->cmd = clean_calloc(micli->tokdata.toksize + 1, sizeof(char), micli); //From position 0 at startl to position of index on flag trigger is the size of the command name, plus 1 for null termination		
-		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
+		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, (char)127); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
 	{
@@ -126,7 +135,7 @@ void			process_token(t_micli *micli)
 			micli->token->arguments = ft_lstnew(dst);
 		else
 			ft_lstadd_back(&micli->token->arguments, ft_lstnew(dst));
-		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli->tokdata.quote);
+		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, (char)127);
 	}
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl (which will be a NULL, not a space, so nothing will be skipped)
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
@@ -213,7 +222,7 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 	//Looking for the end of cmds/arguments (aka. tokens)
 	while (micli->tokdata.tok_start < endl)
 	{
-		process_char(*micli->tokdata.tok_end, micli);
+		*micli->tokdata.tok_end = process_char(*micli->tokdata.tok_end, micli);
 		
 		//What defines the end of a cmd/argument?
 		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
