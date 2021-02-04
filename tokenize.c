@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:14:53 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:53:09 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,9 +230,7 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 		
 		//What defines the end of a cmd/argument?
 		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
-		{
 			process_token(micli);
-		}
 		else //we handle micli->tokdata.tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
 			micli->tokdata.tok_end++;
 	}
@@ -243,26 +241,36 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 }
 
 /*
-** EOF or \n within line has been translated to \0 by this stage.
+** This function parses a single line read from STDIN or a file to delineate
+** the beginning and end of a command and all its arguments (undifferentiated).
+**
+** EOF or \n within the line has been translated to '\0' by this stage, so it is
+** null-terminated.
+**
+** The pointer lstart is pointed to the beginning of the command + arguments.
+** It starts by pointing to the beginning of the line. Spaces are skipped.
+**
+** The pointer lindex is used to iterate through the line from lstart until a ;
+** or NULL (meaning \n or EOF) is found, at which point the fragment from lstart
+** until the ; or NULL is passed to the process_command function for
+** tokenization.
 */
 
-char	*tokenize(char *line, t_micli *micli)
+void	tokenize(char *line, t_micli *micli)
 {
-char	*lstart;
-char	*lindex;
+	char	*lstart;
+	char	*lindex;
 
-(void)lstart;
-lindex = line; //Start lindex at beginning of line
-while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command
-{
-	lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-	lindex = lstart; //set index at start of next command
-	while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command. 
-		lindex++;
-		//Everything from lstart to lindex is your kingdom, I mean is a whole token (command + arguments). ;) Must be executed before continuing...
-	micli->cmd_result = process_command(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
-	//Store command result in cmd_result variable...
-	//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
-}
-return (lindex);
+	lindex = line; //Start lindex at beginning of line
+	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments
+	{
+		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
+		lindex = lstart; //set index at start of next command
+		while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command+arguments. 
+			lindex++;
+			//Everything from lstart to lindex is your kingdom, I mean is a whole token (command + arguments). ;) Must be executed before continuing...
+		micli->cmd_result = process_command(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
+		//Store command result in cmd_result variable...
+		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 12:34:59 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:41:23 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 ** Frees all memory reserved for a character pointer array with ft_split, first
 ** freeing the lines pointed to by each pointer, then freeing the pointer array
 ** itself.
+**
+** NOT USING SPLIT ANYMORE... ANYWAY SHOULD MOVE TO LIBFT. ;)
 */
 
 char	**free_split(char **split)
@@ -40,6 +42,8 @@ char	**free_split(char **split)
 **
 ** If line_end is passed and is greater than line, find will search only until
 ** the specified line_end. Otherwise, it will search until it finds a NULL char.
+** 
+** NOT BEING USED...
 */
 
 char	*find(char *line, char *line_end, char c)
@@ -87,12 +91,7 @@ char	*micli_readline(t_micli *micli)
 	size = 0;
 	micli->bufsize = READLINE_BUFSIZE;
 	micli->position = 0;
-	if (!(micli->buffer = malloc(sizeof(char) * micli->bufsize)))
-	{
-		micli->syserror = errno;
-		micli->buffer = ft_del(micli->buffer);
-		exit_failure(micli); //gestionar con flags
-	}
+	micli->buffer = clean_calloc(micli->bufsize, sizeof(char), micli);
 	while (1)
 	{
 		size += read(STDIN_FILENO, &micli->c, 1); //Si no ha leído nada se comporta como salto de línea?? O_O Lee último carácter, salto de línea? Se queda colgado en read???
@@ -116,14 +115,11 @@ char	*micli_readline(t_micli *micli)
 				exit_failure(micli);
 		}
 	}
-	
-	return ("return");	
 }
 
 char	micli_loop(t_micli *micli)
 {
 	char shutdown;
-	char *line;
 	
 	shutdown = 0;
 
@@ -131,17 +127,11 @@ char	micli_loop(t_micli *micli)
 	{
 		//write(1, "TEST", 4);
 		write(1, "🚀 ", 6);
-		line = micli_readline(micli);//stays here...
-		//write(1, "TEST", 4);
-		if (!(ft_strcmp(line, "exit")))
-		{
-				line = ft_del(line);
-				exit_success(micli);
-		}
+		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
+		if (!(ft_strcmp(micli->buffer, "exit")))
+			exit_success(micli);
 		else
-		{
-			tokenize(line, micli);
-		}
+			tokenize(micli->buffer, micli);
 		/*
 		//ls "implementation" ;)
 		if (!(ft_strcmp(line, "ls")))
@@ -171,7 +161,7 @@ char	micli_loop(t_micli *micli)
 		// {
 		// 	opendir("..");
 		// }*/
-		line = ft_del(line);
+		micli->buffer = ft_del(micli->buffer);
 	}
 	return (0);
 }

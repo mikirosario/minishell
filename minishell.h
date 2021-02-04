@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 15:14:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:50:34 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ typedef struct	s_micli
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
-char	*tokenize(char *line, t_micli *micli);
+void	tokenize(char *line, t_micli *micli);
 
 /* Memory Handling */
 

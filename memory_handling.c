@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 12:16:48 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/04 15:34:24 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ void	free_token(t_micli *micli)
 
 void	freeme(t_micli *micli)
 {
+	if (micli->buffer)
+		micli->buffer = ft_del(micli->buffer);
 	if (micli->token)
 		free_token(micli);
 }
