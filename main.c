@@ -6,34 +6,11 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 20:47:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/05 20:49:33 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*
-** Frees all memory reserved for a character pointer array with ft_split, first
-** freeing the lines pointed to by each pointer, then freeing the pointer array
-** itself.
-**
-** NOT USING SPLIT ANYMORE... ANYWAY SHOULD MOVE TO LIBFT. ;)
-*/
-
-char	**free_split(char **split)
-{
-	int	i;
-
-	i = 0;
-	while (split[i])
-	{
-		if (split)
-		split[i] = ft_del(split[i]);
-		i++;
-	}
-	free(split);
-	return (NULL);
-}
 
 /*
 ** Finds first 'c' in line and return its address.
@@ -171,15 +148,11 @@ int 	main(int argc, char **argv, char **envp)
 	t_micli micli;
 
 	ft_bzero(&micli, sizeof(t_micli));
+	micli.envp = envp;
 	//config files
 	(void)argc;
 	(void)argv;
 
-	//SACAR PATH DE SU CARCEL EN ENVP
-	int i = 0;
-	while (ft_strncmp(envp[i], "PATH", 4))
-		i++;
-	printf("%s\n", envp[i]);
 
 	//command loop
 	micli_loop(&micli);

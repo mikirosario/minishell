@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 19:03:39 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/05 19:23:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef struct	s_token
 {
 	char	*cmd;
 	t_list	*arguments;
-	char	**arg_array;
+	char	**micli_argv;
 }				t_token;
 
 typedef struct	s_varlist
@@ -57,6 +57,7 @@ typedef struct	s_micli
 {
 	t_tokendata	tokdata;
 	t_token		*token;
+	char		**envp;
 	char		*buffer;
 	char		*tmp;
 	int			position;
@@ -66,6 +67,8 @@ typedef struct	s_micli
 	int			cmd_result;
 }				t_micli;
 
+/* Command Execution */
+void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
@@ -73,10 +76,14 @@ unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 /* String Parsing */
 void	tokenize(char *line, t_micli *micli);
 
-/* Memory Handling */
-
+/* Memory Freeing */
 void	freeme(t_micli *micli);
 void	free_token(t_micli *micli);
+char	**free_split(char **split); //Move to libft
+
+/* Memory Reservation */
+char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
+char	**clean_ft_split(const char *s, char c, t_micli *micli);
 char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
