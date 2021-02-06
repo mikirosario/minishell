@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/05 16:55:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/06 18:43:05 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,11 +145,11 @@ void			process_token(t_micli *micli)
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
 	
 	//Debug code to ensure copy is correct, remove from final ver
-	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
-	if (!micli->tokdata.args)
-		ft_printf("Command: %s\n", micli->token->cmd);
-	else
-		ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
+	// ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
+	// if (!micli->tokdata.args)
+	// 	ft_printf("Command: %s\n", micli->token->cmd);
+	// else
+	// 	ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
 
 	micli->tokdata.toksize = 0; //reset string size counter, don't remove this
 }

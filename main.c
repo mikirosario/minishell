@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/05 20:49:33 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/06 18:35:56 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,42 +102,9 @@ char	micli_loop(t_micli *micli)
 
 	while (!shutdown)//no parece que esté usando shutdown...
 	{
-		//write(1, "TEST", 4);
 		write(1, "🚀 ", 6);
 		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
-		if (!(ft_strcmp(micli->buffer, "exit")))
-			exit_success(micli);
-		else
-			tokenize(micli->buffer, micli);
-		/*
-		//ls "implementation" ;)
-		if (!(ft_strcmp(line, "ls")))
-		{
-			DIR *d;
-			struct dirent *dir;
-			d = opendir(".");
-			if (d)
-			{
-				while ((dir = readdir(d)) != NULL)
-					ft_printf("%s\n", dir->d_name);
-				closedir(d);
-			}
-		}
-		if (!(ft_strcmp(line, "pwd")))
-		{
-			char cwd[FILENAME_MAX];
-			if (getcwd(cwd, sizeof(cwd)) != NULL)
-				ft_printf("%s\n", cwd);
-		}
-		if (!(ft_strcmp(line, "cd ..")))
-		{
-			chdir("..");
-		}
-		// waiting for token
-		// if (!(ft_strcmp(line, "cd")))
-		// {
-		// 	opendir("..");
-		// }*/
+		tokenize(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 	}
 	return (0);
@@ -149,6 +116,7 @@ int 	main(int argc, char **argv, char **envp)
 
 	ft_bzero(&micli, sizeof(t_micli));
 	micli.envp = envp;
+	micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
 	(void)argc;
 	(void)argv;

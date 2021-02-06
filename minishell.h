@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/05 19:23:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/06 18:09:02 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,11 @@
 #include <errno.h>
 #include <string.h>
 #include <dirent.h>
+#include <sys/wait.h>
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
+#define BUILTINS "exit,"
 #define DEL 127
 
 typedef struct	s_tokendata
@@ -57,14 +59,15 @@ typedef struct	s_micli
 {
 	t_tokendata	tokdata;
 	t_token		*token;
-	char		**envp;
-	char		*buffer;
-	char		*tmp;
+	size_t		builtin_strlen;
 	int			position;
 	int			bufsize;
 	int			c;
 	int			syserror;
 	int			cmd_result;
+	char		**envp;
+	char		*buffer;
+	char		*tmp;
 }				t_micli;
 
 /* Command Execution */
@@ -82,6 +85,7 @@ void	free_token(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
+char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
 char	*ft_realloc(char *ptr, size_t size, t_micli *micli);

@@ -6,11 +6,28 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/05 19:23:08 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/06 17:52:50 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function is a wrapper around ft_strdup that sets the proper error flag
+** and aborts the program in case of lack of memory. Errno 28 is for lack of
+** memory. I hardcode it as ft_split does not set it.
+*/
+
+char	*clean_ft_strdup(char const *str, t_micli *micli)
+{
+	char	*ptr;
+	if (!(ptr = ft_strdup(str)))
+	{
+		micli->syserror = 28;
+		exit_failure(micli);
+	}
+	return (ptr);
+}
 
 /*
 ** This function is a wrapper around ft_strjoin that sets the proper error flag
