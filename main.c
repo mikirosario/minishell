@@ -169,6 +169,13 @@ int cd(char *path)
 {
     return chdir(path);
 }
+//pwd
+// if (!(strcmp(line, "pwd")))
+// 		{
+// 			char cwd[FILENAME_MAX];
+// 			if (getcwd(cwd, sizeof(cwd)) != NULL)
+// 				printf("%s\n", cwd);
+// 		}
 
 char	micli_loop(t_micli *micli)
 {
@@ -191,24 +198,18 @@ char	micli_loop(t_micli *micli)
 		}
 		// we dont have to do this :,(
 		//
-		if (!(strcmp(line, "ls")))
-		{
-			DIR *d;
-			struct dirent *dir;
-			d = opendir(".");
-			if (d)
-			{
-				while ((dir = readdir(d)) != NULL)
-					printf("%s\n", dir->d_name);
-				closedir(d);
-			}
-		}
-		if (!(strcmp(line, "pwd")))
-		{
-			char cwd[FILENAME_MAX];
-			if (getcwd(cwd, sizeof(cwd)) != NULL)
-				printf("%s\n", cwd);
-		}
+		// if (!(strcmp(line, "ls")))
+		// {
+		// 	DIR *d;
+		// 	struct dirent *dir;
+		// 	d = opendir(".");
+		// 	if (d)
+		// 	{
+		// 		while ((dir = readdir(d)) != NULL)
+		// 			printf("%s\n", dir->d_name);
+		// 		closedir(d);
+		// 	}
+		// }
 		free(line);
 		line = NULL;
 		line = ft_del(line);
