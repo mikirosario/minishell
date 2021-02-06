@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/06 18:40:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/06 20:48:54 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,22 @@ void	exec_builtin(char *cmd, t_micli *micli)
 }
 
 /*
+** This function generates the pathname of a binary after it is found within the
+** binary directories included in the PATH environmental variable, which can
+** then be passed to execve to execute the binary.
 **
+** The path to the directory is saved at the address pointed to by the path
+** pointer without a trailing /, so the trailing / must be added in manually.
+** That is why I created this function instead of just using str_join. :p
+**
+** The command name is saved at the address pointed to by the cmd pointer.
+**
+** First we determine the lengths of path and cmd. Then we reserve enough memory
+** to hold both path and cmd, plus 2 bytes, one for the trailing / we need to
+** put between path/cmd, and another for the terminating null.
+**
+** Then we copy path to the reserved memory block, add a '/' after path, and
+** concatenate it with cmd. We return the result, which will be the pathname.
 */
 
 char	*generate_pathname(char *path, char *cmd, t_micli *micli)
@@ -45,7 +60,33 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 
 
 /*
+** This function finds the path where the binary specified by cmd exists from
+** among the directories specified within the PATH environmental variable. The
+** The PATH variable is passed as the const char pointer paths.
 **
+** The first five characters of the PATH variable are PATH=, so we start
+** searching from paths[5]:
+**
+**	0 1 2 3 4 5 start at pos 5
+**	P A T H = / ...
+**
+** Directories in the PATH variable are divided by ':', so we use ft_split to
+** isolate each directory in its own null-terminated string.
+**
+** First we compare cmd with a hardcoded constant string literal, BUILTINS,
+** defined (currently) in minishell.h (might put this in a config file later).
+**
+** If cmd is in the BUILTIN string, we return the same address as the one cmd
+** points to (micli->token->cmd).
+**
+** If cmd is not found in BUILTIN we open all the directories in path_array one
+** by one and check every entry in each directory one by one. If any of these
+** entries matches cmd, we assemble a path name using the path where it was
+** found (generate_pathname does this) and return an address to the path name
+** thus generated.
+**
+** If no match is found either in BUILTINS or in the PATH directories, we return
+** NULL.
 */
 
 char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
@@ -57,8 +98,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	size_t			y;
 
 	ret = NULL;
-	path_array = clean_ft_split(&paths[5], ':', micli);	//	0 1 2 3 4 5
-														//	P A T H = / ... start at pos 5
+	path_array = clean_ft_split(&paths[5], ':', micli);	
 	y = 0;
 	if (ft_strnstr(BUILTINS, cmd, micli->builtin_strlen))
 		ret = cmd;
@@ -114,6 +154,41 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 	}
 	return (argv);
 }
+
+/*
+** This function attempts to execute a command passed to shell via the command
+** line, with all of its arguments.
+**
+** First we create an argv array for the command using create_micli_argv and
+** save the result in the char pointer array micli->token->micli_argv. This
+** array contains the command name (cmd) as the first pointer, and each argument
+** to the command as the remaining pointers, in the same order as they were
+** input into shell.
+**
+** We search for the PATH environmental variable in the envp pointer array. Once
+** we locate it, we send its address and the address of the command name to
+** the function find_cmd_path.
+**
+** The function find_cmd_path will return the path to the binary whose name
+** matches the command name among the directories listed in PATH. If the command
+** is among the shell built-ins, the address pointed to by cmd will be returned
+** instead. If no match is found either among the built-ins or the PATH
+** directories, a NULL pointer is returned.
+**
+** Depending on the value returned, if we have a built-in we go to the
+** exec_builtin function to execute it, if we have a binary we fork the program
+** and call execve in the child function, sending it the pathname that we
+** assembled with find_cmd_path, and if we haven't found anything we leave the
+** function without doing anything.
+**
+** If a binary is executed in a child process we use waitpid to stop the parent
+** from executing until the child function has terminated. We store the child
+** process termination status in the variable micli->cmd_result. (NEED TO LINK THIS TO THE '?' ENVIRONMENTAL VARIABLE, WHEN CREATED)
+**
+** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
+**
+** If find_cmd_path has to reserve memory to store an assembled pathname, the memory is freed.
+*/
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 {
