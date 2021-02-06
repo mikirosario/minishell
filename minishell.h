@@ -19,6 +19,8 @@
 #include <errno.h>
 #include <string.h>
 #include <dirent.h>
+#include "libft.h"
+#include <signal.h>
 
 #define READLINE_BUFSIZE 1
 

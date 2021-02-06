@@ -130,6 +130,46 @@ char	*micli_readline(t_micli *micli)
 	return ("return");	
 }
 
+// typedef void (*sighandler_t)(int);
+
+// sighandler_t signal(int signum, sighandler_t handler);
+//
+//first arg is the signal number, each signal has a predefined integer value assigned.
+//ex: 2 = SIGINT and 20 SIGTSTP
+//second arg is a pointer to a singal handler. The signal handler is a function that
+//must accept an int as the only parameter and return void as descibed by the typedef
+
+// void sigint_handler()
+// {
+//     printf("Caught crtl-c\n");
+// 	signal(SIGINT, SIG_IGN);
+// }
+
+// //ctrl+C interrupt the program and terminates the application
+void	signal_c()
+{
+	(void) signal(SIGINT, SIG_DFL);
+}
+// //ctrl+\
+// tells the application to exit as soon as possible without saving anything;
+
+void	singal_barra()
+{
+	(void) signal(SIGQUIT, SIG_DFL);
+}
+
+// ctrl+D generates a EOF/end of imput (normally EOF=-1)
+void	signal_d()
+{
+	//send EOF (?)
+}
+
+// cd
+int cd(char *path) 
+{
+    return chdir(path);
+}
+
 char	micli_loop(t_micli *micli)
 {
 	char shutdown;
@@ -169,16 +209,9 @@ char	micli_loop(t_micli *micli)
 			if (getcwd(cwd, sizeof(cwd)) != NULL)
 				printf("%s\n", cwd);
 		}
-		if (!(strcmp(line, "cd")))
-		{
-			chdir("..");
-		}
-		if (!(strcmp(line, "cd ..")))
-		{
-			opendir("..");
-		}
 		free(line);
 		line = NULL;
+		line = ft_del(line);
 	}
 	return (0);
 }
