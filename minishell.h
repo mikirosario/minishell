@@ -22,13 +22,8 @@
 #include <errno.h>
 #include <string.h>
 #include <dirent.h>
-<<<<<<< HEAD
-#include "libft.h"
-#include <signal.h>
-=======
 #include <sys/wait.h>
 #include "libft.h"
->>>>>>> 532689b893087cc7491dabb447c07a1614052ec2
 
 #define READLINE_BUFSIZE 1
 #define BUILTINS "exit,"
