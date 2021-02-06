@@ -3,66 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 14:48:30 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/06 18:35:56 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** Any program failure leading to program termination should immediately save
-** errno to the micli->syserror variable, clean up as needed, and then call this
-** function.
+** Finds first 'c' in line and return its address.
 **
-** This function will print the appropriate error message and kill the program.
+** If passed a null pointer, returns null.
 **
-** If the program fails due to an internal error, rather than a system error,
-** the message "Unknown fatal error" will be displayed.
-*/
-
-void	exit_failure(t_micli *micli)
-{
-	if (micli->syserror)
-		printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
-	else
-		printf("\nUnknown fatal error\n");
-	exit(EXIT_FAILURE);
-}
-
-/*
-** This function reallocates the memory of the string pointed to by ptr to a
-** new memory block of the size defined by size, freeing the old memory block.
+** If line_end is passed and is greater than line, find will search only until
+** the specified line_end. Otherwise, it will search until it finds a NULL char.
 ** 
-** If a null pointer is passed, a null pointer will be returned and nothing
-** will be freed. Freeing a null pointer results in no operation being
-** performed, so it's fine.
-**
-** If the reallocation fails, the old memory block is destroyed and a null
-** pointer is returned. Errno at failure is saved to a variable in the micli
-** struct for use in subsequent error handling.
-**
-** This function uses memcpy, which is not safe if dst and src overlap.
-**
-** Behaviour is undefined if size is less than the memory to be reallocated.
-** Probably means segfault. So just don't do that. ;)
+** NOT BEING USED...
 */
 
-char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
+char	*find(char *line, char *line_end, char c)
 {
-	char *tmp;
-
-	tmp = ptr;
-	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
-		micli->syserror = errno;
-	else
-		memcpy(ptr, tmp, size);
-	//printf("Bufsize: %zu\n", size); (Debug code)
-	free(tmp);
-	tmp = NULL;
-	return (ptr);
+	if (line)
+	{
+		if (line_end && line_end > line)
+			while (line < line_end && *line != c)
+				line++;
+		else
+			while (*line && *line != c)
+				line++;
+	}
+	return (line);
 }
 
 /*
@@ -96,13 +68,7 @@ char	*micli_readline(t_micli *micli)
 	size = 0;
 	micli->bufsize = READLINE_BUFSIZE;
 	micli->position = 0;
-	if (!(micli->buffer = malloc(sizeof(char) * micli->bufsize)))
-	{
-		micli->syserror = errno;
-		free(micli->buffer);
-		micli->buffer = NULL;
-		exit_failure(micli); //gestionar con flags
-	}
+	micli->buffer = clean_calloc(micli->bufsize, sizeof(char), micli);
 	while (1)
 	{
 		size += read(STDIN_FILENO, &micli->c, 1); //Si no ha leído nada se comporta como salto de línea?? O_O Lee último carácter, salto de línea? Se queda colgado en read???
@@ -110,7 +76,7 @@ char	*micli_readline(t_micli *micli)
 		if (micli->c == EOF || micli->c == '\n')
 		{
 			micli->buffer[micli->position] = '\0';
-			printf("%s\n", micli->buffer);
+			//ft_printf("%s\n", micli->buffer); //esto imprime último comando a stdout
 			return (micli->buffer);
 		}
 		//Otherwise, add the character to our buffer and advance one byte.
@@ -126,8 +92,6 @@ char	*micli_readline(t_micli *micli)
 				exit_failure(micli);
 		}
 	}
-	
-	return ("return");	
 }
 
 // typedef void (*sighandler_t)(int);
@@ -180,51 +144,30 @@ int cd(char *path)
 char	micli_loop(t_micli *micli)
 {
 	char shutdown;
-	char *line;
 	
 	shutdown = 0;
 
 	while (!shutdown)//no parece que esté usando shutdown...
 	{
-		//write(1, "TEST", 4);
 		write(1, "🚀 ", 6);
-		line = micli_readline(micli);//stays here...
-		//write(1, "TEST", 4);
-		if (!(strcmp(line, "exit")) || !(strcmp(line, "quit")))
-		{
-				free(line);
-				line = NULL;
-				exit(EXIT_SUCCESS); //gestionar con flags
-		}
-		// we dont have to do this :,(
-		//
-		// if (!(strcmp(line, "ls")))
-		// {
-		// 	DIR *d;
-		// 	struct dirent *dir;
-		// 	d = opendir(".");
-		// 	if (d)
-		// 	{
-		// 		while ((dir = readdir(d)) != NULL)
-		// 			printf("%s\n", dir->d_name);
-		// 		closedir(d);
-		// 	}
-		// }
-		free(line);
-		line = NULL;
-		line = ft_del(line);
+		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
+		tokenize(micli->buffer, micli);
+		micli->buffer = ft_del(micli->buffer);
 	}
 	return (0);
 }
 
-int 	main(int argc, char **argv)
+int 	main(int argc, char **argv, char **envp)
 {
 	t_micli micli;
 
-	bzero(&micli, sizeof(t_micli));
+	ft_bzero(&micli, sizeof(t_micli));
+	micli.envp = envp;
+	micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
 	(void)argc;
 	(void)argv;
+
 
 	//command loop
 	micli_loop(&micli);
