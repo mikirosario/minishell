@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 20:48:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/07 23:00:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,32 +21,58 @@
 
 int		isvarchar(char chr)
 {
-	if (isalpha(chr) || chr == '_')
+	if (ft_isalpha(chr) || chr == '_')
 		return (1);
-	else if (isdigit(chr))
+	else if (ft_isdigit(chr))
 		return (2);
 	return (0);
 }
 
 /*
-** This functin resolves variable names and saves the result.
+** This function resolves variable names to their values and saves the result
+** in a character buffer that uses READLINE_BUFSIZE, like the line buffer does.
+** If copying a character would cause an overflow, the buffer is reallocated
+** using ft_realloc.
+**
+** All variable strings are terminated by ETX (ASCII 3), except the last one,
+** which is null terminated.
 */
 
+void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
+{
+	int	i;
+
+	i = 0;
+	while (micli->envp[i] && ft_strncmp(var_name, micli->envp[i], var_name_strlen))
+		i++;
+	if (micli->envp[i]) //need to parse this line, find the content, save it to an array or list or something, and fill it in...
+		ft_printf("VAR NAME CONTENT: %s\n", micli->envp[i]);
+}
+
 /*
-** This function identifies and saves variable names so that they can be
-** resolved.
+** This function identifies variable names, saves them to a string and uses the
+** libft function strncmp to locate them in envp so that they can be resolved.
 **
 ** Names are considered to end when invalid variable characters are
 ** found in the string following the initial '$'. The first character
-** must be a letter or underscore.
+** must be a letter or underscore. Remaining letters must be letters, numbers or
+** an underscore. Ref:
 **
 ** https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
+**
+** Once the extent of the variable name is determined and a copy of it is made,
+** the copy's address is sent to the var_buffer function to add the content to
+** the variable buffer, for later insertion into the corresponding token
+** (substituting memory addresses from its $ character).
+**
+** Variable names are inserted in place of unescaped $ names in order of
+** appearance. $ characters without a valid name in front of them are treated as
+** if escaped.
 */
 
 int		var_alloc(char *var_name, t_micli *micli)
 {
 	size_t	i;
-	size_t	f;
 	int		name_state;
 	char	*varnamecpy;
 
@@ -65,11 +91,8 @@ int		var_alloc(char *var_name, t_micli *micli)
 	micli_cpy(varnamecpy, var_name, &var_name[i], DEL);
 	ft_printf("COPIED VAR NAME: %s\n", varnamecpy);
 
-	f = 0;
-	while (micli->envp[f] && ft_strncmp(varnamecpy, micli->envp[f], i))
-		f++;
-	if (micli->envp[f]) //need to parse this line, find the content, save it to an array or list or something, and fill it in... if the content has its own variables they need to be resolved also...
-		ft_printf("VAR NAME CONTENT: %s\n", micli->envp[f]);
+	var_buffer(varnamecpy, i, micli);
+
 	varnamecpy = ft_del(varnamecpy);
 	return(1);
 	
