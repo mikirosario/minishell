@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/06 20:48:54 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/08 00:38:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,10 +107,11 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 		{
 			dir = opendir(path_array[y]); //open dir
 			//ft_printf("%s\n", path_array[y]);
-			while((dirent = readdir(dir)))  //go through every dir entry
-				if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
-					ret = generate_pathname(path_array[y], cmd, micli); //concatenate dir path with command name
-				//ft_printf("%s\n", dirent->d_name);
+			if (dir)
+				while((dirent = readdir(dir)))  //go through every dir entry
+					if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
+						ret = generate_pathname(path_array[y], cmd, micli); //concatenate dir path with command name
+					//ft_printf("%s\n", dirent->d_name);
 			closedir(dir);
 			y++;
 		}			
