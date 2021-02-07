@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 19:06:24 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/07 20:46:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	free_token(t_micli *micli)
 	lst = micli->token->arguments;
 	if (micli->token->cmd)
 		micli->token->cmd = ft_del(micli->token->cmd);
+	// if (micli->token->varnames)
+	// 	micli->token->varnames = ft_del(micli->token->varnames);
 	if (micli->token->arguments)
 		while (lst)
 		{
