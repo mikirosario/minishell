@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 17:45:22 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/08 20:50:46 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,21 +60,28 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	t_list	*new;		
 
 	y = 0;
+	x = 0;
 	while (micli->envp[y] && ft_strncmp(var_name, micli->envp[y], var_name_strlen))
 		y++;
 	if (micli->envp[y]) //need to parse this line, find the content, save it to an array or list or something, and fill it in...
 	{
 		//ft_printf("VAR NAME CONTENT: %s\n", micli->envp[y]);
-		x = 0;
 		while (micli->envp[y][x] && micli->envp[y][x] != '=')
 			x++;
 		ft_printf("VAR NAME CONTENT: %s\n", &micli->envp[y][x + 1]);
 		new = ft_lstnew(&micli->envp[y][x + 1]);
-		if (!micli->token->var_lst)
-			micli->token->var_lst = new;
-		else
-			ft_lstadd_back(&micli->token->var_lst, new);
 	}
+	else
+	{
+		while (micli->envp[0][x])
+			x++;
+		new = ft_lstnew(&micli->envp[0][x]);
+	}
+	if (!micli->token->var_lst)
+		micli->token->var_lst = new;
+	else
+		ft_lstadd_back(&micli->token->var_lst, new);
+	
 }
 
 /*
