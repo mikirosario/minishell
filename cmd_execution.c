@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 23:43:12 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 17:33:11 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@ void	exec_builtin(char *cmd, t_micli *micli)
 {
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
+	if (!(ft_strcmp(cmd, "cd")))
+		cd((const char **)micli->token->micli_argv, micli->envp, micli);
+	if (!(strcmp(cmd, "pwd")))
+		pwd();
 }
 
 /*

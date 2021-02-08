@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 23:29:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 17:33:48 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,"
+#define BUILTINS "exit,cd,echo,pwd,export,unset,env"
 #define DEL 127
 
 typedef struct	s_tokendata
@@ -95,5 +95,16 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 void	exit_success(t_micli *micli);
 void	exit_failure(t_micli *micli);
+
+/* Signal Call */
+
+void	signal_c();
+void	singal_barra();
+void	signal_d();
+
+/* Builtins */
+
+int		cd(const char **argv, char **envp, t_micli *micli);
+void	pwd();
 
 #endif
