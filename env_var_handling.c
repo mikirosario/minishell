@@ -6,11 +6,28 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 23:00:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 02:15:08 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function sums up the lengths of all resolved variables in a set of
+** tokens so that enough memory can be reserved to substitute them in as needed.
+*/
+
+size_t	get_var_lengths(t_list *var_lst)
+{
+	size_t	len;
+
+	while (var_lst)
+	{
+		len = ft_strlen(var_lst->content);
+		var_lst = var_lst->next;
+	}
+	return (len);
+}
 
 /*
 ** This function tests for valid variable name characters. If 1 is returned, the
@@ -29,9 +46,10 @@ int		isvarchar(char chr)
 }
 
 /*
-** This function resolves variable names to their values and saves the result
-** in a character buffer that uses READLINE_BUFSIZE, like the line buffer does.
-** If copying a character would cause an overflow, the buffer is reallocated
+** This function resolves variable names to their values in the envp array and
+** saves the address of the beginning of those values in a character pointer
+** buffer that uses VARPTR_BUFSIZE, similar to the way the line buffer does. If
+** copying a new pointer would cause an overflow, the buffer is reallocated
 ** using ft_realloc.
 **
 ** All variable strings are terminated by ETX (ASCII 3), except the last one,
@@ -40,13 +58,26 @@ int		isvarchar(char chr)
 
 void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 {
-	int	i;
+	int		y;
+	int		x;
+	t_list	*new;		
 
-	i = 0;
-	while (micli->envp[i] && ft_strncmp(var_name, micli->envp[i], var_name_strlen))
-		i++;
-	if (micli->envp[i]) //need to parse this line, find the content, save it to an array or list or something, and fill it in...
-		ft_printf("VAR NAME CONTENT: %s\n", micli->envp[i]);
+	y = 0;
+	while (micli->envp[y] && ft_strncmp(var_name, micli->envp[y], var_name_strlen))
+		y++;
+	if (micli->envp[y]) //need to parse this line, find the content, save it to an array or list or something, and fill it in...
+	{
+		//ft_printf("VAR NAME CONTENT: %s\n", micli->envp[y]);
+		x = 0;
+		while (micli->envp[y][x] && micli->envp[y][x] != '=')
+			x++;
+		ft_printf("VAR NAME CONTENT: %s\n", &micli->envp[y][x + 1]);
+		new = ft_lstnew(&micli->envp[y][x + 1]);
+		if (!micli->token->var_lst)
+			micli->token->var_lst = new;
+		else
+			ft_lstadd_back(&micli->token->var_lst, new);
+	}
 }
 
 /*

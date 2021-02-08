@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:37:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 02:18:36 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,10 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
+#define VARPTR_BUFSIZE 1
 #define BUILTINS "exit,"
 #define DEL 127
-#define ETX 3
+#define SUB 26
 
 typedef struct	s_tokendata
 {
@@ -45,7 +46,7 @@ typedef struct	s_tokendata
 typedef struct	s_token
 {
 	char	*cmd;
-	char	*var_buffer;
+	t_list	*var_lst;
 	t_list	*arguments;
 	char	**micli_argv;
 }				t_token;
@@ -79,6 +80,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
+size_t	get_var_lengths(t_list *var_lst);
 void	tokenize(char *line, t_micli *micli);
 
 /* Copying */

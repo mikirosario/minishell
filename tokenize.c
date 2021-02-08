@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:37:10 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 02:33:05 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,13 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 	s = src;
 	while (s != src_end)
 	{
-		if (*s != delete && *s >= 0)
+		if (*s != delete && *s != SUB)
 			*d++ = *s++;
-		// else if (*s < 0) //if characters are negative, they are are variable name.for inserting VAR
-		// {
-		// 	*d++ = -(*s++);
-		// }
+		else if (*s++ == SUB) //if characters are negative, they are are variable name.for inserting VAR
+		{
+			*d++ = 'V';
+			//copia micli->token->var_lst->content //LA ÚNICA FUNCiÓn que NO RECIBE MICLI AARRRRGHHH
+		}
 		else
 			s++;
 	}
@@ -105,8 +106,8 @@ char			process_char(char *chr, t_micli *micli)
 	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
 	{
 		micli->tokdata.var_flag = 1;
-		*chr = DEL; //Flag for deletion
-		//var_alloc((chr + 1), micli); //Send the address of the name for processing
+		*chr = SUB; //Flag for variable substitution
+		micli->tokdata.toksize += get_var_lengths(micli->token->var_lst); //Add all resolved variable string lengths to toksize
 	}
 	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && !ft_isspace(*chr))) //if variable flag is set and no space
 	{
@@ -138,6 +139,7 @@ void			process_token(t_micli *micli)
 {
 	char	*dst;
 
+	ft_printf("Show bytes reserved: %u\n", micli->tokdata.toksize);
 	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
 	{
 		micli->tokdata.cmd_flag = 1;
@@ -164,11 +166,11 @@ void			process_token(t_micli *micli)
 	// 	micli->token->varnames = ft_del(micli->token->varnames);
 
 	//Debug code to ensure copy is correct, remove from final ver
-	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
-	if (!micli->tokdata.args)
-		ft_printf("Command: %s\n", micli->token->cmd);
-	else
-		ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
+	// ft_printf("Show bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
+	// if (!micli->tokdata.args)
+	// 	ft_printf("Command: %s\n", micli->token->cmd);
+	// else
+	// 	ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
 
 	micli->tokdata.toksize = 0; //reset string size counter, don't remove this
 }
