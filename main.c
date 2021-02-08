@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 16:03:43 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/08 20:03:43 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,11 @@ char	micli_loop(t_micli *micli)
 		tokenize(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		//signals
-		signal_c();
-		singal_barra();
-		signal_d(); //<==not working
+		
+
+		// signal_c();
+		// singal_barra();
+		// signal_d(); //<==not working
 	}
 	return (0);
 }
@@ -125,6 +127,8 @@ int 	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
+	//signal
+	catch_signal();
 
 	//command loop
 	micli_loop(&micli);

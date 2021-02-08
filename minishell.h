@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 18:29:39 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/08 20:03:51 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <stdio.h>
 //#include <sys/types.h>
 //#include <sys/uio.h>
+#include <signal.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -28,6 +29,13 @@
 #define READLINE_BUFSIZE 1
 #define BUILTINS "exit,cd,echo,pwd,export,unset,env"
 #define DEL 127
+
+#define SIGHUP  1   /* Hangup the process */ 
+#define SIGINT  2   /* Interrupt the process */ 
+#define SIGQUIT 3   /* Quit the process */ 
+#define SIGILL  4   /* Illegal instruction. */ 
+#define SIGTRAP 5   /* Trace trap. */ 
+#define SIGABRT 6   /* Abort. */
 
 typedef struct	s_tokendata
 {
@@ -98,9 +106,12 @@ void	exit_failure(t_micli *micli);
 
 /* Signal Call */
 
-void	signal_c();
-void	singal_barra();
-void	signal_d();
+int		catch_signal();
+void	ctrl_c(int signum);
+void	ctrl_bar(int signum);
+// void	signal_c();
+// void	singal_bar();
+// void	signal_d();
 
 /* Builtins */
 
