@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 02:15:08 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 17:45:22 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,7 @@ int		isvarchar(char chr)
 
 /*
 ** This function resolves variable names to their values in the envp array and
-** saves the address of the beginning of those values in a character pointer
-** buffer that uses VARPTR_BUFSIZE, similar to the way the line buffer does. If
-** copying a new pointer would cause an overflow, the buffer is reallocated
-** using ft_realloc.
+** saves the addresses of the beginning of those values in a linked list.
 **
 ** All variable strings are terminated by ETX (ASCII 3), except the last one,
 ** which is null terminated.
@@ -119,7 +116,8 @@ int		var_alloc(char *var_name, t_micli *micli)
 			i++;
 	ft_printf("VAR NAME: %.*s\n", i, var_name); //var_name is var_name[0] --> var_name[i - 1];
 	varnamecpy = clean_calloc(i + 1, sizeof(char), micli);
-	micli_cpy(varnamecpy, var_name, &var_name[i], DEL);
+	//micli_cpy(varnamecpy, var_name, &var_name[i], micli);
+	strncpy(varnamecpy, var_name, (&var_name[i] - var_name)); //need to make a strncpy :p 
 	ft_printf("COPIED VAR NAME: %s\n", varnamecpy);
 
 	var_buffer(varnamecpy, i, micli);

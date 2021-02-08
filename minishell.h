@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 02:18:36 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 15:37:15 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ size_t	get_var_lengths(t_list *var_lst);
 void	tokenize(char *line, t_micli *micli);
 
 /* Copying */
-char *micli_cpy(char *dst, const char *src, char *src_end, char delete);
+char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
 /* Memory Freeing */
 void	freeme(t_micli *micli);

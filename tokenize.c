@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 02:33:05 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 17:37:24 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,28 @@
 ** Not a friendly function. I wouldn't recommend copying it. ;)
 */
 
-char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
+char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 {
+	t_list		*var_lst;
 	char		*d;
 	const char	*s;
+	size_t		i;
 
 	d = dst;
 	s = src;
+	var_lst = micli->token->var_lst;
 	while (s != src_end)
 	{
-		if (*s != delete && *s != SUB)
+		if (*s != DEL && *s != SUB)
 			*d++ = *s++;
-		else if (*s++ == SUB) //if characters are negative, they are are variable name.for inserting VAR
+		else if (*s == SUB) //if SUB is detected, it is replaced with the resolved variables stored in var_lst for this token in order of appearance.
 		{
-			*d++ = 'V';
-			//copia micli->token->var_lst->content //LA ÚNICA FUNCiÓn que NO RECIBE MICLI AARRRRGHHH
+			i = 0;
+			while (((char *)var_lst->content)[i])
+				*d++ = ((char *)var_lst->content)[i++];
+			var_lst = var_lst->next;
+			s++;
+		// // 	//copia micli->token->var_lst->content //LA ÚNICA FUNCiÓn que NO RECIBE MICLI AARRRRGHHH
 		}
 		else
 			s++;
@@ -144,7 +151,7 @@ void			process_token(t_micli *micli)
 	{
 		micli->tokdata.cmd_flag = 1;
 		micli->token->cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
-		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, (char)127); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
+		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
 	{
@@ -157,7 +164,7 @@ void			process_token(t_micli *micli)
 			micli->token->arguments = ft_lstnew(dst); //needs to use clean_calloc
 		else
 			ft_lstadd_back(&micli->token->arguments, ft_lstnew(dst)); //needs to use clean_calloc
-		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, (char)127);
+		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl (which will be a NULL, not a space, so nothing will be skipped)
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
