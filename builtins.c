@@ -38,16 +38,20 @@ int     cd(const char **argv, char **envp, t_micli *micli)
 //echo
 
 //pwd
-void pwd()
+void    pwd(t_micli *micli)
 {
     char cwd[FILENAME_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-        printf("%s\n", cwd);
+    
+    if(micli->token->arguments == 0)
+    {
+        if (getcwd(cwd, sizeof(cwd)) != NULL)
+                ft_printf("%s\n", cwd);
+    }
+    if (micli->token->arguments > 0)
+        ft_printf("pwd: too many arguments \n");
 }
 //export
 
 //unset
 
 //env
-
-//exit <==in exti_handling

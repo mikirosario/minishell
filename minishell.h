@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 17:33:48 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/08 18:29:39 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	signal_d();
 /* Builtins */
 
 int		cd(const char **argv, char **envp, t_micli *micli);
-void	pwd();
+void	pwd(t_micli *micli);
+
 
 #endif
