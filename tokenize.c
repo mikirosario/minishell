@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 23:10:04 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 20:13:36 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 
 char			process_char(char chr, t_micli *micli)
 {
+	if (chr == DEL)
+		return (chr);
 	if (!micli->tokdata.escape_flag && chr == '\\')
 	{
 		micli->tokdata.escape_flag = 1;
@@ -230,7 +232,7 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 		*micli->tokdata.tok_end = process_char(*micli->tokdata.tok_end, micli);
 		
 		//What defines the end of a cmd/argument?
-		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd or argument (OR endl has been reached, because we don't do multiline commands)
+		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd+argument (OR endl has been reached, because we don't do multiline commands)
 			process_token(micli);
 		else //we handle micli->tokdata.tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
 			micli->tokdata.tok_end++;
@@ -268,8 +270,19 @@ void	tokenize(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments
 	{
+		if (*lindex == ';') //Quick fix for commands with ';'. If multiple ';' are detected, print syntax
+		{
+			if (*(lindex + 1) == ';')
+			{
+				print_error(SYN_ERROR, lindex);
+				break ;
+			}
+			else
+				lindex++;
+		}
 		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
 		lindex = lstart; //set index at start of next command
+
 		while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command+arguments. 
 			lindex++;
 			//Everything from lstart to lindex is your kingdom, I mean is a whole token (command + arguments). ;) Must be executed before continuing...

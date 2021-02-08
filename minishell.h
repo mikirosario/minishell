@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/07 23:29:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/08 20:12:28 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #define READLINE_BUFSIZE 1
 #define BUILTINS "exit,"
 #define DEL 127
+#define SYN_ERROR "micli: syntax error near unexpected token"
 
 typedef struct	s_tokendata
 {
@@ -92,8 +93,10 @@ char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Exit Handling */
-
 void	exit_success(t_micli *micli);
 void	exit_failure(t_micli *micli);
+
+/* Error Handling */
+void	print_error(char *error, char *error_location);
 
 #endif
