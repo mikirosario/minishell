@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 20:13:36 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/08 20:29:02 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ char *micli_cpy(char *dst, const char *src, char *src_end, char delete)
 
 char			process_char(char chr, t_micli *micli)
 {
-	if (chr == DEL)
-		return (chr);
 	if (!micli->tokdata.escape_flag && chr == '\\')
 	{
 		micli->tokdata.escape_flag = 1;
