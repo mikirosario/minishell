@@ -115,8 +115,9 @@ void	ctrl_bar(int signum);
 
 /* Builtins */
 
-int		cd(const char **argv, char **envp, t_micli *micli);
-void	pwd(t_micli *micli);
+int		ft_cd(const char **argv, char **envp, t_micli *micli);
+void	ft_pwd(t_micli *micli);
+void    ft_echo(const char **argv);
 
 
 #endif

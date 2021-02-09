@@ -22,9 +22,11 @@ void	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	if (!(ft_strcmp(cmd, "cd")))
-		cd((const char **)micli->token->micli_argv, micli->envp, micli);
+		ft_cd((const char **)micli->token->micli_argv, micli->envp, micli);
 	if (!(strcmp(cmd, "pwd")))
-		pwd(micli);
+		ft_pwd(micli);
+	if (!(strcmp(cmd, "echo")))
+		ft_echo((const char **)micli->token->micli_argv);
 }
 
 /*

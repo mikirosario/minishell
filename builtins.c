@@ -8,7 +8,7 @@
 // **argv ->    *argv[0] -> cmd
 //              *argv[1] -> 1er argumento
 //              *argv[2] -> NULL;
-int     cd(const char **argv, char **envp, t_micli *micli) 
+int     ft_cd(const char **argv, char **envp, t_micli *micli) 
 {
     int i;
 
@@ -36,9 +36,24 @@ int     cd(const char **argv, char **envp, t_micli *micli)
 }
 
 //echo
+void    ft_echo(const char **argv)
+{
+    int i;
 
+    i = 1;
+    if(argv[i] == 0)
+        ft_printf("\n");
+    while(argv[i] != 0)
+    {
+        ft_printf("%s\n", argv[i]);
+        i++;
+        // if(argv[i] == NULL)
+        //     break;
+    }
+    
+}
 //pwd
-void    pwd(t_micli *micli)
+void    ft_pwd(t_micli *micli)
 {
     char cwd[FILENAME_MAX];
     
