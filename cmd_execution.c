@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:38:26 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/09 22:11:31 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,8 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 					if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
 						ret = generate_pathname(path_array[y], cmd, micli); //concatenate dir path with command name
 					//ft_printf("%s\n", dirent->d_name);
-			closedir(dir);
+			if (dir)
+				closedir(dir);
 			y++;
 		}			
 	
