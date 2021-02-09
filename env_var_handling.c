@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 20:50:46 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/09 19:29:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,21 +46,32 @@ int		isvarchar(char chr)
 }
 
 /*
-** This function resolves variable names to their values in the envp array and
-** saves the addresses of the beginning of those values in a linked list.
+** This function resolves variable names to their associated values in the envp
+** array and saves the addresses to the first character of those values in a
+** linked list.
 **
-** All variable strings are terminated by ETX (ASCII 3), except the last one,
-** which is null terminated.
+** If the variable name is not found in envp, a pointer to '\0' is passed.
+**
+** Note the var_buffer is a list of pointers to addresses that are part of envp.
+** The only memory reserved here during runtime is for the list members
+** themselves, NOT the list contents. Since I don't reserve memory for list
+** content at runtime, and therefore don't free it either, I point to a literal
+** constant (NUL) for the null character, likewise declared at compile-time in
+** minishell.h.
 */
 
 void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 {
 	int		y;
 	int		x;
+	char	*varp;
 	t_list	*new;		
 
 	y = 0;
 	x = 0;
+	
+	varp = find_var(var_name, micli->envp);
+	ft_printf("THIS IS ONLY A TEST OF FIND_VAR: %s\n", varp);
 	while (micli->envp[y] && ft_strncmp(var_name, micli->envp[y], var_name_strlen))
 		y++;
 	if (micli->envp[y]) //need to parse this line, find the content, save it to an array or list or something, and fill it in...
@@ -72,11 +83,9 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 		new = ft_lstnew(&micli->envp[y][x + 1]);
 	}
 	else
-	{
-		while (micli->envp[0][x])
-			x++;
-		new = ft_lstnew(&micli->envp[0][x]);
-	}
+		new = ft_lstnew(NUL); //If no match is found for a variable name among envp, resolve to a '\0' character.
+		//I don't dynamically reserve memory for content in the linked list of variable values, rather I point to existing memory of the envp array, so
+		//for pointing to the null character I use a constant so I don't need to free it either.
 	if (!micli->token->var_lst)
 		micli->token->var_lst = new;
 	else

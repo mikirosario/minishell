@@ -6,11 +6,44 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/06 19:40:50 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/09 20:54:29 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Returns the pointer to the first variable in envp with a key corresponding to
+** the argument passed as name. If no key matches the name, NULL is returned.
+*/
+
+char	*find_var(char *name, char **envp)
+{	
+	size_t	name_len;
+
+	// size_t	i;
+
+	// i = 0;
+	// if (envp && *envp)
+	// {
+	// 	i = 0;
+	// 	name_len = ft_strlen(name);
+	// 	while (ft_printf("PTR ADDR: %p\n", envp[i]) && envp[i] && ft_strncmp(name, envp[i], name_len))
+	// 		i++;
+	// }
+	// return (envp[i]);
+
+	char	**ptr;
+
+	ptr = NULL;
+	if (envp && (ptr = envp))
+	{
+		name_len = ft_strlen(name);
+		while (ft_printf("PTR ADDR: %s\n", *ptr) && *ptr && ft_strncmp(name, *ptr, name_len))
+			ptr++;
+	}
+	return(*ptr);
+}
 
 /*
 ** Finds first 'c' in line and return its address.

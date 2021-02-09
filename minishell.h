@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 20:25:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/09 19:36:45 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,10 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define VARPTR_BUFSIZE 1
-#define BUILTINS "exit,"
+#define BUILTINS "exit,la,"
 #define DEL 127
 #define SUB 26
+#define NUL ""
 #define SYN_ERROR "micli: syntax error near unexpected token"
 
 typedef struct	s_tokendata
@@ -81,6 +81,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
+char	*find_var(char *name, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	tokenize(char *line, t_micli *micli);
 
