@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:06:34 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/10 19:56:33 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ char	**free_split(char **split)
 	i = 0;
 	while (split[i])
 	{
-		if (split)
 		split[i] = ft_del(split[i]);
 		i++;
 	}
@@ -73,4 +72,6 @@ void	freeme(t_micli *micli)
 		micli->buffer = ft_del(micli->buffer);
 	if (micli->token)
 		free_token(micli);
+	if (micli->tokdata.path_array)
+		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
 }

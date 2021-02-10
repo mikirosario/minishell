@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/09 22:08:48 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/10 20:24:23 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,14 @@ void	exec_builtin(char *cmd, t_micli *micli)
 }
 
 /*
+** Once a command is found in a directory, this function will generate a path to
+** the command within that directory from the directory path and the command
+** name.
 **
+** The directory path is not terminated in '/', so we need to add one and
+** account for it in the final pathlen size, hence the size will be the sum of
+** the path and command lengths plus one for the extra '/' and one for the null,
+** so plus 2.
 */
 
 char	*generate_pathname(char *path, char *cmd, t_micli *micli)
@@ -45,39 +52,46 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 
 
 /*
+** This function splits all the directories contained in the PATH variable value
+** into a character pointer array using ft_split, bearing in mind that PATH
+** directories are separated by the ':' character.
 **
+** NOTE: Assumes that the PATH variable begins 'PATH='.
+**
+** 
 */
 
 char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 {
-	char			**path_array;
 	DIR				*dir;
 	struct dirent	*dirent;
 	char			*ret;
 	size_t			y;
 
 	ret = NULL;
-	path_array = clean_ft_split(&paths[5], ':', micli);	//	0 1 2 3 4 5
-														//	P A T H = / ... start at pos 5
 	y = 0;
 	if (ft_strnstr(BUILTINS, cmd, micli->builtin_strlen))
 		ret = cmd;
 	else
-		while (!ret && path_array[y]) //for every dir in PATH
+	{
+		micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);	//	0 1 2 3 4 5
+																			//	P A T H = / ... start at pos 5
+		while (!ret && micli->tokdata.path_array[y]) //for every dir in PATH
 		{
-			dir = opendir(path_array[y]); //open dir
+			dir = opendir(micli->tokdata.path_array[y]); //open dir
 			//ft_printf("%s\n", path_array[y]);
 			if (dir)
 				while((dirent = readdir(dir)))  //go through every dir entry
 					if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
-						ret = generate_pathname(path_array[y], cmd, micli); //concatenate dir path with command name
+						ret = generate_pathname(micli->tokdata.path_array[y], cmd, micli); //concatenate dir path with command name
 					//ft_printf("%s\n", dirent->d_name);
 			if (dir)
 				closedir(dir);
 			y++;
-		}			
-	
-	path_array = free_split(path_array);
+		}
+		micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
+	}
+
 	return (ret);
 }
 

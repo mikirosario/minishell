@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/11 03:22:29 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/21 16:37:37 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/10 20:22:17 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,71 +14,77 @@
 #include <stdlib.h>
 
 /*
-** Index[0] = rowindex, Index[1] = rowlen, Index[2] = colindex
+** Miki's split had a leak, so we have substituted it for Miguel's split. xD
 */
 
-static size_t	ft_colcounter(char const *s, char c)
+int		ft_contador(char const *s, char c)
 {
-	size_t	rowlen;
+	unsigned int	i;
+	int				cntr;
+	int				tiene;
 
-	rowlen = 0;
-	if (!s)
-		return (0);
-	while (*s)
+	i = 0;
+	cntr = 0;
+	tiene = 0;
+	while (s[i] == c && s[i])
+		i++;
+	while (s[i])
 	{
-		while (*s && *s++ != c)
-			while (*s == c && c)
-			{
-				if (*(s - 1) != c)
-					rowlen++;
-				s++;
-			}
-		if (*(s - 1) != c)
-			rowlen++;
-	}
-	return (++rowlen);
-}
-
-static size_t	ft_collen(char const *s, char c)
-{
-	size_t	collen;
-
-	collen = 0;
-	if (!s)
-		return (0);
-	while (*s)
-	{
-		while (*s && *s++ != c)
-			collen++;
-	}
-	return (collen);
-}
-
-char			**ft_split(char const *s, char c)
-{
-	char	*i;
-	char	**ptr;
-	size_t	index[3];
-
-	index[0] = 0;
-	index[2] = 0;
-	if (!s)
-		return (NULL);
-	i = ft_strtrim(s, (char[2]) {c, '\0'});
-	index[1] = ft_colcounter(i, c);
-	if (!(ptr = ft_calloc(index[1], sizeof(char *))))
-		return (NULL);
-	while (index[1]-- > 1)
-	{
-		if (!(ptr[index[0]] = ft_calloc(ft_collen(i, c) + 1, sizeof(char))))
-			return (NULL);
-		while (*i != c && *i)
-			ptr[index[0]][index[2]++] = *i++;
-		index[2] = 0;
-		index[0]++;
-		while (*i == c && *i)
+		if (s[i] != c && s[i])
+			tiene = 1;
+		if (s[i] == c)
+		{
+			while (s[i] == c && s[i])
+				i++;
+			if (s[i])
+				cntr++;
+		}
+		else
 			i++;
 	}
-	ptr[index[0]] = NULL;
-	return (ptr);
+	return (cntr + tiene);
+}
+
+char	*ft_alc(const char *s, char c)
+{
+	char	*tb;
+	int		i;
+
+	i = 0;
+	tb = 0;
+	while (s[i] && s[i] != c)
+		i++;
+	if (!(tb = malloc(i + 1)))
+		return (NULL);
+	ft_strlcpy(tb, s, i + 1);
+	return (tb);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	int		count;
+	int		words;
+	char	**tab;
+
+	count = -1;
+	if (!s)
+		return (NULL);
+	words = ft_contador(s, c);
+	if (!(tab = malloc(sizeof(char *) * (words + 1))))
+		return (NULL);
+	while (++count < words)
+	{
+		while (s[0] == c)
+			s++;
+		if (!(tab[count] = ft_alc(s, c)))
+		{
+			while (count > 0)
+				free(tab[count--]);
+			free(tab);
+			return (NULL);
+		}
+		s += ft_strlen(tab[count]);
+	}
+	tab[count] = NULL;
+	return (tab);
 }
