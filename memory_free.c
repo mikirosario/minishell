@@ -3,14 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:06:34 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/10 15:41:02 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Frees all memory reserved for a linked list, without attempting to free the
+** memory taken up by its content. ;)
+*/
+
+t_list	*ft_lstfree(t_list *lst)
+{
+	t_list	*next;
+
+	if (lst)
+	{
+		next = lst;
+		while (next)
+		{
+			lst = next;
+			next = lst->next;
+			free(lst);
+		}
+	}
+	return (NULL);
+}
 
 /*
 ** Frees all memory reserved for a character pointer array with ft_split, first
@@ -37,27 +59,31 @@ char	**free_split(char **split)
 ** This function frees memory reserved to store dynamic token information.
 **
 ** Pointers used to check for reserved memory are set to NULL.
+**
+** PRINTFs are DEBUG CODE, REMOVE FROM FINAL VERSION.
 */
 
 void	free_token(t_micli *micli)
 {
-	t_list *lst;
+	t_list	*tmp;
 
+	tmp = micli->token->var_lst;
+	if (tmp)
+		while (tmp)
+		{
+			//ft_printf("VAR LIST: %s\n", tmp->content);
+			tmp = tmp->next;
+		}
 	//Check token struct for anything that needs to be freed and free as needed.
-	lst = micli->token->arguments;
 	if (micli->token->cmd)
 		micli->token->cmd = ft_del(micli->token->cmd);
-	if (micli->token->arguments)
-		while (lst)
-		{
-			if (lst->content)
-				lst->content = ft_del(lst->content);
-			lst = lst->next;
-		}
 	if (micli->token->micli_argv)
 		micli->token->micli_argv = ft_del(micli->token->micli_argv);
 	//	ft_lstiter(micli->token->arguments, free); //My lstiter leads to unallocated pointers being freed... :p
-	ft_lstclear(&micli->token->arguments, free);
+	if (micli->token->arguments)
+		ft_lstclear(&micli->token->arguments, free);
+	if (micli->token->var_lst)
+		micli->token->var_lst = ft_lstfree(micli->token->var_lst);
 	micli->token->arguments = NULL;
 	micli->token = NULL; //token struct memory is reserved locally by the tokenize function for the moment, so does not need to be freed, only the pointer nullified for validity of the check.
 }
