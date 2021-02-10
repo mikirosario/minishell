@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 15:46:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/10 20:27:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ void			process_token(t_micli *micli)
 	// 	micli->token->varnames = ft_del(micli->token->varnames);
 
 	//Debug code to ensure copy is correct, remove from final ver
-	// ft_printf("Show bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
+	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
 	// if (!micli->tokdata.args)
 	// 	ft_printf("Command: %s\n", micli->token->cmd);
 	// else

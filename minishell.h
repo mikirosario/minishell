@@ -6,7 +6,11 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/02/10 14:51:55 by mrosario         ###   ########.fr       */
+=======
+/*   Updated: 2021/02/10 20:22:46 by mrosario         ###   ########.fr       */
+>>>>>>> miki_str_tok
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +40,7 @@ typedef struct	s_tokendata
 {
 	size_t			toksize;
 	size_t			args;
+	char			**path_array;
 	char			*tok_start;
 	char			*tok_end;
 	unsigned char	quote_flag:2; //This flag has 2 bits. First bit is single quotes, second bit is double quotes. 00 = quotes closed, 01 = double quotes open single quotes closed, 10 = single quotes open double quotes closed, 11 = double and single quotes open.

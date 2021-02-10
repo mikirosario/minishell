@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 15:47:14 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/10 20:29:59 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,33 +91,35 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 
 char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 {
-	char			**path_array;
 	DIR				*dir;
 	struct dirent	*dirent;
 	char			*ret;
 	size_t			y;
 
 	ret = NULL;
-	path_array = clean_ft_split(&paths[5], ':', micli);	
 	y = 0;
 	if (ft_strnstr(BUILTINS, cmd, micli->builtin_strlen))
 		ret = cmd;
 	else
-		while (!ret && path_array[y]) //for every dir in PATH
+	{
+		micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);	//	0 1 2 3 4 5
+																			//	P A T H = / ... start at pos 5
+		while (!ret && micli->tokdata.path_array[y]) //for every dir in PATH
 		{
-			dir = opendir(path_array[y]); //open dir
+			dir = opendir(micli->tokdata.path_array[y]); //open dir
 			//ft_printf("%s\n", path_array[y]);
 			if (dir)
 				while((dirent = readdir(dir)))  //go through every dir entry
 					if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
-						ret = generate_pathname(path_array[y], cmd, micli); //concatenate dir path with command name
+						ret = generate_pathname(micli->tokdata.path_array[y], cmd, micli); //concatenate dir path with command name
 					//ft_printf("%s\n", dirent->d_name);
 			if (dir)
 				closedir(dir);
 			y++;
-		}			
-	
-	path_array = free_split(path_array);
+		}
+		micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
+	}
+
 	return (ret);
 }
 
