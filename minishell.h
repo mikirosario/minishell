@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:31:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/10 20:38:43 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,la,"
+#define BUILTINS "exit,cd,echo,pwd,export,unset,env"
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -60,9 +60,15 @@ typedef struct	s_varlist
 	struct s_varlist	*next;
 }				t_varlist;
 
+typedef struct	s_builtins
+{
+	int 		argflag;
+}				t_builtins;
+
 typedef struct	s_micli
 {
 	t_tokendata	tokdata;
+	t_builtins	builtins;
 	t_token		*token;
 	size_t		builtin_strlen;
 	int			position;
@@ -74,6 +80,10 @@ typedef struct	s_micli
 	char		*buffer;
 	char		*tmp;
 }				t_micli;
+
+
+
+
 
 /* Command Execution */
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
@@ -101,6 +111,21 @@ char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
 char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
+
+/* Signal Call */
+
+int		catch_signal();
+void	ctrl_c(int signum);
+void	ctrl_bar(int signum);
+// void	signal_c();
+// void	singal_bar();
+// void	signal_d();
+
+/* Builtins */
+
+int		ft_cd(const char **argv, char **envp, t_micli *micli);
+void	ft_pwd(t_micli *micli);
+void    ft_echo(const char **argv, t_micli *micli);
 
 /* Exit Handling */
 void	exit_success(t_micli *micli);

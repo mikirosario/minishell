@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
+#    By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/02/08 20:35:49 by mrosario         ###   ########.fr        #
+#    Updated: 2021/02/10 16:54:54 by mvillaes         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
 SRC = main.c exit_handling.c memory_reservation.c memory_free.c tokenize.c \
-flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c
+flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c builtins.c
 
 LIBFT = ./libft/libft.a
 
