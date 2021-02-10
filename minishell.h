@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/09 19:36:45 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/10 14:51:55 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
-char	*find_var(char *name, char **envp);
+char	*find_var(char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	tokenize(char *line, t_micli *micli);
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 02:00:16 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/10 15:41:02 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ char	**free_split(char **split)
 ** This function frees memory reserved to store dynamic token information.
 **
 ** Pointers used to check for reserved memory are set to NULL.
+**
+** PRINTFs are DEBUG CODE, REMOVE FROM FINAL VERSION.
 */
 
 void	free_token(t_micli *micli)
@@ -69,7 +71,7 @@ void	free_token(t_micli *micli)
 	if (tmp)
 		while (tmp)
 		{
-			ft_printf("VAR LIST: %s\n", tmp->content);
+			//ft_printf("VAR LIST: %s\n", tmp->content);
 			tmp = tmp->next;
 		}
 	//Check token struct for anything that needs to be freed and free as needed.
