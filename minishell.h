@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:08:04 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/11 20:17:39 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,8 +123,10 @@ void	ctrl_bar(int signum);
 /* Builtins */
 
 int		ft_cd(const char **argv, char **envp, t_micli *micli);
-void	ft_pwd(t_micli *micli);
+void	ft_pwd();
 void    ft_echo(const char **argv, t_micli *micli);
+void    ft_unset(char **argv, char **envp);
+
 
 /* Exit Handling */
 void	exit_success(t_micli *micli);

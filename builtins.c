@@ -35,7 +35,13 @@ int     ft_cd(const char **argv, char **envp, t_micli *micli)
     //     ft_realloc()
 }
 
-//echo
+/*  
+**  echo function checks first if it has arguments in case it doesnt it will print an empty line
+**  then it checks if it has arguments equal to -n, if found sets the arglaf to 1 and increases the
+**  counter, when all -n are read it starts writing all characters, when finished printing
+**  checks if it the arglaf is 1 or 0, if is set to 0 it will print add a \n. 
+*/
+
 void    ft_echo(const char **argv, t_micli *micli)
 {
     int i;
@@ -47,18 +53,11 @@ void    ft_echo(const char **argv, t_micli *micli)
     i = 1;
     micli->builtins.argflag = 0;
 
-    //check if echo has arguments
-    //if not, print a empty line
-
     if(argv[i] == NULL)
     {
         ft_printf("\n");
         return;
     }
-    
-    //check if arguments are -n
-    //if found set argflag to 1
-    //and increase the counter
 
     i = 1;
     while(!(ft_memcmp(argv[i], n, len)))
@@ -68,38 +67,53 @@ void    ft_echo(const char **argv, t_micli *micli)
             return;
         i++;
     }
-
-    //after arguments are checked
-    //check if there is more text
-    //and print it
-    
-
     while(argv[i] != 0)
     {
         ft_printf("%s ", argv[i]);
             i++; 
     }
-
-    //if no -n print a return
     if(micli->builtins.argflag != 1)
             ft_printf("\n");
 }
 
 //pwd
-void    ft_pwd(t_micli *micli)
+void    ft_pwd()
 {
     char cwd[FILENAME_MAX];
     
-    if(micli->token->arguments == 0)
-    {
-        if (getcwd(cwd, sizeof(cwd)) != NULL)
-                ft_printf("%s\n", cwd);
-    }
-    if (micli->token->arguments > 0)
-        ft_printf("pwd: too many arguments \n");
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+            ft_printf("%s\n", cwd);
 }
 //export
 
-//unset
+/*
+**  unset
+**  deletes variables and enviorement funcionts
+**  if argv is not null, argv_length equals to the legth of argv
+**  then uses find_var function, if found delete it. 
+*/
+
+void    ft_unset(char **argv, char **envp)
+{
+    int i;
+    int argv_length;
+
+    i = 1;
+    argv_length = 0;
+    if(argv[i] != NULL)
+    {
+        argv_length = ft_strlen(argv[i]);
+
+        if(find_var(argv[i], argv_length, &envp[i]))
+        {
+            envp[i] = NULL;
+        }
+    }
+}
 
 //env
+
+// void    ft_env(const char **argv)
+// {
+    
+// }

@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 19:46:32 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/11 20:17:31 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,13 @@ void	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "cd")))
 		ft_cd((const char **)micli->token->micli_argv, micli->envp, micli);
 	if (!(strcmp(cmd, "pwd")))
-		ft_pwd(micli);
+		ft_pwd();
 	if (!(strcmp(cmd, "echo")))
 		ft_echo((const char **)micli->token->micli_argv, micli);
+	if (!(strcmp(cmd, "unset")))
+		ft_unset((char **)micli->token->micli_argv, micli->envp);
+	// if (!(strcmp(cmd, "env")))
+	// 	ft_env(const char**)micli->token->micli_argv);
 }
 
 /*

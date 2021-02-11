@@ -60,5 +60,5 @@ void	ctrl_bar(int signum)
 // }
 
 
-// usefull linke
+// usefull link
 // http://people.cs.pitt.edu/~alanjawi/cs449/code/shell/UnixSignals.htm
