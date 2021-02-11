@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 15:39:33 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/11 22:55:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,19 +59,17 @@ char	*find_var(char *name, size_t name_len, char **envp)
 }
 
 /*
-** This function sums up the lengths of all resolved variables in a set of
-** tokens so that enough memory can be reserved to substitute them in as needed.
+** This function retrieves the length of the last resolved variable in a token
+** so that enough memory can be reserved to substitute it in as needed.
 */
 
 size_t	get_var_lengths(t_list *var_lst)
 {
 	size_t	len;
 
-	while (var_lst)
-	{
-		len = ft_strlen(var_lst->content);
+	while (var_lst->next)
 		var_lst = var_lst->next;
-	}
+	len = ft_strlen(var_lst->content);
 	return (len);
 }
 

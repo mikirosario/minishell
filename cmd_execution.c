@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:38:05 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/12 00:19:21 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ void	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	if (!(ft_strcmp(cmd, "cd")))
-		ft_cd((const char **)micli->token->micli_argv, micli->envp, micli);
+		ft_cd((const char **)micli->cmdline->micli_argv, micli->envp, micli);
 	if (!(strcmp(cmd, "pwd")))
 		ft_pwd(micli);
 	if (!(strcmp(cmd, "echo")))
-		ft_echo((const char **)micli->token->micli_argv, micli);
+		ft_echo((const char **)micli->cmdline->micli_argv, micli);
 }
 
 /*
@@ -83,7 +83,7 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 ** defined (currently) in minishell.h (might put this in a config file later).
 **
 ** If cmd is in the BUILTIN string, we return the same address as the one cmd
-** points to (micli->token->cmd).
+** points to (micli->cmdline->cmd).
 **
 ** If cmd is not found in BUILTIN we open all the directories in path_array one
 ** by one and check every entry in each directory one by one. If any of these
@@ -170,7 +170,7 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** line, with all of its arguments.
 **
 ** First we create an argv array for the command using create_micli_argv and
-** save the result in the char pointer array micli->token->micli_argv. This
+** save the result in the char pointer array micli->cmdline->micli_argv. This
 ** array contains the command name (cmd) as the first pointer, and each argument
 ** to the command as the remaining pointers, in the same order as they were
 ** input into shell.
@@ -209,11 +209,11 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 
 	
 	exec_path = NULL;
-	micli->token->micli_argv = create_micli_argv(cmd, arglst, micli);
+	micli->cmdline->micli_argv = create_micli_argv(cmd, arglst, micli);
 	
 	// i = 0;
-	// while (micli->token->micli_argv[i])
-	// 	ft_printf("%s\n", micli->token->micli_argv[i++]);
+	// while (micli->cmdline->micli_argv[i])
+	// 	ft_printf("%s\n", micli->cmdline->micli_argv[i++]);
 	
 	i = 0;
 	while (ft_strncmp(micli->envp[i], "PATH", 4))
@@ -229,7 +229,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		else
 		{
 			if (!(pid = fork()))
-				execve(exec_path, micli->token->micli_argv, micli->envp);
+				execve(exec_path, micli->cmdline->micli_argv, micli->envp);
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
 			// ft_printf("STAT_LOC: %d\n", micli->cmd_result);

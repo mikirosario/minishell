@@ -3,58 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   memory_handling.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:38:10 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/12 00:18:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*
-** This function frees memory reserved to store dynamic token information.
-**
-** Pointers used to check for reserved memory are set to NULL.
-*/
-
-void	free_token(t_micli *micli)
-{
-	t_list *lst;
-
-	//Check token struct for anything that needs to be freed and free as needed.
-	lst = micli->token->arguments;
-	if (micli->token->cmd)
-		micli->token->cmd = ft_del(micli->token->cmd);
-	// if (micli->token->varnames)
-	// 	micli->token->varnames = ft_del(micli->token->varnames);
-	if (micli->token->arguments)
-		while (lst)
-		{
-			if (lst->content)
-				lst->content = ft_del(lst->content);
-			lst = lst->next;
-		}
-	if (micli->token->arg_array)
-		micli->token->arg_array = ft_del(micli->token->arg_array);
-	//	ft_lstiter(micli->token->arguments, free); //My lstiter leads to unallocated pointers being freed... :p
-	ft_lstclear(&micli->token->arguments, free);
-	micli->token->arguments = NULL;
-	micli->token = NULL; //token struct memory is reserved locally by the tokenize function for the moment, so does not need to be freed, only the pointer nullified for validity of the check.
-}
-
-/*
-** This function should free any memory that needs to be freed before program
-** termination.
-*/
-
-void	freeme(t_micli *micli)
-{
-	if (micli->buffer)
-		micli->buffer = ft_del(micli->buffer);
-	if (micli->token)
-		free_token(micli);
-}
 
 /*
 ** This function reallocates the memory of the string pointed to by ptr to a

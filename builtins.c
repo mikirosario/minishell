@@ -4,7 +4,7 @@
 // micli->envp
 // **envp ->    *envp[0] key=value;
 //              *envp[1] NULL;
-// micli->token->micli_argv;
+// micli->cmdline->micli_argv;
 // **argv ->    *argv[0] -> cmd
 //              *argv[1] -> 1er argumento
 //              *argv[2] -> NULL;
@@ -90,12 +90,12 @@ void    ft_pwd(t_micli *micli)
 {
     char cwd[FILENAME_MAX];
     
-    if(micli->token->arguments == 0)
+    if(micli->cmdline->arguments == 0)
     {
         if (getcwd(cwd, sizeof(cwd)) != NULL)
                 ft_printf("%s\n", cwd);
     }
-    if (micli->token->arguments > 0)
+    if (micli->cmdline->arguments > 0)
         ft_printf("pwd: too many arguments \n");
 }
 //export
