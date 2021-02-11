@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 20:27:50 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/11 23:52:12 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ char			process_char(char *chr, t_micli *micli)
 		*chr = SUB; //Flag for variable substitution
 		micli->tokdata.toksize += get_var_lengths(micli->token->var_lst); //Add all resolved variable string lengths to toksize
 	}
-	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && !ft_isspace(*chr))) //if variable flag is set and no space
+	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && !ft_isspace(*chr))) //if variable flag is set and no space
 	{
 		*chr = DEL; //Flag var name for deletion
 	}
@@ -150,8 +150,8 @@ void			process_token(t_micli *micli)
 	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
 	{
 		micli->tokdata.cmd_flag = 1;
-		micli->token->cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
-		micli_cpy(micli->token->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
+		micli->cmdline->cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
+		micli_cpy(micli->cmdline->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
 	{
@@ -161,9 +161,9 @@ void			process_token(t_micli *micli)
 		//Will clean up the calloc stuff once the rest is cleaned up, I know it's not norm-friendly ;)
 		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
 		if (micli->tokdata.args == 1)
-			micli->token->arguments = ft_lstnew(dst); //needs to use clean_calloc
+			micli->cmdline->arguments = ft_lstnew(dst); //needs to use clean_calloc
 		else
-			ft_lstadd_back(&micli->token->arguments, ft_lstnew(dst)); //needs to use clean_calloc
+			ft_lstadd_back(&micli->cmdline->arguments, ft_lstnew(dst)); //needs to use clean_calloc
 		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl (which will be a NULL, not a space, so nothing will be skipped)
@@ -175,7 +175,7 @@ void			process_token(t_micli *micli)
 	//Debug code to ensure copy is correct, remove from final ver
 	// ft_printf("Show bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
 	// if (!micli->tokdata.args)
-	// 	ft_printf("Command: %s\n", micli->token->cmd);
+	// 	ft_printf("Command: %s\n", micli->cmdline->cmd);
 	// else
 	// 	ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
 
@@ -242,11 +242,14 @@ void			process_token(t_micli *micli)
 
 int		process_command(char *startl, char *endl, t_micli *micli)
 {
+	t_cmdline		cmdline;
 	t_token			token;
 	
 	ft_bzero(&token, sizeof(t_token));
+	ft_bzero(&cmdline, sizeof(t_cmdline));
 	// Save line to array?? Not a requirement, but good feature to have...
 	micli->token = &token;
+	micli->cmdline = &cmdline;
 	micli->tokdata.toksize = 0;
 	micli->tokdata.args = 0;
 	micli->tokdata.cmd_flag = 0; //if this flag is set, everything else we find here is an argument.
@@ -261,16 +264,25 @@ int		process_command(char *startl, char *endl, t_micli *micli)
 		
 		//What defines the end of a cmd/argument?
 		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd+argument (OR endl has been reached, because we don't do multiline commands)
+		{
 			process_token(micli);
-		else //we handle micli->tokdata.tok_end indexing inside if when we find end of cmd/argument by advancing it to start of next argument.
+			micli->token->var_lst = ft_lstfree(micli->token->var_lst);
+			//clear_token(micli);
+		}
+		else //we handle micli->tokdata.tok_end indexing inside the preceding if when we find end of a cmd/argument by advancing it to start of next argument.
 			micli->tokdata.tok_end++;
 	}
 	micli->tokdata.quote_flag = 0; //reset quote flag
 	micli->tokdata.escape_flag = 0; //reset escape flag
-	
-	exec_cmd(micli->token->cmd, micli->token->arguments, micli);
+	// t_list *tmp = micli->cmdline->arguments;
+	// while (tmp)
+	// {
+	// 	ft_printf("%s\n", tmp->content);
+	// 	tmp = tmp->next;
+	// }
+	exec_cmd(micli->cmdline->cmd, micli->cmdline->arguments, micli);
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
-	free_token(micli); //Free token
+	clear_cmdline(micli); //Free token
 	return (0);	
 }
 
@@ -298,7 +310,7 @@ void	tokenize(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments
 	{
-		if (*lindex == ';') //Quick fix for commands with ';'. If multiple ';' are detected, print syntax
+		if (*lindex == ';') //Quick fix for commands with ';'. If multiple ';' are detected, print syntax error
 		{
 			if (*(lindex + 1) == ';')
 			{
@@ -313,7 +325,7 @@ void	tokenize(char *line, t_micli *micli)
 
 		while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command+arguments. 
 			lindex++;
-			//Everything from lstart to lindex is your kingdom, I mean is a whole token (command + arguments). ;) Must be executed before continuing...
+			//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
 		micli->cmd_result = process_command(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
 		//Store command result in cmd_result variable...
 		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p

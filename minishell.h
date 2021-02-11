@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 14:51:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/11 23:28:46 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,16 @@ typedef struct	s_tokendata
 
 typedef struct	s_token
 {
-	char	*cmd;
 	t_list	*var_lst;
+}				t_token;
+
+typedef struct	s_cmdline
+{
+	char	*cmd;
 	t_list	*arguments;
 	char	**micli_argv;
-}				t_token;
+}				t_cmdline;
+
 
 typedef struct	s_varlist
 {
@@ -62,6 +67,7 @@ typedef struct	s_varlist
 typedef struct	s_micli
 {
 	t_tokendata	tokdata;
+	t_cmdline	*cmdline;
 	t_token		*token;
 	size_t		builtin_strlen;
 	int			position;
@@ -89,8 +95,9 @@ void	tokenize(char *line, t_micli *micli);
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
 /* Memory Freeing */
+t_list	*ft_lstfree(t_list *lst);
 void	freeme(t_micli *micli);
-void	free_token(t_micli *micli);
+void	clear_cmdline(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
