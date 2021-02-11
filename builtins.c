@@ -53,7 +53,7 @@ void    ft_echo(const char **argv, t_micli *micli)
     i = 1;
     micli->builtins.argflag = 0;
 
-    if(argv[i] == NULL)
+    if(!argv[i])
     {
         ft_printf("\n");
         return;
@@ -83,6 +83,11 @@ void    ft_pwd()
     
     if (getcwd(cwd, sizeof(cwd)) != NULL)
             ft_printf("%s\n", cwd);
+    // pwd in bash when passed an argument with a -1234
+    // returns:
+    // bash: pwd: -1: invalid option
+    // pwd: usage: pwd [-LP]
+    // where -1 is the first char after -
 }
 //export
 
