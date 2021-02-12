@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 17:41:51 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/12 20:11:46 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,export,unset,env"
+#define BUILTINS "exit,cd,echo,pwd,unset"
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -130,7 +130,7 @@ void	ctrl_bar(int signum);
 
 /* Builtins */
 void	exec_builtin(char *cmd, t_micli *micli);
-void	ft_cd(const char **argv, char **envp, t_micli *micli);
+int     ft_cd(const char **argv, t_micli *micli);
 void	ft_pwd();
 void    ft_echo(const char **argv, t_micli *micli);
 void    ft_unset(char **argv, char **envp);

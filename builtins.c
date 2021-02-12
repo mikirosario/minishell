@@ -9,11 +9,13 @@ void	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	if (!(ft_strcmp(cmd, "cd")))
-		ft_cd((const char **)micli->cmdline->micli_argv, micli->envp, micli);
+		ft_cd((const char **)micli->cmdline->micli_argv, micli);
 	if (!(strcmp(cmd, "pwd")))
 		ft_pwd(micli);
 	if (!(strcmp(cmd, "echo")))
 		ft_echo((const char **)micli->cmdline->micli_argv, micli);
+    if (!(strcmp(cmd, "unset")))
+        ft_unset(micli->cmdline->micli_argv, micli->envp);
 }
 
 // cd
@@ -24,12 +26,37 @@ void	exec_builtin(char *cmd, t_micli *micli)
 // **argv ->    *argv[0] -> cmd
 //              *argv[1] -> 1er argumento
 //              *argv[2] -> NULL;
-void     ft_cd(const char **argv, char **envp, t_micli *micli) 
+int     ft_cd(const char **argv, t_micli *micli) 
 {
-    char *get_dir;
-    char *dir;
-    char *where;
+    char *home;
 
+    //simple change directory if first argument exist
+    if(argv[1] == 0 || *argv[1] == '~')
+    {
+        // 0 1 2 3 4 5
+        // H O M E = /BLABLA
+        home = find_var("HOME", 4, micli->envp);
+            ft_printf("%s\n", home);
+        home += 5;
+        chdir(home);
+        //error habndling
+        return(0);
+    }
+    if (argv[1] != 0 && *argv[1] != '~')
+    {
+        if (chdir(argv[1]) == -1)
+        {
+            ft_printf("cd: %s: %s\n", argv[1], strerror(errno));
+            return(1);
+        }
+    }
+    else
+        return(0);
+    return(0);
+    // here should update env pwd and old pwd, (where are you and where have you been)
+    //
+    // 
+}
     
     
     
@@ -56,7 +83,7 @@ void     ft_cd(const char **argv, char **envp, t_micli *micli)
     //     ft_strncmp("PWD", envp[i], 3);
 
     //     ft_realloc()
-}
+// }
 
 /*  
 **  echo function checks first if it has arguments in case it doesnt it will print an empty line
