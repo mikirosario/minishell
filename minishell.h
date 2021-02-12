@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 15:44:26 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 18:06:21 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,export,unset,env"
+#define BUILTINS "exit,cd,echo,pwd,unset,env"
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -76,7 +76,7 @@ typedef struct	s_micli
 	t_cmdline	*cmdline;
 	t_token		*token;
 	t_builtins	builtins;
-	size_t		builtin_strlen;
+	//size_t		builtin_strlen;
 	int			position;
 	int			bufsize;
 	int			c;

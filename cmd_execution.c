@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 15:43:38 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 18:05:44 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,4 +245,6 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			exec_path = ft_del(exec_path);
 		}
 	}
+	else
+		ft_printf("%s: command not found\n", cmd);
 }

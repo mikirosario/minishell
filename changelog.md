@@ -1,3 +1,9 @@
+### Version 2.02
+
+- The exec_cmd function in cmd_execution.c will now print an error message if a specified command is found neither among the builtins nor among the system binaries.
+
+- Commented out variable that is unused since Version 2.01: micli->builtin_strlen.
+
 ### Version 2.01
 
 - Switched builtin detection in the find_cmd_path function over to using the find_builtin function (both defined in cmd_execution.c). With this update, only comma-separated words within the BUILTIN string will be recognized as builtins. Partial matches will not be misinterpreted as full matches (i.e. "namels," will not be misinterpreted as a match for "ls").
