@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 18:05:44 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/12 18:55:30 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (exec_path)
 	{
 		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin
-			exec_builtin(exec_path, micli);
+			/*micli->cmd_result = */exec_builtin(exec_path, micli);
 		else
 		{
 			if (!(pid = fork()))
