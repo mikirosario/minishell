@@ -1,4 +1,4 @@
-#Basic Overview
+# Basic Overview
 
 Minishell parses and processes text from stdin in the manner of bash.
 
@@ -8,12 +8,12 @@ Each **phase** of minishell (raw, cmdline, token, character) has its own associa
 
 So, each raw line must deal with all of its command lines before exiting, each command line must deal with all of its tokens before exiting, and each token must deal with all of its characters before exiting. Higher phases thus pass tasks down to lower phases as soon as they are identified.
 
-|                           PHASES                      |
-| ----------------------------------------------------- |
-|        RAW LINE       |  CMD LINE | TOKEN	| CHARACTER |
-| --------------------- | --------- | ----- | --------- |
-| $raw line; from stdin | $raw line | $raw  |     $     |
-|         micli         |  cmdline  | token |  tokdata  |
+# PHASES
+
+|         RAW LINE         |    CMD LINE  |  TOKEN | CHARACTER |
+| ------------------------ | :----------- | :----- | :-------- |
+|  $raw line; from stdin   |  $raw line   |  $raw  |     $     |
+|           micli          |    cmdline   |  token |  tokdata  |
 
 Subject to change, of course. ;)
 
