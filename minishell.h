@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:13:52 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 00:50:29 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 /* String Parsing */
 char	*find_var(char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
-void	tokenize(char *line, t_micli *micli);
+void	process_raw_line(char *line, t_micli *micli);
 
 /* Copying */
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);

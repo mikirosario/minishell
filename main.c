@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:37:48 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/12 00:50:00 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ char	micli_loop(t_micli *micli)
 	{
 		write(1, "🚀 ", 6);
 		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
-		tokenize(micli->buffer, micli);
+		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 	}
 	return (0);

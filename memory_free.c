@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:21:09 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 00:51:07 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	clear_cmdline(t_micli *micli)
 	if (micli->token->var_lst)
 		micli->token->var_lst = ft_lstfree(micli->token->var_lst);
 	micli->cmdline->arguments = NULL;
-	micli->token = NULL; //token struct memory is reserved locally by the tokenize function for the moment, so does not need to be freed, only the pointer nullified for validity of the check.
+	micli->token = NULL; //token struct memory is reserved locally by the process_cmdline function for the moment, so does not need to be freed, only the pointer nullified for validity of the check.
 }
 
 /*
