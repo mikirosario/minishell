@@ -49,9 +49,9 @@ int     ft_cd(const char **argv, t_micli *micli)
             ft_printf("cd: %s: %s\n", argv[1], strerror(errno));
             return(1);
         }
+        else
+            return(0);
     }
-    else
-        return(0);
     return(0);
     // here should update env pwd and old pwd, (where are you and where have you been)
     //
