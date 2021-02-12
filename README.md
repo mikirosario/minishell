@@ -1,3 +1,22 @@
+#Basic Overview
+
+Minishell parses and processes text from stdin in the manner of bash.
+
+The program parses text in **phases** in the following hierarchical order: *raw line from stdin* -> *command line* -> *token* -> *character*.
+
+Each **phase** of minishell (raw, cmdline, token, character) has its own associated dataset. Character has *micli->tokdata*, token has *micli->token*, command line has *micli->cmdline*, and the raw line uses *micli* directly. Each phase is required to complete all tasks **below** it in the hierarchy before continuing with other tasks **above** it. 
+
+So, each raw line must deal with all of its command lines before exiting, each command line must deal with all of its tokens before exiting, and each token must deal with all of its characters before exiting. Higher phases thus pass tasks down to lower phases as soon as they are identified.
+
+|                           PHASES                      |
+| ----------------------------------------------------- |
+|        RAW LINE       |  CMD LINE | TOKEN	| CHARACTER |
+| --------------------- | --------- | ----- | --------- |
+| $raw line; from stdin | $raw line | $raw  |     $     |
+|         micli         |  cmdline  | token |  tokdata  |
+
+Subject to change, of course. ;)
+
 # minishell
 MICLI - Minishell Project for 42 School Madrid.
 
