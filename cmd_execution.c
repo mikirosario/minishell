@@ -6,27 +6,37 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:19:21 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 15:43:38 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
 /*
-** This function executes built-ins when they are called from shell.
+** This function finds comma-separated builtins in the BUILTIN constant string
+** declared in the minishell.h header. If the argument passed as cmd matches a
+** comma-separated builtin within the BUILTIN constant string, 1 is returned.
+** Otherwise, 0 is returned.
 */
 
-void	exec_builtin(char *cmd, t_micli *micli)
+int		find_builtin(char *cmd)
 {
-	if (!(ft_strcmp(cmd, "exit")))
-		exit_success(micli);
-	if (!(ft_strcmp(cmd, "cd")))
-		ft_cd((const char **)micli->cmdline->micli_argv, micli->envp, micli);
-	if (!(strcmp(cmd, "pwd")))
-		ft_pwd(micli);
-	if (!(strcmp(cmd, "echo")))
-		ft_echo((const char **)micli->cmdline->micli_argv, micli);
+	char	*startl;
+	char	*endl;
+
+	startl = BUILTINS;
+	endl = startl;
+	while (*startl)
+	{
+		while (*endl && *endl != ',')
+			endl++;
+		if ((!(strncmp(startl, cmd, endl - startl))))
+			return (1);
+		else if (*endl == ',')
+			endl++;
+		startl = endl;
+	}
+	return (0);
 }
 
 /*
@@ -104,7 +114,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 
 	ret = NULL;
 	y = 0;
-	if (ft_strnstr(BUILTINS, cmd, micli->builtin_strlen))
+	if (find_builtin(cmd))
 		ret = cmd;
 	else
 	{
@@ -203,8 +213,8 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 {
 	char	*exec_path;
+	char	*path_var;
 	int		stat_loc;
-	int		i;
 	pid_t	pid;
 
 	
@@ -215,13 +225,12 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	// while (micli->cmdline->micli_argv[i])
 	// 	ft_printf("%s\n", micli->cmdline->micli_argv[i++]);
 	
-	i = 0;
-	while (ft_strncmp(micli->envp[i], "PATH", 4))
-		i++;
-	
-	//printf("%s\n", micli->envp[i]);
 
-	exec_path = find_cmd_path(cmd, micli->envp[i], micli);
+	path_var = find_var("PATH", 4, micli->envp);
+	
+	//printf("%s\n", path_var);
+
+	exec_path = find_cmd_path(cmd, path_var, micli);
 	if (exec_path)
 	{
 		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin

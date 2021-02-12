@@ -1,5 +1,21 @@
 #include "minishell.h"
 
+/*
+** This function executes built-ins when they are called from shell.
+*/
+
+void	exec_builtin(char *cmd, t_micli *micli)
+{
+	if (!(ft_strcmp(cmd, "exit")))
+		exit_success(micli);
+	if (!(ft_strcmp(cmd, "cd")))
+		ft_cd((const char **)micli->cmdline->micli_argv, micli->envp, micli);
+	if (!(strcmp(cmd, "pwd")))
+		ft_pwd(micli);
+	if (!(strcmp(cmd, "echo")))
+		ft_echo((const char **)micli->cmdline->micli_argv, micli);
+}
+
 // cd
 // micli->envp
 // **envp ->    *envp[0] key=value;
@@ -90,13 +106,12 @@ void    ft_pwd(t_micli *micli)
 {
     char cwd[FILENAME_MAX];
     
-    if(micli->cmdline->arguments == 0)
+    if(!micli->cmdline->arguments)
     {
         if (getcwd(cwd, sizeof(cwd)) != NULL)
                 ft_printf("%s\n", cwd);
     }
-    if (micli->cmdline->arguments > 0)
-        ft_printf("pwd: too many arguments \n");
+    
 }
 //export
 

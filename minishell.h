@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:50:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/12 15:44:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void	ctrl_bar(int signum);
 // void	signal_d();
 
 /* Builtins */
-
+void	exec_builtin(char *cmd, t_micli *micli);
 int		ft_cd(const char **argv, char **envp, t_micli *micli);
 void	ft_pwd(t_micli *micli);
 void    ft_echo(const char **argv, t_micli *micli);
