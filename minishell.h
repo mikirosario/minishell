@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 19:05:31 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/13 20:09:00 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,unset"
+#define BUILTINS "exit,cd,echo,pwd,unset,env"
 #define REDIRECTIONS ""
 #define DEL 127
 #define SUB 26
@@ -138,6 +138,7 @@ int     ft_cd(const char **argv, t_micli *micli);
 int		ft_pwd();
 int	    ft_echo(const char **argv, t_micli *micli);
 int	    ft_unset(char **argv, char **envp);
+int		ft_env(char **envp);
 
 /* Redirections */
 

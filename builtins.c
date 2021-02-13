@@ -10,12 +10,14 @@ int 	exec_builtin(char *cmd, t_micli *micli)
 		exit_success(micli);
 	else if (!(ft_strcmp(cmd, "cd")))
 		return(ft_cd((const char **)micli->cmdline->micli_argv, micli));
-	else if (!(strcmp(cmd, "pwd")))
+	else if (!(ft_strcmp(cmd, "pwd")))
 		return(ft_pwd(micli));
-	else if (!(strcmp(cmd, "echo")))
+	else if (!(ft_strcmp(cmd, "echo")))
 		return(ft_echo((const char **)micli->cmdline->micli_argv, micli));
-    else if (!(strcmp(cmd, "unset")))
+    else if (!(ft_strcmp(cmd, "unset")))
         return(ft_unset(micli->cmdline->micli_argv, micli->envp));
+    else if (!(ft_strcmp(cmd, "env")))
+        return(ft_env(micli->envp));
     return(128);
 }
 
@@ -144,7 +146,18 @@ int    ft_unset(char **argv, char **envp)
 
 //env
 
-// void    ft_env(const char **argv)
-// {
-    
-// }
+int    ft_env(char **envp)
+{
+    int i;
+    char *store;
+
+    store = *envp;
+    i = 1;
+    while(store)
+    {
+        printf("%s\n", store);
+        store = *(envp + i);
+        i++;
+    }
+    return(0);    
+}
