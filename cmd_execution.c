@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 18:55:30 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/13 15:34:50 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,17 +234,19 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (exec_path)
 	{
 		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin
-			/*micli->cmd_result = */exec_builtin(exec_path, micli);
+			/*micli->cmd_result = */exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
 			if (!(pid = fork()))
 				execve(exec_path, micli->cmdline->micli_argv, micli->envp);
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
-			// ft_printf("STAT_LOC: %d\n", micli->cmd_result);
 			exec_path = ft_del(exec_path);
 		}
 	}
 	else
+	{
+		micli->cmd_result = 127;
 		ft_printf("%s: command not found\n", cmd);
+	}
 }

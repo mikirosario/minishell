@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 18:06:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/13 14:30:42 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct	s_micli
 	int			c;
 	int			syserror;
 	int			cmd_result;
+	char		*cmd_result_str;
 	char		**envp;
 	char		*buffer;
 	char		*tmp;
