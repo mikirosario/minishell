@@ -4,18 +4,19 @@
 ** This function executes built-ins when they are called from shell.
 */
 
-void	exec_builtin(char *cmd, t_micli *micli)
+int 	exec_builtin(char *cmd, t_micli *micli)
 {
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
-	if (!(ft_strcmp(cmd, "cd")))
-		ft_cd((const char **)micli->cmdline->micli_argv, micli);
-	if (!(strcmp(cmd, "pwd")))
-		ft_pwd(micli);
-	if (!(strcmp(cmd, "echo")))
-		ft_echo((const char **)micli->cmdline->micli_argv, micli);
-    if (!(strcmp(cmd, "unset")))
-        ft_unset(micli->cmdline->micli_argv, micli->envp);
+	else if (!(ft_strcmp(cmd, "cd")))
+		return(ft_cd((const char **)micli->cmdline->micli_argv, micli));
+	else if (!(strcmp(cmd, "pwd")))
+		return(ft_pwd(micli));
+	else if (!(strcmp(cmd, "echo")))
+		return(ft_echo((const char **)micli->cmdline->micli_argv, micli));
+    else if (!(strcmp(cmd, "unset")))
+        return(ft_unset(micli->cmdline->micli_argv, micli->envp));
+    return(128);
 }
 
 // cd
@@ -35,13 +36,13 @@ int     ft_cd(const char **argv, t_micli *micli)
     {
         // 0 1 2 3 4 5
         // H O M E = /BLABLA
+        //ft_printf("%s%s: ", home, (argv[1] + 2), strerror);
         home = find_var("HOME", 4, micli->envp);
-            ft_printf("%s\n", home);
-        home += 5;
-        chdir(home);
+        chdir(home += 5);
         //error habndling
         return(0);
     }
+
     if (argv[1] != 0 && *argv[1] != '~')
     {
         if (chdir(argv[1]) == -1)
@@ -92,7 +93,7 @@ int     ft_cd(const char **argv, t_micli *micli)
 **  checks if it the arglaf is 1 or 0, if is set to 0 it will print add a \n. 
 */
 
-void    ft_echo(const char **argv, t_micli *micli)
+int    ft_echo(const char **argv, t_micli *micli)
 {
     int i;
     char *n;
@@ -106,7 +107,7 @@ void    ft_echo(const char **argv, t_micli *micli)
     if(!argv[i])
     {
         ft_printf("\n");
-        return;
+        return(0);
     }
 
     i = 1;
@@ -114,25 +115,28 @@ void    ft_echo(const char **argv, t_micli *micli)
     {
         micli->builtins.argflag = 1;
         if(argv[i+1] == NULL)
-            return;
+            return(0);
         i++;
     }
     while(argv[i] != 0)
     {
         ft_printf("%s ", argv[i]);
-            i++; 
+            i++;
+        return(0);
     }
     if(micli->builtins.argflag != 1)
             ft_printf("\n");
+    return(0);
 }
 
 //pwd
-void    ft_pwd()
+int    ft_pwd()
 {
     char cwd[FILENAME_MAX];
     
     if (getcwd(cwd, sizeof(cwd)) != NULL)
             ft_printf("%s\n", cwd);
+        return(0);
     // pwd in bash when passed an argument with a -1234
     // returns:
     // bash: pwd: -1: invalid option
@@ -148,7 +152,7 @@ void    ft_pwd()
 **  then uses find_var function, if found delete it. 
 */
 
-void    ft_unset(char **argv, char **envp)
+int    ft_unset(char **argv, char **envp)
 {
     int i;
     int argv_length;
@@ -164,6 +168,7 @@ void    ft_unset(char **argv, char **envp)
             envp[i] = NULL;
         }
     }
+    return(0);
 }
 
 //env
