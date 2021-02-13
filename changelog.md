@@ -1,3 +1,7 @@
+### Version 2.032
+
+- Code required for builtin exit status was accidently left commented in the last push. :p
+
 ### Version 2.031
 
 - The special '?' variable now resolves to the exit status of the last executed command both for binary executables and builtins.
