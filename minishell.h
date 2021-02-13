@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 18:21:59 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/13 20:34:19 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ typedef struct	s_micli
 	t_token		*token;
 	t_builtins	builtins;
 	//size_t		builtin_strlen;
+	int			fd[2];
 	int			position;
 	int			bufsize;
 	int			c;

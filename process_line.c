@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 15:21:53 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/13 20:32:55 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,13 +110,17 @@ char			process_char(char *chr, t_micli *micli)
 		micli->tokdata.quote_flag = toggle_quote_flag(*chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
 		*chr = DEL; //Flag for deletion
 	}
+	else if (!micli->tokdata.escape_flag && !micli->tokdata.quote_flag && *chr == '|')
+	{
+		pipe(micli->fd);
+	}
 	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
 	{
 		micli->tokdata.var_flag = 1;
 		*chr = SUB; //Flag for variable substitution
 		micli->tokdata.toksize += get_var_lengths(micli->token->var_lst); //Add all resolved variable string lengths to toksize
 	}
-	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && !ft_isspace(*chr))) //if variable flag is set and no space
+	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && !ft_isspace(*chr))) //if escape flag is not set and variable flag is set and no space, |, NUL or ;
 	{
 		*chr = DEL; //Flag var name for deletion
 	}
@@ -300,6 +304,8 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 ** or NULL (meaning \n or EOF) is found, at which point the fragment from lstart
 ** until the ; or NULL is passed to the process_cmdline function for
 ** tokenization.
+** 
+** ESCAPE FLAG MAY NOT BE WORKING WITH ; and |
 */
 
 void	process_raw_line(char *line, t_micli *micli)
@@ -323,7 +329,7 @@ void	process_raw_line(char *line, t_micli *micli)
 		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
 		lindex = lstart; //set index at start of next command
 
-		while (*lindex && *lindex != ';') //If we find ';' or NULL it signifies end of command+arguments. 
+		while (*lindex && (*lindex != ';' || *lindex != '|')) //If we find ';' or '|' or NULL it signifies end of command+arguments. 
 			lindex++;
 			//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
