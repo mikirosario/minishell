@@ -50,7 +50,6 @@ int     ft_cd(const char **argv, t_micli *micli)
             ft_printf("cd: %s: %s\n", argv[1], strerror(errno));
             return(1);
         }
-        else
             return(0);
     }
     return(0);
@@ -58,33 +57,6 @@ int     ft_cd(const char **argv, t_micli *micli)
     //
     // 
 }
-    
-    
-    
-    // int i;
-
-    // (void)micli;
-    // //if is one arg
-    // i = -1;
-    // //if only cd is received, move to home directory
-    // if (chdir(argv[1]) != 0)
-    // {
-    //     while(envp[++i])
-    //         ft_strncmp("HOME", envp[i], 4);
-    //     chdir((const char *)envp[i + 1]);
-    // }
-    // return(0);
-    // if (chdir(argv[1] != 1))
-    // {
-
-    // }
-    //     // strerror("cd: not such file or directory:" input)
-    // //
-    // while (envp[i])
-    //     ft_strncmp("PWD", envp[i], 3);
-
-    //     ft_realloc()
-// }
 
 /*  
 **  echo function checks first if it has arguments in case it doesnt it will print an empty line
@@ -98,7 +70,7 @@ int    ft_echo(const char **argv, t_micli *micli)
     int i;
     char *n;
     int len;
-
+   
     n = "-n";
     len = 2;
     i = 1;
@@ -120,13 +92,12 @@ int    ft_echo(const char **argv, t_micli *micli)
     }
     while(argv[i] != 0)
     {
-        ft_printf("%s ", argv[i]);
+        ft_printf(argv[i + 1] ? "%s " : "%s", argv[i]);
             i++;
-        return(0);
     }
     if(micli->builtins.argflag != 1)
             ft_printf("\n");
-    return(0);
+        return(0);
 }
 
 //pwd

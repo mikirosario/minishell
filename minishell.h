@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 18:16:47 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/13 19:05:31 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 
 #define READLINE_BUFSIZE 1
 #define BUILTINS "exit,cd,echo,pwd,unset"
+#define REDIRECTIONS ""
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -87,31 +88,33 @@ typedef struct	s_micli
 	char		*tmp;
 }				t_micli;
 
-
-
-
-
 /* Command Execution */
+
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
+
 unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
+
 char	*find_var(char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
 
 /* Copying */
+
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
 /* Memory Freeing */
+
 t_list	*ft_lstfree(t_list *lst);
 void	freeme(t_micli *micli);
 void	clear_cmdline(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
+
 int		var_alloc(char *var_name, t_micli *micli);
 char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
@@ -129,17 +132,24 @@ void	ctrl_bar(int signum);
 // void	signal_d();
 
 /* Builtins */
+
 int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int		ft_pwd();
 int	    ft_echo(const char **argv, t_micli *micli);
 int	    ft_unset(char **argv, char **envp);
 
+/* Redirections */
+
+
+
 /* Exit Handling */
+
 void	exit_success(t_micli *micli);
 void	exit_failure(t_micli *micli);
 
 /* Error Handling */
+
 void	print_error(char *error, char *error_location);
 
 #endif
