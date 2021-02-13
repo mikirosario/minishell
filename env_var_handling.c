@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/11 22:55:58 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/13 15:56:16 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,15 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	char	*varp;
 	t_list	*new;		
 
-	varp = find_var(var_name, var_name_strlen, micli->envp);
 	//ft_printf("THIS IS ONLY A TEST OF FIND_VAR: %s\n", varp);
-	if (varp)
+	if (*var_name == '?')
+	{
+		if (micli->cmd_result_str)
+			micli->cmd_result_str = ft_del(micli->cmd_result_str); //libera esto en freeme tb
+		micli->cmd_result_str = ft_itoa(micli->cmd_result);
+		new = ft_lstnew(micli->cmd_result_str);
+	}
+	else if ((varp = find_var(var_name, var_name_strlen, micli->envp)))
 	{
 		varp = (ft_strchr(varp, '=') + 1); //Variable value starts at character after '='
 		//ft_printf("VAR NAME CONTENT: %s\n", varp);
@@ -162,7 +168,9 @@ int		var_alloc(char *var_name, t_micli *micli)
 	char	*varnamecpy;
 
 	i = 0;
-	if ((name_state = isvarchar(var_name[i++])) != 1) //Initial varchar must be a letter or underscore https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
+	if (var_name[i] == '?') //If the initial varchar is '?', it's special and it refers to micli->cmd_result
+		i++;
+	else if ((name_state = isvarchar(var_name[i++])) != 1) //Initial varchar must be a letter or underscore https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
 	{
 		//ft_printf("INVALID VAR NAME: %.*s\n", i, var_name);
 		return (0);

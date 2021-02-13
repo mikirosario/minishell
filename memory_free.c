@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:51:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/13 14:34:50 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ void	clear_cmdline(t_micli *micli)
 
 void	freeme(t_micli *micli)
 {
+	if (micli->cmd_result_str)
+		micli->cmd_result_str = ft_del(micli->cmd_result_str);
 	if (micli->buffer)
 		micli->buffer = ft_del(micli->buffer);
 	if (micli->cmdline)

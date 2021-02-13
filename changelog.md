@@ -1,3 +1,11 @@
+### Version 2.031
+
+- The special '?' variable now resolves to the exit status of the last executed command both for binary executables and builtins.
+
+### Version 2.03
+
+- A special '?' variable has been added that resolves to the exit status of the last executed command if the command points to a binary. If the command does not exist, it resolves to 127. NOTE: This still does not work with the builtins as the builtins still do not return their exit status.
+
 ### Version 2.02
 
 - The exec_cmd function in cmd_execution.c will now print an error message if a specified command is found neither among the builtins nor among the system binaries.
