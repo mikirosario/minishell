@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 20:32:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/14 20:56:09 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ char			process_char(char *chr, t_micli *micli)
 	}
 	else if (!micli->tokdata.escape_flag && !micli->tokdata.quote_flag && *chr == '|')
 	{
-		pipe(micli->fd);
+		*chr = DEL; //Flag for deletion???????
 	}
 	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
 	{
@@ -316,7 +316,7 @@ void	process_raw_line(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments
 	{
-		if (*lindex == ';') //Quick fix for commands with ';'. If multiple ';' are detected, print syntax error
+		if (*lindex == ';') //Quick fix for commands with ';' or '|'. If multiple ';' or '|' are detected, print syntax error
 		{
 			if (*(lindex + 1) == ';')
 			{
@@ -326,10 +326,36 @@ void	process_raw_line(char *line, t_micli *micli)
 			else
 				lindex++;
 		}
+		// else if (*lindex == '|')
+		// {
+		// 	if (*(lindex + 1) == '|')
+		// 	{
+		// 		print_error(SYN_ERROR, lindex);
+		// 		break ;
+		// 	}
+		// 	else
+		// 		lindex++;
+		// }
+		
 		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-		lindex = lstart; //set index at start of next command
+		
+		lindex = lstart; //set index at start of next command 
+		if  (*lindex == '|')
+		{
+			if (*(lindex + 1) == '|')
+			{
+				print_error(SYN_ERROR, lindex);
+				break ;	
+			}
+			else
+			{
+				micli->pipe_flag = 1;
+				lindex++;
+			}
+			
+		}
 
-		while (*lindex && (*lindex != ';' || *lindex != '|')) //If we find ';' or '|' or NULL it signifies end of command+arguments. 
+		while (*lindex && (*lindex != ';'/* || *lindex != '|'*/)) //If we find ';' or '|' or NULL it signifies end of command+arguments. 
 			lindex++;
 			//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 

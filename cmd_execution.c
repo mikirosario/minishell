@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 18:47:39 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/14 20:24:16 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,11 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
+			if (micli->pipe_flag)
+			{
+				printf("I AM A PIPED COMMAND RAWR\n");
+				micli->pipe_flag = 0;
+			}
 			if (!(pid = fork()))
 				execve(exec_path, micli->cmdline->micli_argv, micli->envp);
 			waitpid(pid, &stat_loc, WUNTRACED);

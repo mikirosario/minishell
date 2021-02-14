@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 20:34:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/14 20:39:50 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,unset"
+#define BUILTINS "exit,cd,pwd,unset"
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -87,6 +87,7 @@ typedef struct	s_micli
 	char		**envp;
 	char		*buffer;
 	char		*tmp;
+	char		pipe_flag:1;
 }				t_micli;
 
 
