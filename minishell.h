@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 16:34:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 16:58:36 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,22 +73,23 @@ typedef struct	s_builtins
 
 typedef struct	s_micli
 {
-	t_tokendata	tokdata;
-	t_cmdline	*cmdline;
-	t_token		*token;
-	t_builtins	builtins;
+	t_tokendata		tokdata;
+	t_cmdline		*cmdline;
+	t_token			*token;
+	t_builtins		builtins;
 	//size_t		builtin_strlen;
-	int			pipe[2];
-	int			position;
-	int			bufsize;
-	int			c;
-	int			syserror;
-	int			cmd_result;
-	char		*cmd_result_str;
-	char		**envp;
-	char		*buffer;
-	char		*tmp;
-	char		pipe_flag:1;
+	int				pipe[2];
+	int				position;
+	int				bufsize;
+	int				c;
+	int				syserror;
+	int				cmd_result;
+	char			*cmd_result_str;
+	char			**envp;
+	char			*buffer;
+	char			*tmp;
+	unsigned char	quote_flag:1; //Raw_line quote flag...
+	unsigned char	pipe_flag:1;
 }				t_micli;
 
 
@@ -99,7 +100,7 @@ typedef struct	s_micli
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
-unsigned char	toggle_quote_flag(char quotes, char quote_flag);
+unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
 
 /* String Parsing */
 char	*find_var(char *name, size_t name_len, char **envp);

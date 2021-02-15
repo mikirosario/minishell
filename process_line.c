@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 16:28:13 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 17:32:29 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,7 +300,7 @@ int		null_check(char **lindex)
 {
 	//We arrive here with end of last command line, which may be a space, a ';' or a '|'. We advance one if we find ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as syntax_check ensures it before we get here.
 
-	if (ft_strchr(CMDLINE_END, **lindex))
+	if (**lindex == ';' || **lindex == '|')
 		(*lindex)++;
 	*lindex = ft_skipspaces(*lindex);
 	if (!(**lindex)) //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
@@ -314,11 +314,9 @@ int		null_check(char **lindex)
 
 int		syntax_check(char *line)
 {
-	char	dquote_flag;
-	char	squote_flag;
+	unsigned char	quote_flag;
 
-	dquote_flag = 0;
-	squote_flag = 0;
+	quote_flag = 0;
 	line = ft_skipspaces(line);
 	if (*line == ';' || *line == '|')
 	{
@@ -327,7 +325,7 @@ int		syntax_check(char *line)
 	}
 	while (*line)
 	{
-		if ((!dquote_flag && !squote_flag) && (*line == ';' || *line == '|'))
+		if (!quote_flag && (*line == ';' || *line == '|'))
 		{
 			line = ft_skipspaces(++line);
 			if (*line == ';' || *line == '|')
@@ -338,10 +336,7 @@ int		syntax_check(char *line)
 		}
 		else
 		{
-			if (*line == '"')
-				dquote_flag = ~dquote_flag;
-			else if (*line == '\'')
-				squote_flag = ~squote_flag;
+			quote_flag = toggle_quote_flag(*line, quote_flag);
 			line++;
 		}
 	}
@@ -370,31 +365,27 @@ void	process_raw_line(char *line, t_micli *micli)
 {
 	char	*lstart;
 	char	*lindex;
-	char	dquote_flag;
-	char	squote_flag;
-	char	escape_flag;
+	unsigned char	quote_flag;
+	unsigned char	escape_flag;
 
-	dquote_flag = 0;
-	squote_flag = 0;
+
 	escape_flag = 0;
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
 		return ;
 	while (!null_check(&lindex)) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
 	{	
+		quote_flag = 0;
 		lstart = lindex; //set start at start of next command
 		// lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
 		
 		//lindex = lstart; //set index at start of next command 
 
-		while (*lindex && ((dquote_flag || squote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments (iff not between quotes)
+		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments (iff not between quotes)
 		{
 			escape_flag = 0;
-			if (*lindex == '"')
-				dquote_flag = ~dquote_flag;
-			else if (*lindex == '\'')
-				squote_flag = ~squote_flag;
-			else if (!dquote_flag && !squote_flag && *lindex == '\\')
+			quote_flag = toggle_quote_flag(*lindex, quote_flag);
+			if (!quote_flag && *lindex == '\\')
 				escape_flag = 1;
 			lindex++;
 		}

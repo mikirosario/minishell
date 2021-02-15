@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/14 20:22:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/15 16:59:47 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int 	main(int argc, char **argv, char **envp)
 	t_micli micli;
 
 	ft_bzero(&micli, sizeof(t_micli));
-	pipe(micli.fd);
+	pipe(micli.pipe);
 	micli.envp = envp;
 	//micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files

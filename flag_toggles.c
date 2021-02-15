@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+	/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   flag_toggles.c                                     :+:      :+:    :+:   */
@@ -41,7 +41,7 @@ unsigned char	ft_togglebit(unsigned char byte, unsigned char bit)
 ** 11 (3) = Double quotes opened, single quotes opened.
 */
 
-unsigned char	toggle_quote_flag(char quotes, char quote_flag)
+unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag)
 {
 	if (quotes == '"')
 		quote_flag = ft_togglebit(quote_flag, 0);

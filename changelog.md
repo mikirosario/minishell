@@ -1,3 +1,11 @@
+### Version 2.11
+
+- Fixed null_check so that it no longer increments the line index when it finds a null character.
+
+- Changed the syntax_check function to use toggle_quote_flag function. It continues to use its own local quote flag.
+
+- Changed the process_raw_line to use the toggle_quote_flag function. It continues to use its own local quote flag.
+
 ## Version 2.1
 
 - Syntax check is now done before any commands are executed, so a syntax error will prevent any commands in a multi-command line from being executed, as in bash.
