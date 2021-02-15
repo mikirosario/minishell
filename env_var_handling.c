@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 15:56:16 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/15 19:04:44 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,11 +130,10 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	}
 	else
 		new = ft_lstnew(NUL); //If no match is found for a variable name among envp, resolve to a '\0' character.
-	if (!micli->token->var_lst)
-		micli->token->var_lst = new;
+	if (!micli->token.var_lst)
+		micli->token.var_lst = new;
 	else
-		ft_lstadd_back(&micli->token->var_lst, new);
-	
+		ft_lstadd_back(&micli->token.var_lst, new);	
 }
 
 /*
@@ -188,5 +187,4 @@ int		var_alloc(char *var_name, t_micli *micli)
 
 	varnamecpy = ft_del(varnamecpy);
 	return(1);
-	
 }

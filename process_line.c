@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:10:35 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 18:57:18 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 
 	d = dst;
 	s = src;
-	var_lst = micli->token->var_lst;
+	var_lst = micli->token.var_lst;
 	while (s != src_end)
 	{
 		if (*s != DEL && *s != SUB)
@@ -47,7 +47,7 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 				*d++ = ((char *)var_lst->content)[i++];
 			var_lst = var_lst->next;
 			s++;
-		// // 	//copia micli->token->var_lst->content //LA ÚNICA FUNCiÓn que NO RECIBE MICLI AARRRRGHHH
+		// // 	//copia micli->token.var_lst->content //LA ÚNICA FUNCiÓn que NO RECIBE MICLI AARRRRGHHH
 		}
 		else
 			s++;
@@ -92,6 +92,8 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 ** included.
 **
 ** This function returns chr, which may be changed as desired.
+**
+** Should functionalize conditionals so they are easier to read...
 */
 
 char			process_char(char *chr, t_micli *micli)
@@ -110,15 +112,11 @@ char			process_char(char *chr, t_micli *micli)
 		micli->tokdata.quote_flag = toggle_quote_flag(*chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
 		*chr = DEL; //Flag for deletion
 	}
-	// else if (!micli->tokdata.escape_flag && !micli->tokdata.quote_flag && *chr == '|')
-	// {
-	// 	micli->pipe_flag = 1; //Pipe flag here????? No-op????? Should functionalize conditionals so they are easier to read.
-	// }
 	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
 	{
 		micli->tokdata.var_flag = 1;
 		*chr = SUB; //Flag for variable substitution
-		micli->tokdata.toksize += get_var_lengths(micli->token->var_lst); //Add all resolved variable string lengths to toksize
+		micli->tokdata.toksize += get_var_lengths(micli->token.var_lst); //Add all resolved variable string lengths to toksize
 	}
 	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && *chr != '|' && !ft_isspace(*chr))) //if escape flag is not set and variable flag is set and space, '|', NUL or ; is NOT found
 	{
@@ -144,6 +142,18 @@ char			process_char(char *chr, t_micli *micli)
 ** token->arguments pointer.
 **
 ** An argv array is created out of the linked list.
+**
+** The index pointer micli->tokdata->tok_end will then skip any spaces and
+** advance to the beginning of the next token. If a ';' or '\0' is found then
+** that will be the same address as endl and the next token will be a new
+** command line, so the program should leave the calling function,
+** process_cmdline, and re-enter it.
+**
+** If a '|' is found then that will be the same address as endl and the next
+** token will be a new command line, and the output of the current command line
+** must be piped to it. This will set the pipe flag.
+**
+** Otherwise the next token will be an argument to the current command line.
 */
 
 void			process_token(t_micli *micli)
@@ -154,8 +164,8 @@ void			process_token(t_micli *micli)
 	if (!micli->tokdata.cmd_flag) //if micli->tokdata.cmd_flag hasn't been triggered yet, everything from index to &index[i] is the command name
 	{
 		micli->tokdata.cmd_flag = 1;
-		micli->cmdline->cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
-		micli_cpy(micli->cmdline->cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
+		micli->cmdline.cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
+		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
 	{
@@ -165,9 +175,9 @@ void			process_token(t_micli *micli)
 		//Will clean up the calloc stuff once the rest is cleaned up, I know it's not norm-friendly ;)
 		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
 		if (micli->tokdata.args == 1)
-			micli->cmdline->arguments = ft_lstnew(dst); //needs to use clean_calloc
+			micli->cmdline.arguments = ft_lstnew(dst); //needs to use clean_calloc
 		else
-			ft_lstadd_back(&micli->cmdline->arguments, ft_lstnew(dst)); //needs to use clean_calloc
+			ft_lstadd_back(&micli->cmdline.arguments, ft_lstnew(dst)); //needs to use clean_calloc
 		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
 	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
@@ -176,13 +186,13 @@ void			process_token(t_micli *micli)
 	//advance index pointer to BEGINNING of next token, unless it's already endl (which will be a NULL, not a space, so nothing will be skipped). Beginning of next token may be its first character or '|' or ';', which ends a command line and means the next token will also be a new command. If it's a '|' we set the pipe flag to indicate that current command must send its output to the next command via the established pipe at micli->pipe.
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
 
-	// if (micli->token->varnames)
-	// 	micli->token->varnames = ft_del(micli->token->varnames);
+	// if (micli->token.varnames)
+	// 	micli->token.varnames = ft_del(micli->token.varnames);
 
 	//Debug code to ensure copy is correct, remove from final ver
 	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
 	// if (!micli->tokdata.args)
-	// 	ft_printf("Command: %s\n", micli->cmdline->cmd);
+	// 	ft_printf("Command: %s\n", micli->cmdline.cmd);
 	// else
 	// 	ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
 
@@ -241,25 +251,20 @@ void			process_token(t_micli *micli)
 ** Otherwise, it will parse the string to separate the command from its
 ** arguments and execute the command.
 **
-** Any text within quotations will be considered a single argument/command.
+** Any text within quotations will be considered a single argument/command, aka
+** 'token'.
 **
-** Any text after a $ will be considered a variable name (NOTE: NOT YET
-** IMPLEMENTED) unless the $ is escaped with '\'.
+** Any text after a $ will be considered a variable name unless the $ is escaped
+** with '\', between single quotes ' ', or isn't a valid varchar (see isvarchr
+** function for more details).
 */
 
 int		process_cmdline(char *startl, char *endl, t_micli *micli)
 {
-	t_cmdline		cmdline;
-	t_token			token;
-	
-	ft_bzero(&token, sizeof(t_token));
-	ft_bzero(&cmdline, sizeof(t_cmdline));
+	ft_bzero(&micli->token, sizeof(t_token));
+	ft_bzero(&micli->cmdline, sizeof(t_cmdline));
+	ft_bzero(&micli->tokdata, sizeof(t_tokendata));
 	// Save line to array?? Not a requirement, but good feature to have...
-	micli->token = &token;
-	micli->cmdline = &cmdline;
-	micli->tokdata.toksize = 0;
-	micli->tokdata.args = 0;
-	micli->tokdata.cmd_flag = 0; //if this flag is set, everything else we find here is an argument.
 	micli->tokdata.tok_start = startl; //start of first token is at line start
 	micli->tokdata.tok_end = micli->tokdata.tok_start; //micli->tokdata.tok_end initialized at micli->tokdata.tok_start. It will be incremented until we find the end of the token. When we have a whole token, we process it and move micli->tokdata.tok_start to micli->tokdata.tok_end for next token.
 	//Looking for the end of cmds/arguments (aka. tokens)
@@ -269,14 +274,11 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 
 		*micli->tokdata.tok_end = process_char(micli->tokdata.tok_end, micli);
 		
-		//What defines the end of a cmd/argument?
-		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd+argument (OR endl has been reached, because we don't do multiline commands)
+		//What defines the end of a token?
+		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of token (OR endl has been reached, because we don't do multiline commands)
 		{
-			// tmp = micli->tokdata.tok_end; //need a tmp here because we need to send 
-			// if (*(tmp = ft_skipspaces(tmp)) == '|')
-			// 	micli->pipe_flag = 1;
 			process_token(micli);
-			micli->token->var_lst = ft_lstfree(micli->token->var_lst);
+			micli->token.var_lst = ft_lstfree(micli->token.var_lst); //Free token's variable list, if created
 			//clear_token(micli);
 		}
 		else //we handle micli->tokdata.tok_end indexing inside the preceding if when we find end of a cmd/argument by advancing it to start of next argument.
@@ -284,15 +286,15 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	}
 	micli->tokdata.quote_flag = 0; //reset quote flag
 	micli->tokdata.escape_flag = 0; //reset escape flag
-	// t_list *tmp = micli->cmdline->arguments;
+	// t_list *tmp = micli->cmdline.arguments;
 	// while (tmp)
 	// {
 	// 	ft_printf("%s\n", tmp->content);
 	// 	tmp = tmp->next;
 	// }
-	exec_cmd(micli->cmdline->cmd, micli->cmdline->arguments, micli);
+	exec_cmd(micli->cmdline.cmd, micli->cmdline.arguments, micli);
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
-	clear_cmdline(micli); //Free token
+	clear_cmdline(micli); //Free memory reserved for cmdline parsing
 	return (0);	
 }
 

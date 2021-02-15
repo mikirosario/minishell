@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:01:36 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 18:31:08 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ typedef struct	s_builtins
 typedef struct	s_micli
 {
 	t_tokendata		tokdata;
-	t_cmdline		*cmdline;
-	t_token			*token;
+	t_cmdline		cmdline;
+	t_token			token;
 	t_builtins		builtins;
 	//size_t		builtin_strlen;
 	int				pipe[2];

@@ -1,3 +1,13 @@
+### Version 2.13
+
+- The cmdline and token structs, previously declared locally within the process_cmdline function and pointed to by pointers in the t_micli struct, are now declared directly within the t_micli struct. All references have been modified accordingly.
+
+- The ft_bzero function is now used to zero the tokdata struct in the process_cmdline function.
+
+- Code clean-up in the memory_free.c file.
+
+- Updated descriptions of process_token and process_cmdline functions.
+
 ### Version 2.12
 
 - Removed null_check function and incorporated it back into the process_raw_line while as a set of instructions after cmd_execution.
@@ -54,7 +64,7 @@
 
 - Updated the get_var_lengths description to be more accurate.
 
-- The linked list (micli->token->var_lst) used to store resolved variable addresses for every token was not being freed and set to null between tokens, causing a segmentation fault when variables were used in multiple arguments to a single command. This has been fixed.
+- The linked list (micli->token.var_lst) used to store resolved variable addresses for every token was not being freed and set to null between tokens, causing a segmentation fault when variables were used in multiple arguments to a single command. This has been fixed.
 
 - When a command line ended in a variable and a ';', the ';' was being flagged for deletion along with the variable name by micli_cpy, causing the next command not to be processed. This has been fixed.
 

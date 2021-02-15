@@ -9,13 +9,13 @@ int 	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	else if (!(ft_strcmp(cmd, "cd")))
-		return(ft_cd((const char **)micli->cmdline->micli_argv, micli));
+		return(ft_cd((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(strcmp(cmd, "pwd")))
 		return(ft_pwd(micli));
 	else if (!(strcmp(cmd, "echo")))
-		return(ft_echo((const char **)micli->cmdline->micli_argv, micli));
+		return(ft_echo((const char **)micli->cmdline.micli_argv, micli));
     else if (!(strcmp(cmd, "unset")))
-        return(ft_unset(micli->cmdline->micli_argv, micli->envp));
+        return(ft_unset(micli->cmdline.micli_argv, micli->envp));
     return(128);
 }
 
@@ -23,7 +23,7 @@ int 	exec_builtin(char *cmd, t_micli *micli)
 // micli->envp
 // **envp ->    *envp[0] key=value;
 //              *envp[1] NULL;
-// micli->cmdline->micli_argv;
+// micli->cmdline.micli_argv;
 // **argv ->    *argv[0] -> cmd
 //              *argv[1] -> 1er argumento
 //              *argv[2] -> NULL;
