@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 17:32:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 18:10:35 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,53 +296,6 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	return (0);	
 }
 
-int		null_check(char **lindex)
-{
-	//We arrive here with end of last command line, which may be a space, a ';' or a '|'. We advance one if we find ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as syntax_check ensures it before we get here.
-
-	if (**lindex == ';' || **lindex == '|')
-		(*lindex)++;
-	*lindex = ft_skipspaces(*lindex);
-	if (!(**lindex)) //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
-		return (1);
-	return (0);
-}
-
-/*
-** If we find two characters ';' or '|' we return a syntax error and stop parsing - not exactly bash behaviour, as bash supports ||** , meaning execute next command only if preceding command returned false, but minishell subject does not require us to * ** implement this, so I just return syntax error like with multiple ';'. :)
-*/
-
-int		syntax_check(char *line)
-{
-	unsigned char	quote_flag;
-
-	quote_flag = 0;
-	line = ft_skipspaces(line);
-	if (*line == ';' || *line == '|')
-	{
-		print_error(SYN_ERROR, line);
-		return (0);
-	}
-	while (*line)
-	{
-		if (!quote_flag && (*line == ';' || *line == '|'))
-		{
-			line = ft_skipspaces(++line);
-			if (*line == ';' || *line == '|')
-			{
-				print_error(SYN_ERROR, line);
-				return (0);
-			}
-		}
-		else
-		{
-			quote_flag = toggle_quote_flag(*line, quote_flag);
-			line++;
-		}
-	}
-	return (1);
-}
-
 /*
 ** This function parses a single line read from STDIN or a file to delineate
 ** the beginning and end of a command and all its arguments (undifferentiated).
@@ -357,8 +310,6 @@ int		syntax_check(char *line)
 ** or NULL (meaning \n or EOF) is found, at which point the fragment from lstart
 ** until the ; or NULL is passed to the process_cmdline function for
 ** tokenization.
-** 
-** ESCAPE FLAG MAY NOT BE WORKING WITH ; and |
 */
 
 void	process_raw_line(char *line, t_micli *micli)
@@ -373,7 +324,7 @@ void	process_raw_line(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
 		return ;
-	while (!null_check(&lindex)) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
+	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
 	{	
 		quote_flag = 0;
 		lstart = lindex; //set start at start of next command
@@ -393,7 +344,11 @@ void	process_raw_line(char *line, t_micli *micli)
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
 		//Store command result in cmd_result variable...
 		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
-		
 
+
+		//We arrive here with end of last command line, which may be a NULL, a space, a ';' or a '|'. We advance one if we have ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as the syntax_check ensures this before we get here.
+		if (*lindex == ';' || *lindex == '|')
+			lindex++;
+		lindex = ft_skipspaces(lindex); //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
 	}
 }

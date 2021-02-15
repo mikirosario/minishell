@@ -1,3 +1,7 @@
+### Version 2.12
+
+- Removed null_check function and incorporated it back into the process_raw_line while as a set of instructions after cmd_execution.
+
 ### Version 2.11
 
 - Fixed null_check so that it no longer increments the line index when it finds a null character.
