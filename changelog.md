@@ -1,3 +1,7 @@
+### Version 2.14
+
+- Shell now knows whether a command called with pipe will only write to the pipe, read from the pipe and write to the pipe, or only read from the pipe, depending on the preceding call. :) The pipe_flag is set to 0 for no pipe, 1 for write-only mode, 2 for read-only mode and 3 for read-write mode. The idea is to use this flag to tell the child processes exactly what to do with the pipe we send them. :)
+
 ### Version 2.13
 
 - The cmdline and token structs, previously declared locally within the process_cmdline function and pointed to by pointers in the t_micli struct, are now declared directly within the t_micli struct. All references have been modified accordingly.

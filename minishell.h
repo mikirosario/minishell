@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:31:08 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 22:16:25 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ typedef struct	s_micli
 	char			*buffer;
 	char			*tmp;
 	unsigned char	quote_flag:1; //Raw_line quote flag...
-	unsigned char	pipe_flag:1;
+	unsigned char	pipe_flag:2;
 }				t_micli;
 
 
@@ -101,6 +101,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
 unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
+unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
 /* String Parsing */
 char	*find_var(char *name, size_t name_len, char **envp);

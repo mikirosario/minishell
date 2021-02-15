@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:57:18 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 22:54:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,9 +181,9 @@ void			process_token(t_micli *micli)
 		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
 	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
-	if (*(micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end)) == '|')
-		micli->pipe_flag = 1;
-	//advance index pointer to BEGINNING of next token, unless it's already endl (which will be a NULL, not a space, so nothing will be skipped). Beginning of next token may be its first character or '|' or ';', which ends a command line and means the next token will also be a new command. If it's a '|' we set the pipe flag to indicate that current command must send its output to the next command via the established pipe at micli->pipe.
+	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
+
+	//advance index pointer to BEGINNING of next token, unless it's already endl (which will be a NULL, not a space, so nothing will be skipped). Beginning of next token may be its first character or '|' or ';', which ends a command line and means the next token will also be a new command.
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
 
 	// if (micli->token.varnames)
@@ -284,6 +284,8 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 		else //we handle micli->tokdata.tok_end indexing inside the preceding if when we find end of a cmd/argument by advancing it to start of next argument.
 			micli->tokdata.tok_end++;
 	}
+	 //If end of cmdline is a '|' we set the pipe flag to indicate that current command must send its output to the next command via the established pipe at micli->pipe.
+	micli->pipe_flag = toggle_pipe_flag(*micli->tokdata.tok_end, micli->pipe_flag); //set pipe flag
 	micli->tokdata.quote_flag = 0; //reset quote flag
 	micli->tokdata.escape_flag = 0; //reset escape flag
 	// t_list *tmp = micli->cmdline.arguments;
@@ -326,15 +328,16 @@ void	process_raw_line(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
 		return ;
+	quote_flag = 0;
+	micli->pipe_flag = 0; //reset pipe_flag at start of new raw line (no multiline shenanigans here)
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
-	{	
-		quote_flag = 0;
+	{
 		lstart = lindex; //set start at start of next command
 		// lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
 		
 		//lindex = lstart; //set index at start of next command 
 
-		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments (iff not between quotes)
+		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments cmdline (if not between quotes). If quotes are opened and not closed we leave with NULL (EOL), meaning end of raw line, so we exit the function and quote flag will be reset on reentry.
 		{
 			escape_flag = 0;
 			quote_flag = toggle_quote_flag(*lindex, quote_flag);

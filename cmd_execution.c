@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:26:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/15 22:20:18 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,13 +237,20 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
+			if (/*!micli->pipe_flag && */!(pid = fork())) //unpiped child
+				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+			// else if (micli->pipe_flag && !(pid = fork())) //piped child
+			// {
+			// 	//close stdout (1), normally used for write to terminal, and make a duplicate
+			// 	// of fd[1], write end of a pipe, and assign file descriptor 1 to it.
+			// 	dup2(micli->pipe[1], 1);
+			// 	execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+			// }
 			if (micli->pipe_flag)
 			{
-				printf("I AM A PIPED COMMAND RAWR\n");
-				micli->pipe_flag = 0;
+				printf("I AM A PIPED COMMAND RAWR: %u\n", micli->pipe_flag);
+				//micli->pipe_flag = 0;
 			}
-			if (!(pid = fork()))
-				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
 			exec_path = ft_del(exec_path);
