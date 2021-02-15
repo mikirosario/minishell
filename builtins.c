@@ -11,7 +11,7 @@ int 	exec_builtin(char *cmd, t_micli *micli)
 	else if (!(ft_strcmp(cmd, "cd")))
 		return(ft_cd((const char **)micli->cmdline->micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "pwd")))
-		return(ft_pwd(micli));
+		return(ft_pwd((const char**)micli->cmdline->micli_argv));
 	else if (!(ft_strcmp(cmd, "echo")))
 		return(ft_echo((const char **)micli->cmdline->micli_argv, micli));
     else if (!(ft_strcmp(cmd, "unset")))
@@ -89,7 +89,7 @@ int    ft_echo(const char **argv, t_micli *micli)
     while(!(ft_memcmp(argv[i], n, len)))
     {
         micli->builtins.argflag = 1;
-        if(argv[i+1] == NULL)
+        if(argv[i + 1] == NULL)
             return(0);
         i++;
     }
@@ -103,21 +103,31 @@ int    ft_echo(const char **argv, t_micli *micli)
         return(0);
 }
 
-int    ft_pwd()
+int    ft_pwd(const char **argv)
 {
+    int i;
     char cwd[FILENAME_MAX];
     
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    i = 1;
+    if(argv[i] == 0 || *argv[1] != '-')
+    {
+       if (getcwd(cwd, sizeof(cwd)) != NULL)
             ft_printf("%s\n", cwd);
+        return(0); 
+    }
+
+    if(*argv[i] == '-')
+    {
+        ft_printf("micli: pwd %s: invalid option\n", argv[i]);
+        while(i < 3)
+            i++;
+        ft_printf("pwd: usage: pwd [-LP]\n");
         return(0);
-    // pwd in bash when passed an argument with a -1234
-    // returns:
-    // bash: pwd: -1: invalid option
-    // pwd: usage: pwd [-LP]
-    // where -1 is the first char after -
+    }
+    return(0);
 }
 
-// int     ft_export(int argc, char **argv)
+// int     ft_export(char **argv)
 // {
 
 // }

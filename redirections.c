@@ -43,31 +43,33 @@ int     ft_redir(const char **argv, t_micli *micli)
         */
         if(in)
         {
-            //fd0 is file descriptor
-            if((fd0 = open(input, O_RDONLY, 0)) < 0)
-            {
-                perror("Can't open input file");
-                return(0);
-                //exit(0);
-            }
-            //dup2() copies content of fdo in input of preceeding file
-            dup2(fd0, 0);
-            close(fd0);
+            ft_alef(in, micli);
+            // //fd0 is file descriptor
+            // if((fd0 = open(input, O_RDONLY, 0)) < 0)
+            // {
+            //     print_error("Can't open input file", "redirection <");
+            //     return(0);
+            //     //exit(0);
+            // }
+            // //dup2() copies content of fdo in input of preceeding file
+            // dup2(fd0, 0);
+            // close(fd0);
         }
         /* 
         **  if '>' char was found on input
         */
        if(out)
        {
-           int fd1;
-           if((fd1 = /*create???*/(output, /*0644???*/)) < 0)
-           {
-               perror("Couldn't open the output file");
-               return(0);
-               //exit(0);
-           }
-           dup2(fd1, STDOUT_FILENO);
-           close(fd1);
+           ft_aright(out, micli);
+        //    int fd1;
+        //    if((fd1 = /*create???*/(output, /*0644???*/)) < 0)
+        //    {
+        //        print_error("Can't open output file", "redirection >");
+        //        return(0);
+        //        //exit(0);
+        //    }
+        //    dup2(fd1, STDOUT_FILENO);
+        //    close(fd1);
        }
        if (!(execvp(*argv, argv) >= 0))
        {
@@ -84,4 +86,36 @@ int     ft_redir(const char **argv, t_micli *micli)
     }
     else
         while(!(wait(/*&status???*/) == pid));
+}
+
+
+
+////CLEAN
+int     ft_aleft(const char **argv, t_micli *micli)
+{
+    int     fd0;
+    char    input[64];
+    //fd0 is file descriptor
+    if((fd0 = open(input, O_RDONLY, 0)) < 0)
+    {
+        print_error("Can't open input file", "redirection <");
+        return(0);
+        //exit(0);
+    }
+    //dup2() copies content of fdo in input of preceeding file
+    dup2(fd0, 0);
+    close(fd0);
+}
+
+int     ft_aright(const char **argv, t_micli *micli)
+{
+    int fd1;
+    if((fd1 = /*create???*/(output, /*0644???*/)) < 0)
+    {
+        print_error("Can't open output file", "redirection >");
+        return(0);
+        //exit(0);
+    }
+    dup2(fd1, STDOUT_FILENO);
+    close(fd1);
 }
