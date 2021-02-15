@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/14 20:56:09 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/15 16:28:13 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 
 char			process_char(char *chr, t_micli *micli)
 {
-	if (!micli->tokdata.escape_flag && *chr == '\\')
+	if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '\\') //if single quotes are not open and escape flag is found
 	{
 		micli->tokdata.escape_flag = 1;
 		*chr = DEL; //Flag for deletion
@@ -110,17 +110,17 @@ char			process_char(char *chr, t_micli *micli)
 		micli->tokdata.quote_flag = toggle_quote_flag(*chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
 		*chr = DEL; //Flag for deletion
 	}
-	else if (!micli->tokdata.escape_flag && !micli->tokdata.quote_flag && *chr == '|')
-	{
-		*chr = DEL; //Flag for deletion???????
-	}
+	// else if (!micli->tokdata.escape_flag && !micli->tokdata.quote_flag && *chr == '|')
+	// {
+	// 	micli->pipe_flag = 1; //Pipe flag here????? No-op????? Should functionalize conditionals so they are easier to read.
+	// }
 	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
 	{
 		micli->tokdata.var_flag = 1;
 		*chr = SUB; //Flag for variable substitution
 		micli->tokdata.toksize += get_var_lengths(micli->token->var_lst); //Add all resolved variable string lengths to toksize
 	}
-	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && !ft_isspace(*chr))) //if escape flag is not set and variable flag is set and no space, |, NUL or ;
+	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && *chr != '|' && !ft_isspace(*chr))) //if escape flag is not set and variable flag is set and space, '|', NUL or ; is NOT found
 	{
 		*chr = DEL; //Flag var name for deletion
 	}
@@ -170,7 +170,10 @@ void			process_token(t_micli *micli)
 			ft_lstadd_back(&micli->cmdline->arguments, ft_lstnew(dst)); //needs to use clean_calloc
 		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
-	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end); //advance index pointer to beginning of next argument, unless it's endl (which will be a NULL, not a space, so nothing will be skipped)
+	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
+	if (*(micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end)) == '|')
+		micli->pipe_flag = 1;
+	//advance index pointer to BEGINNING of next token, unless it's already endl (which will be a NULL, not a space, so nothing will be skipped). Beginning of next token may be its first character or '|' or ';', which ends a command line and means the next token will also be a new command. If it's a '|' we set the pipe flag to indicate that current command must send its output to the next command via the established pipe at micli->pipe.
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
 
 	// if (micli->token->varnames)
@@ -193,7 +196,7 @@ void			process_token(t_micli *micli)
 ** If we want to save the lines of text issued to terminal in a list for later
 ** retrieval, we can do that here before processing.
 **
-** Commands should always end in a ';' or null, which will be pointed to by
+** Commands should always end in a ';', '|' or null, which will be pointed to by
 ** endl.
 **
 ** To understand how this function works, it is important to understand the
@@ -269,6 +272,9 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 		//What defines the end of a cmd/argument?
 		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of cmd+argument (OR endl has been reached, because we don't do multiline commands)
 		{
+			// tmp = micli->tokdata.tok_end; //need a tmp here because we need to send 
+			// if (*(tmp = ft_skipspaces(tmp)) == '|')
+			// 	micli->pipe_flag = 1;
 			process_token(micli);
 			micli->token->var_lst = ft_lstfree(micli->token->var_lst);
 			//clear_token(micli);
@@ -288,6 +294,58 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
 	clear_cmdline(micli); //Free token
 	return (0);	
+}
+
+int		null_check(char **lindex)
+{
+	//We arrive here with end of last command line, which may be a space, a ';' or a '|'. We advance one if we find ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as syntax_check ensures it before we get here.
+
+	if (ft_strchr(CMDLINE_END, **lindex))
+		(*lindex)++;
+	*lindex = ft_skipspaces(*lindex);
+	if (!(**lindex)) //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
+		return (1);
+	return (0);
+}
+
+/*
+** If we find two characters ';' or '|' we return a syntax error and stop parsing - not exactly bash behaviour, as bash supports ||** , meaning execute next command only if preceding command returned false, but minishell subject does not require us to * ** implement this, so I just return syntax error like with multiple ';'. :)
+*/
+
+int		syntax_check(char *line)
+{
+	char	dquote_flag;
+	char	squote_flag;
+
+	dquote_flag = 0;
+	squote_flag = 0;
+	line = ft_skipspaces(line);
+	if (*line == ';' || *line == '|')
+	{
+		print_error(SYN_ERROR, line);
+		return (0);
+	}
+	while (*line)
+	{
+		if ((!dquote_flag && !squote_flag) && (*line == ';' || *line == '|'))
+		{
+			line = ft_skipspaces(++line);
+			if (*line == ';' || *line == '|')
+			{
+				print_error(SYN_ERROR, line);
+				return (0);
+			}
+		}
+		else
+		{
+			if (*line == '"')
+				dquote_flag = ~dquote_flag;
+			else if (*line == '\'')
+				squote_flag = ~squote_flag;
+			line++;
+		}
+	}
+	return (1);
 }
 
 /*
@@ -312,54 +370,39 @@ void	process_raw_line(char *line, t_micli *micli)
 {
 	char	*lstart;
 	char	*lindex;
+	char	dquote_flag;
+	char	squote_flag;
+	char	escape_flag;
 
+	dquote_flag = 0;
+	squote_flag = 0;
+	escape_flag = 0;
 	lindex = line; //Start lindex at beginning of line
-	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments
-	{
-		if (*lindex == ';') //Quick fix for commands with ';' or '|'. If multiple ';' or '|' are detected, print syntax error
-		{
-			if (*(lindex + 1) == ';')
-			{
-				print_error(SYN_ERROR, lindex);
-				break ;
-			}
-			else
-				lindex++;
-		}
-		// else if (*lindex == '|')
-		// {
-		// 	if (*(lindex + 1) == '|')
-		// 	{
-		// 		print_error(SYN_ERROR, lindex);
-		// 		break ;
-		// 	}
-		// 	else
-		// 		lindex++;
-		// }
+	if (!syntax_check(line))
+		return ;
+	while (!null_check(&lindex)) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
+	{	
+		lstart = lindex; //set start at start of next command
+		// lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
 		
-		lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-		
-		lindex = lstart; //set index at start of next command 
-		if  (*lindex == '|')
-		{
-			if (*(lindex + 1) == '|')
-			{
-				print_error(SYN_ERROR, lindex);
-				break ;	
-			}
-			else
-			{
-				micli->pipe_flag = 1;
-				lindex++;
-			}
-			
-		}
+		//lindex = lstart; //set index at start of next command 
 
-		while (*lindex && (*lindex != ';'/* || *lindex != '|'*/)) //If we find ';' or '|' or NULL it signifies end of command+arguments. 
+		while (*lindex && ((dquote_flag || squote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments (iff not between quotes)
+		{
+			escape_flag = 0;
+			if (*lindex == '"')
+				dquote_flag = ~dquote_flag;
+			else if (*lindex == '\'')
+				squote_flag = ~squote_flag;
+			else if (!dquote_flag && !squote_flag && *lindex == '\\')
+				escape_flag = 1;
 			lindex++;
+		}
 			//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
 		//Store command result in cmd_result variable...
 		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
+		
+
 	}
 }

@@ -1,3 +1,17 @@
+## Version 2.1
+
+- Syntax check is now done before any commands are executed, so a syntax error will prevent any commands in a multi-command line from being executed, as in bash.
+
+- Lines beginning with ';' or '|' will now throw a syntax error.
+
+- Added quote detection in the process_raw_line phase so that ';' or '|' between quotes will no longer be misinterpreted as command line ends. Code is a bit rough and verbose, will streamline it in clean-up process.
+
+- Added basic pipe detection. Shell will now confirm that it has detected a pipe order before executing a command ending with '|' printing a stand-in confirmation message.
+
+- Added micli->pipe array of two integers to contain input and output pipes.
+
+- The process_raw_line function will now use the null_check function to check for end of line, and will now detect that it has reached the end of a line even if the last command in a line ends in ';' or '|'. As we don't process multiline commands, hanging '|' at the end of a line will be ignored.
+
 ### Version 2.032
 
 - Code required for builtin exit status was accidently left commented in the last push. :p

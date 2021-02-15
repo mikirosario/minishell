@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/14 20:39:50 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/15 16:34:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 
 #define READLINE_BUFSIZE 1
 #define BUILTINS "exit,cd,pwd,unset"
+#define	CMDLINE_END ";|"
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -77,7 +78,7 @@ typedef struct	s_micli
 	t_token		*token;
 	t_builtins	builtins;
 	//size_t		builtin_strlen;
-	int			fd[2];
+	int			pipe[2];
 	int			position;
 	int			bufsize;
 	int			c;
