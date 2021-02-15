@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/13 20:09:00 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/14 20:26:35 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,12 @@ typedef struct	s_tokendata
 	unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
 }				t_tokendata;
 
+typedef struct	s_child
+{
+	int		child_flag;
+}				t_child;
+
+
 typedef struct	s_token
 {
 	t_list	*var_lst;
@@ -77,6 +83,7 @@ typedef struct	s_micli
 	t_cmdline	*cmdline;
 	t_token		*token;
 	t_builtins	builtins;
+	t_child		child_know;
 	//size_t		builtin_strlen;
 	int			position;
 	int			bufsize;
@@ -124,11 +131,10 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Signal Call */
 
-int		catch_signal();
+//int		catch_signal(t_micli *micli);
+// int		catch_signal();
 void	ctrl_c(int signum);
 void	ctrl_bar(int signum);
-// void	signal_c();
-// void	singal_bar();
 // void	signal_d();
 
 /* Builtins */

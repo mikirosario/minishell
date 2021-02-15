@@ -1,64 +1,69 @@
 #include "minishell.h"
 
-//typedef void (*sighandler_t)(int);
+// int   catch_signal() 
+// {
+//    int status;
+//    pid_t result;
 
-//sighandler_t signal(int signum, sighandler_t handler);
-//
-//first arg is the signal number, each signal has a predefined integer value assigned.
-//ex: 2 = SIGINT and 20 SIGTSTP
-//second arg is a pointer to a singal handler. The signal handler is a function that
-//must accept an int as the only parameter and return void as descibed by the typedef
-
-
-int catch_signal() 
-{
-   signal(SIGINT, ctrl_c);
-   signal(SIGQUIT, ctrl_bar);
-
-//    while(1) {
-//       //printf("Going to sleep for a second...\n");
-//       sleep(1); 
+//    result = waitpid(pid, &status, WNOHANG);
+//    if (result == 0)
+//    {
+//       // Child still alive
+//       signal(SIGINT, ctrl_c);
+//       signal(SIGQUIT, ctrl_bar);
 //    }
-   return(0);
-}
+//    else if (result == -1)
+//    {
+//       // error
+//    }
+//    else
+//    {
+//       // child exited
+//       // if ctrl_c return prompt
+//       // if ctrl_bar return nothing
+//    }
+//    //signal(SIGCHLD, SIG_IGN);
+   
+//    return(0);
+// }
+
+// int   catch_signal() 
+// {
+//    signal(SIGINT, ctrl_c);
+//    signal(SIGQUIT, ctrl_bar);
+//    return(0);
+// }
+/*
+** Ctrl+C interrupt the program and terminates the application
+*/
 
 void	ctrl_c(int signum)
 {
-   printf("Ctrl -%d\n", signum);
-   //exit(1);
+   //if child process is running do...
+   //if(micli->child_know.child_flag == 1)
+      printf("Ctrl -%d\n", signum);
+   //else return a new prompt
+   //else if(ft_printf("else ctrl_c"));
 }
+
+/*
+** Ctrl+\ tells the application to exit as soon as possible without saving
+*/
 
 void	ctrl_bar(int signum)
 {
-	printf("Ctrl -%d\n", signum);
+   //if child process is runnning do..
+   //if(micli->child_know.child_flag == 1)
+	   printf("Ctrl -%dQuit: 3\n", signum);
+   //else do nothing
+   //else if(ft_printf("else ctrl_c"));
 }
 
-// void	ctrl_d(int signum)
-// {
-// 	printf("Ctrl -%d\n", signum);
-// }
+/*
+** Ctrl+D ends input stream
+*/
 
-// //ctrl+C interrupt the program and terminates the application
-// void	signal_c()
+// void  ctrl_d(int signum)
 // {
-// 	// if program is executing
-// 	(void) signal(SIGINT, SIG_DFL);
-// 	// if no program is executing
-// 	// new line
-// }
-// // //ctrl+bar
-// // tells the application to exit as soon as possible without saving anything;
-// void	singal_bar()
-// {
-// 	// 
-// 	(void) signal(SIGQUIT, SIG_DFL);
-// }
-// // ctrl+D generates a EOF/end of imput (normally EOF=-1)
-// void	signal_d()
-// {
-// 	//send EOF (?)
-// }
 
-
-// usefull link
-// http://people.cs.pitt.edu/~alanjawi/cs449/code/shell/UnixSignals.htm
+// }

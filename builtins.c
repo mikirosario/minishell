@@ -62,9 +62,10 @@ int     ft_cd(const char **argv, t_micli *micli)
 
 /*  
 **  echo function checks first if it has arguments in case it doesnt it will print an empty line
-**  then it checks if it has arguments equal to -n, if found sets the arglaf to 1 and increases the
-**  counter, when all -n are read it starts writing all characters, when finished printing
-**  checks if it the arglaf is 1 or 0, if is set to 0 it will print add a \n. 
+**  then it checks if it has arguments equal to -n, if found sets the argflag to 1 and increases the
+**  counter, when all -n are read it starts writing all characters separated with spaces till the last
+**  one where it dosent print the last space.
+**  When finished printing checks if it the argflag is 1 or 0, if is set to 0 it will print add a \n. 
 */
 
 int    ft_echo(const char **argv, t_micli *micli)
@@ -102,7 +103,6 @@ int    ft_echo(const char **argv, t_micli *micli)
         return(0);
 }
 
-//pwd
 int    ft_pwd()
 {
     char cwd[FILENAME_MAX];
@@ -116,10 +116,12 @@ int    ft_pwd()
     // pwd: usage: pwd [-LP]
     // where -1 is the first char after -
 }
-//export
 
+// int     ft_export(int argc, char **argv)
+// {
+
+// }
 /*
-**  unset
 **  deletes variables and enviorement funcionts
 **  if argv is not null, argv_length equals to the legth of argv
 **  then uses find_var function, if found delete it. 
@@ -144,7 +146,9 @@ int    ft_unset(char **argv, char **envp)
     return(0);
 }
 
-//env
+/*
+**  Function that prints the enviorenment variables stored in envp
+*/
 
 int    ft_env(char **envp)
 {

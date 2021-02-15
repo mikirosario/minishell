@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int     ft_redir()
+int     ft_redir(const char **argv, t_micli *micli)
 {
     int fd0;
     int fd1;
@@ -9,43 +9,79 @@ int     ft_redir()
     int out;
     char input[64];
     char output[64];
-
-    in = 0;
-    out = 0;
-
-    if(pid == 0)
+    pid_t pid;
 
     /*
     **  finds where '<' or '>' occurs and make that argv[i] = NULL
     **  to ensure that command wont't read that
     */
 
-    i = 0;
-    while(argv[i] 1= '\0' && ++i)
+    if(pid == 0)
     {
-        if(ft_strcmp(argv[i], "<") == 0)
+        in = 0;
+        out = 0;
+        while(argv[i] != '\0')
         {
-            argv[i] = NULL;
-            ft_strcpy(input, argv[i + 1]);
-            in = 2;
-        }
+            i = 0;
+            if(ft_strcmp(argv[i], "<") == 0)
+            {
+                argv[i] = NULL;
+                ft_strcpy(input, argv[i + 1]);
+                in = 2;
+            }
 
-        if(ft_strcmp(argv[i], ">") == 0)
-        {
-            argv[i] = NULL;
-            ft_strcpy(output, argv[i + 1])
-            out = 2;
+            if(ft_strcmp(argv[i], ">") == 0)
+            {
+                argv[i] = NULL;
+                ft_strcpy(output, argv[i + 1]);
+                out = 2;
+            }
+            i++;
         }
-    }
-    /*
-    ** if '<' char was found on input
-    */
-   if(in)
-   {
-       if((fd0 = open(input, O_RDONLY, 0)) < 0)
+        /*
+        ** if '<' char was found on input
+        */
+        if(in)
+        {
+            //fd0 is file descriptor
+            if((fd0 = open(input, O_RDONLY, 0)) < 0)
+            {
+                perror("Can't open input file");
+                return(0);
+                //exit(0);
+            }
+            //dup2() copies content of fdo in input of preceeding file
+            dup2(fd0, 0);
+            close(fd0);
+        }
+        /* 
+        **  if '>' char was found on input
+        */
+       if(out)
        {
-           perror("Can't open input file");
-           exit(0);
+           int fd1;
+           if((fd1 = /*create???*/(output, /*0644???*/)) < 0)
+           {
+               perror("Couldn't open the output file");
+               return(0);
+               //exit(0);
+           }
+           dup2(fd1, STDOUT_FILENO);
+           close(fd1);
        }
-   }
+       if (!(execvp(*argv, argv) >= 0))
+       {
+           ft_printf("ERROR: exec failed\n");
+           return(1);
+           //exit(1);
+       }
+    }
+    else if((pid) < 0)
+    {
+        printf("fork() failed\n");
+        return(1);
+        //exit(1);
+    }
+    else
+        while(!(wait(/*&status???*/) == pid));
 }

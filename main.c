@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 18:02:56 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/14 20:25:49 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,8 @@ int 	main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	//signal
-	catch_signal();
+	// catch_signal();
+	//catch_signal(&micli);
 	//command loop
 	micli_loop(&micli);
 
