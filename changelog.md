@@ -1,3 +1,9 @@
+### Version 2.15
+
+- Rudimentary pipe implemented. Can only be used once. xD Second process hangs, apparently waiting for input from first process, which never comes as my implementation is sequential and iterative, and write process is already gone... :_( You can leave the process by sending a ctrl-C signal, but to stop the hanging programmatically I've discovered I need to close the ALL the pipe's write fds (i.e. including the parents') so that their associated reference counters reach zero and their associated inode kindly expires... But then, of course, I need to *open them up again* for the following pipe. Not yet implemented, that part. ;)
+
+- The more documentation I read, the more I have a feeling I am implementing this backwards to how it is usually done (execute last command first and have it spawn children recursively). And the more I'm feeling trapped by my own design. *sigh* :p
+
 ### Version 2.14
 
 - Shell now knows whether a command called with pipe will only write to the pipe, read from the pipe and write to the pipe, or only read from the pipe, depending on the preceding call. :) The pipe_flag is set to 0 for no pipe, 1 for write-only mode, 2 for read-only mode and 3 for read-write mode. The idea is to use this flag to tell the child processes exactly what to do with the pipe we send them. :)

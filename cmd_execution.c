@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 22:20:18 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/17 00:14:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,19 +237,28 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
-			if (/*!micli->pipe_flag && */!(pid = fork())) //unpiped child
+			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-			// else if (micli->pipe_flag && !(pid = fork())) //piped child
-			// {
-			// 	//close stdout (1), normally used for write to terminal, and make a duplicate
-			// 	// of fd[1], write end of a pipe, and assign file descriptor 1 to it.
-			// 	dup2(micli->pipe[1], 1);
-			// 	execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-			// }
+			else if (micli->pipe_flag && !(pid = fork())) //piped child
+			{
+				//close stdout (1), normally used for write to terminal, and make a duplicate
+				// of fd[1], write end of pipe, and assign file descriptor 1 to it.
+				if (ft_isbitset(micli->pipe_flag, 0)) //if micli->pipe_flag rightmost bit is set: 11 == read-write or 01 == write-only
+					dup2(micli->pipe[1], 1);
+				//close stdin (0) normally used for read from terminal, and make a duplicate
+				//of fd[0], read end of pipe, and assign file descriptor 0 to it.
+				if (ft_isbitset(micli->pipe_flag, 1)) //if micli->pipeflag leftmost bit is set: 11 == read-write or 10 == read-only
+					dup2(micli->pipe[0], 0);
+				close(micli->pipe[1]);
+				close(micli->pipe[0]);
+				execve(exec_path, micli->cmdline.micli_argv, micli->envp);//now execute command... =_=
+			}
 			if (micli->pipe_flag)
 			{
 				printf("I AM A PIPED COMMAND RAWR: %u\n", micli->pipe_flag);
 				//micli->pipe_flag = 0;
+				if (micli->pipe_flag == 2) //OK, so write pipe must be closed so read child stops waiting for its input, apparently... tricksy... xD how to handle this... me sigue pareciendo todo un poco mágico de momento xD
+					close(micli->pipe[1]); //Closing write pipe forces read child to close, but for the moment stops any further piping from working... need to figure out a way to do this and open them back up sequentially... alegría!!!! xD
 			}
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
