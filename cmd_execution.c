@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/17 00:14:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/18 20:29:55 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,28 +237,77 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
+			micli->pipe_reset_flag = micli->pipe_reset_flag == 2 ? 0 : micli->pipe_reset_flag + 1; //If the pipe reset flag reaches 3, reset to 0.
+			if (micli->pipe_reset_flag == 0) // If this flag is 0, we read from 4, write to 1
+			{
+				close(micli->pipe[2]); // Close readpd 2
+				pipe(&micli->pipe[2]);
+			}
+			else if (micli->pipe_reset_flag == 1) //If this flag is 1, we read from 0, write to 3
+			{
+				close(micli->pipe[4]); //Close readpd 4
+				pipe(&micli->pipe[4]);
+			}
+			else								//If this flag is 2, we read from 2, write to 5
+			{
+				close(micli->pipe[0]); //Close readpd 0
+				pipe(&micli->pipe[0]);
+			}
 			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+			// else if (micli->pipe_flag && !(pid = fork()))//experimental piped child
+			// {
+			// 	if (micli->pipe_flag && !(pid = fork())) //unpiped child
+			// 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);	//temporary deactivation pipes
+			// }
 			else if (micli->pipe_flag && !(pid = fork())) //piped child
 			{
+				int writefd_pos;
+				int readfd_pos;
+				int i;
+
+				i = 0;
+
+				if (micli->pipe_reset_flag == 0)
+				{
+					writefd_pos = 1;
+					readfd_pos = 4;
+				}
+				else if (micli->pipe_reset_flag == 1)
+				{
+					writefd_pos = 3;
+					readfd_pos = 0;
+				}
+				else
+				{
+					writefd_pos = 5;
+					readfd_pos = 2;
+				}
 				//close stdout (1), normally used for write to terminal, and make a duplicate
 				// of fd[1], write end of pipe, and assign file descriptor 1 to it.
 				if (ft_isbitset(micli->pipe_flag, 0)) //if micli->pipe_flag rightmost bit is set: 11 == read-write or 01 == write-only
-					dup2(micli->pipe[1], 1);
+					dup2(micli->pipe[writefd_pos], 1);
 				//close stdin (0) normally used for read from terminal, and make a duplicate
 				//of fd[0], read end of pipe, and assign file descriptor 0 to it.
 				if (ft_isbitset(micli->pipe_flag, 1)) //if micli->pipeflag leftmost bit is set: 11 == read-write or 10 == read-only
-					dup2(micli->pipe[0], 0);
-				close(micli->pipe[1]);
-				close(micli->pipe[0]);
+					dup2(micli->pipe[readfd_pos], 0);
+				while (i < 6)
+					close(micli->pipe[i++]);
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);//now execute command... =_=
 			}
 			if (micli->pipe_flag)
 			{
-				printf("I AM A PIPED COMMAND RAWR: %u\n", micli->pipe_flag);
+				printf("PIPE FLAG: %u\nPIPE RESET FLAG: %u\n", micli->pipe_flag, micli->pipe_reset_flag);
 				//micli->pipe_flag = 0;
-				if (micli->pipe_flag == 2) //OK, so write pipe must be closed so read child stops waiting for its input, apparently... tricksy... xD how to handle this... me sigue pareciendo todo un poco mágico de momento xD
-					close(micli->pipe[1]); //Closing write pipe forces read child to close, but for the moment stops any further piping from working... need to figure out a way to do this and open them back up sequentially... alegría!!!! xD
+				if (micli->pipe_reset_flag == 0) // If this flag is 0, we read from 4, write to 1
+					close(micli->pipe[5]); // Close writepd 5
+				else if (micli->pipe_reset_flag == 1) //If this flag is 1, we read from 0, write to 3
+					close(micli->pipe[1]); //Close writepd 1
+				else								//If this flag is 2, we read from 2, write to 5
+				{
+					ft_printf("I CAME HERE\n");
+					close(micli->pipe[3]); //Close writepd 3s
+				}
 			}
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);

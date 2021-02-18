@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 22:54:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/18 18:02:35 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,19 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 ** This function returns chr, which may be changed as desired.
 **
 ** Should functionalize conditionals so they are easier to read...
+//////////////////////////////////////////////////////////////////
+** NOTE: bash behaviour does:
+** echo "test \| test"
+** "test \| test"
+**
+** Mine does:
+** echo "test \| test"
+** test | test
+**
+** Escape only relevant in double quotes when behind $ in bash implementation; need to tweak this. (NOT IMPLEMENTED)
+**
+** echo test \" | echo test \" also not functioning properly, revise escape detection...
+//////////////////////////////////////////////////////////////////
 */
 
 char			process_char(char *chr, t_micli *micli)
@@ -328,6 +341,8 @@ void	process_raw_line(char *line, t_micli *micli)
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
 		return ;
+	//ft_printf("How Many Pipes In This Line?\n%s\n%u\n", line, pipe_count(line, micli));
+	micli->pipe_count = pipe_count(line, micli);
 	quote_flag = 0;
 	micli->pipe_flag = 0; //reset pipe_flag at start of new raw line (no multiline shenanigans here)
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.

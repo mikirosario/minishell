@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 22:16:25 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/18 18:02:18 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ typedef struct	s_micli
 	t_token			token;
 	t_builtins		builtins;
 	//size_t		builtin_strlen;
-	int				pipe[2];
+	int				pipe[6]; //three-pipe array
 	int				position;
 	int				bufsize;
 	int				c;
@@ -88,8 +88,10 @@ typedef struct	s_micli
 	char			**envp;
 	char			*buffer;
 	char			*tmp;
+	size_t			pipe_count;
 	unsigned char	quote_flag:1; //Raw_line quote flag...
 	unsigned char	pipe_flag:2;
+	unsigned char	pipe_reset_flag:2; //Pipe controls which pipe in the pipe array needs to be reopened for following exec cycle
 }				t_micli;
 
 
@@ -110,6 +112,9 @@ void	process_raw_line(char *line, t_micli *micli);
 
 /* Copying */
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
+
+/* Pipe Handling */
+size_t	pipe_count(const char *line, t_micli *micli);
 
 /* Memory Freeing */
 t_list	*ft_lstfree(t_list *lst);
