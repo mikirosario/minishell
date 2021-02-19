@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/18 20:29:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/19 21:13:37 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,28 +238,9 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		else
 		{
 			micli->pipe_reset_flag = micli->pipe_reset_flag == 2 ? 0 : micli->pipe_reset_flag + 1; //If the pipe reset flag reaches 3, reset to 0.
-			if (micli->pipe_reset_flag == 0) // If this flag is 0, we read from 4, write to 1
-			{
-				close(micli->pipe[2]); // Close readpd 2
-				pipe(&micli->pipe[2]);
-			}
-			else if (micli->pipe_reset_flag == 1) //If this flag is 1, we read from 0, write to 3
-			{
-				close(micli->pipe[4]); //Close readpd 4
-				pipe(&micli->pipe[4]);
-			}
-			else								//If this flag is 2, we read from 2, write to 5
-			{
-				close(micli->pipe[0]); //Close readpd 0
-				pipe(&micli->pipe[0]);
-			}
+			pipe_reset(micli->pipe_reset_flag, micli->pipe); //Si devuelve 0, ha fallado... devuelve ese error tipo "NO PUEDORRRRL MÁS PIPES"
 			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-			// else if (micli->pipe_flag && !(pid = fork()))//experimental piped child
-			// {
-			// 	if (micli->pipe_flag && !(pid = fork())) //unpiped child
-			// 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);	//temporary deactivation pipes
-			// }
 			else if (micli->pipe_flag && !(pid = fork())) //piped child
 			{
 				int writefd_pos;
@@ -268,21 +249,23 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 
 				i = 0;
 
-				if (micli->pipe_reset_flag == 0)
-				{
-					writefd_pos = 1;
-					readfd_pos = 4;
-				}
-				else if (micli->pipe_reset_flag == 1)
-				{
-					writefd_pos = 3;
-					readfd_pos = 0;
-				}
-				else
-				{
-					writefd_pos = 5;
-					readfd_pos = 2;
-				}
+				pipe_selector(micli->pipe_reset_flag, &writefd_pos, &readfd_pos);
+
+				// if (micli->pipe_reset_flag == 0)
+				// {
+				// 	writefd_pos = 1;
+				// 	readfd_pos = 4;
+				// }
+				// else if (micli->pipe_reset_flag == 1)
+				// {
+				// 	writefd_pos = 3;
+				// 	readfd_pos = 0;
+				// }
+				// else
+				// {
+				// 	writefd_pos = 5;
+				// 	readfd_pos = 2;
+				// }
 				//close stdout (1), normally used for write to terminal, and make a duplicate
 				// of fd[1], write end of pipe, and assign file descriptor 1 to it.
 				if (ft_isbitset(micli->pipe_flag, 0)) //if micli->pipe_flag rightmost bit is set: 11 == read-write or 01 == write-only
@@ -304,10 +287,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 				else if (micli->pipe_reset_flag == 1) //If this flag is 1, we read from 0, write to 3
 					close(micli->pipe[1]); //Close writepd 1
 				else								//If this flag is 2, we read from 2, write to 5
-				{
-					ft_printf("I CAME HERE\n");
 					close(micli->pipe[3]); //Close writepd 3s
-				}
 			}
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
