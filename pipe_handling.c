@@ -6,11 +6,37 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/19 21:52:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/20 11:42:51 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function selects which pipe's write file descriptor to close. It will
+** close the write file descriptor of the pipe used by the preceding command.
+** This appears to 'de-pipe' the pipe, maybe by turning it into a normal file
+** with EOF. This will stop the current command from waiting for further input
+** from the pipe inode, causing it to close after reading.
+**
+** For example, if current command is cmd2:
+**
+**			pipe1	    	pipe2	 		pipe3
+**	 ...[write][read]	[write][read]	[write][read]...
+**		5			0	1			2	3			4		
+**		x			↓	↑	   		↓	↑	  		↓
+**	...cmd1		  	cmd2			cmd3			cmd1...
+*/
+
+void	close_write_end_preceding_pipe(unsigned char pipe_reset_flag, int *pipes)
+{
+	if (pipe_reset_flag == 0) // If this flag is 0, we read from 4, write to 1, so close 5
+		close(pipes[5]); // Close writepd 5
+	else if (pipe_reset_flag == 1) //If this flag is 1, we read from 0, write to 3, so close 1
+		close(pipes[1]); //Close writepd 1
+	else								//If this flag is 2, we read from 2, write to 5, so close 3
+		close(pipes[3]); //Close writepd 3s
+}
 
 /*
 ** This function selects which two of the three available pipes will be used by

@@ -1,6 +1,12 @@
+### Version 2.21
+
+- Cleaned up pipe code, which has been consolidated into its own file, pipe_handling.c.
+
+-  Unfortunately, while this **is** functional for *sequentially executed commands*, it is **not functional** for *concurrently executed commands*. That is, each process must close before the next one is executed. So this will not replicate bash for example, in the case of *cat /dev/urandom | less*, where *less* will only display the results of *cat /dev/urandom* if *cat /dev/urandom* is terminated. Mario came up with this experiment, and performing it showed me exactly *why* implementations of piping are normally not sequential. :p Can my implementation be saved...? Tune in for the next riveting episode of minishell to find out... I will have to abandon the three-pipe system at the very least in favour of an n-pipes system.
+
 ## Version 2.2
 
-- Very sloppily written pipe functionality, but pipe functionality nonetheless. xD
+- Very sloppily written pipe functionality, but pipe functionality nonetheless. xD.
 
 ### Version 2.15
 
