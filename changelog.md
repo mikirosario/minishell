@@ -1,3 +1,11 @@
+## Version 2.3
+
+- Pipes now execute all commands in the pipeline concurrently (though they are still *called* sequentially), and the three-pipe system has been replaced with an n-pipes system.
+
+- The function pipe_count had to be modified to take ';' into account.
+
+- The read buffer has been increased to 1024 from 1, as, after weeks of stress-testing without failures, I now consider ft_realloc to have proven itself. ;)
+
 ### Version 2.21
 
 - Cleaned up pipe code, which has been consolidated into its own file, pipe_handling.c.

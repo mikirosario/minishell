@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/20 11:38:26 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/20 20:09:11 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,12 +71,22 @@ typedef struct	s_builtins
 	int 		argflag;
 }				t_builtins;
 
+typedef struct	s_pipes
+{
+	int		*array;
+	size_t	array_size;
+	size_t	count;
+	size_t	index;
+}				t_pipes;
+
+
 typedef struct	s_micli
 {
 	t_tokendata		tokdata;
 	t_cmdline		cmdline;
 	t_token			token;
 	t_builtins		builtins;
+	t_pipes			pipes;
 	//size_t		builtin_strlen;
 	int				pipe[6]; //three-pipe array
 	int				position;
@@ -88,7 +98,6 @@ typedef struct	s_micli
 	char			**envp;
 	char			*buffer;
 	char			*tmp;
-	size_t			pipe_count; //not being used
 	unsigned char	quote_flag:1; //Raw_line quote flag...
 	unsigned char	pipe_flag:2;
 	unsigned char	pipe_reset_flag:2; //Pipe controls which pipe in the pipe array needs to be reopened for following exec cycle
@@ -113,11 +122,15 @@ void	process_raw_line(char *line, t_micli *micli);
 /* Copying */
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
-/* Sequential Pipe Handling */
-int		pipe_reset(unsigned char pipe_reset_flag, int *pipe);
-void	close_write_end_preceding_pipe(unsigned char pipe_reset_flag, int *pipes);
-void	pipe_selector(unsigned char pipe_reset_flag, int *writepos, int *readpos);
+/* Concurrent Pipe Handling */
 size_t	pipe_count(const char *line, t_micli *micli);
+int		pipe_reset(t_pipes *pipes, t_micli *micli);
+
+// /* Sequential Pipe Handling */
+// int		pipe_reset(unsigned char pipe_reset_flag, int *pipe);
+// void	close_write_end_preceding_pipe(unsigned char pipe_reset_flag, int *pipes);
+// void	pipe_selector(unsigned char pipe_reset_flag, int *writepos, int *readpos);
+// size_t	pipe_count(const char *line, t_micli *micli);
 
 /* Memory Freeing */
 t_list	*ft_lstfree(t_list *lst);

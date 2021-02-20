@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/18 18:02:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/20 21:48:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ void			process_token(t_micli *micli)
 	// 	micli->token.varnames = ft_del(micli->token.varnames);
 
 	//Debug code to ensure copy is correct, remove from final ver
-	ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
+	//ft_printf("Bytes reserved: %u\n", micli->tokdata.toksize); //Debug code to ensure enough bytes were reserved
 	// if (!micli->tokdata.args)
 	// 	ft_printf("Command: %s\n", micli->cmdline.cmd);
 	// else
@@ -335,21 +335,24 @@ void	process_raw_line(char *line, t_micli *micli)
 	char	*lindex;
 	unsigned char	quote_flag;
 	unsigned char	escape_flag;
+	char	new_pipeline;
 
-
+	new_pipeline = ';';
 	escape_flag = 0;
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
 		return ;
 	//ft_printf("How Many Pipes In This Line?\n%s\n%u\n", line, pipe_count(line, micli));
-	micli->pipe_count = pipe_count(line, micli);
+	
+
+	
 	quote_flag = 0;
-	micli->pipe_flag = 0; //reset pipe_flag at start of new raw line (no multiline shenanigans here)
 	while (*lindex) //If we find NULL (could be EOF or \n), always signifies end of command+arguments. If we find CMDLINE_END repeated, syntax error. If we find CMDLINE_END at the beginning of a line, syntax error. If we find CMDLINE_END and/or spaces and after that NULL, end of command+arguments.
 	{
 		lstart = lindex; //set start at start of next command
 		// lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-		
+		if (new_pipeline == ';' && (micli->pipes.count = pipe_count(lstart, micli))) //If we might be at the start of a new pipeline, and pipes are detected in the pipeline
+			pipe_reset(&micli->pipes, micli);
 		//lindex = lstart; //set index at start of next command 
 
 		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments cmdline (if not between quotes). If quotes are opened and not closed we leave with NULL (EOL), meaning end of raw line, so we exit the function and quote flag will be reset on reentry.
@@ -360,14 +363,15 @@ void	process_raw_line(char *line, t_micli *micli)
 				escape_flag = 1;
 			lindex++;
 		}
-			//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
+		//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
+
 		//Store command result in cmd_result variable...
 		//cmd_result will later be stored in a var named ? so it can be printed with echo $?... when vars are even implemented :p
 
 
 		//We arrive here with end of last command line, which may be a NULL, a space, a ';' or a '|'. We advance one if we have ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as the syntax_check ensures this before we get here.
-		if (*lindex == ';' || *lindex == '|')
+		if ((new_pipeline = *lindex) == ';' || *lindex == '|')
 			lindex++;
 		lindex = ft_skipspaces(lindex); //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
 	}

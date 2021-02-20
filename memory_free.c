@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 18:35:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/20 17:10:41 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,6 @@ void	freeme(t_micli *micli)
 	clear_cmdline(micli);
 	if (micli->tokdata.path_array)
 		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
+	if (micli->pipes.array)
+		micli->pipes.array = ft_del(micli->pipes.array); //Free pipe array...
 }

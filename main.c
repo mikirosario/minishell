@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/18 19:23:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/20 14:31:22 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,10 @@ int 	main(int argc, char **argv, char **envp)
 	t_micli micli;
 
 	ft_bzero(&micli, sizeof(t_micli));
-	pipe(&micli.pipe[0]);
-	pipe(&micli.pipe[2]);
-	pipe(&micli.pipe[4]);
-	close(micli.pipe[5]);
+	// pipe(&micli.pipe[0]);
+	// pipe(&micli.pipe[2]);
+	// pipe(&micli.pipe[4]);
+	// close(micli.pipe[5]);
 	micli.envp = envp;
 	//micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
