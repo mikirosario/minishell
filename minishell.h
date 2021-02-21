@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 20:36:42 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/21 19:32:45 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,unset,env"
+#define BUILTINS "exit,cd,echo,pwd,unset,env,export"
 #define REDIRECTIONS ""
 #define DEL 127
 #define SUB 26
@@ -105,7 +105,7 @@ unsigned char	toggle_quote_flag(char quotes, char quote_flag);
 
 /* String Parsing */
 
-char	*find_var(char *name, size_t name_len, char **envp);
+char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
 
@@ -143,8 +143,9 @@ int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int    	ft_pwd(const char **argv);
 int	    ft_echo(const char **argv, t_micli *micli);
-int	    ft_unset(char **argv, char **envp);
+int	    ft_unset(char **argv, char **envp, t_micli *micli);
 int		ft_env(char **envp);
+int		ft_export(const char **argv, char **envp, t_micli *micli);
 
 /* Redirections */
 
