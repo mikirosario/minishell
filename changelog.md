@@ -1,5 +1,9 @@
 ### Version 2.31
 
+- The pipe array will now only reserve as many pipes as needed, rather than one more than needed as it did before. The equation used to derive the proper write and read pipe_fds from the pipe number has been modified to work with the new pipe array.
+
+- The pipe_reset function has been protected and will now fail in case more pipes are called than associated file descriptors can fit in a size_t integer (that is, SIZE_MAX / 2 - 1 pipes, if my maths do not fail me - though I will try to get the resident math geniuses to double check this ;)). SIZE_MAX / 2 - 1 has thus been made a constant called PIPE_MAX.
+
 - Bug in the pipe_reset function caused already-created pipes not to be closed properly in case of pipe creation failure. This has been fixed.
 
 - The close_pipes function has been made independent of pipe_reset. Both live in the pipe_handling.c file.
