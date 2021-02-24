@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/24 02:05:21 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/24 13:33:58 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ size_t	pipe_count(const char *line, t_micli *micli)
 	while (*line)
 	{
 		escape_flag = 0;														//Status Conditions
-		if (*line == '\\' && quote_flag != 2 && !escape_flag) 					//If escape is found and we aren't between single quotes and the escape hasn't itself been escaped... Note that single quotes prevent escaping.
+		if (*line == '\\' && quote_flag != 2/* && !escape_flag*/) 				//If escape is found and we aren't between single quotes.. Note that single quotes prevent escaping.
 		{
 			escape_flag = 1;													//Escape flag is set.
 			line++;																//Line is incremented by one to examine escaped character.

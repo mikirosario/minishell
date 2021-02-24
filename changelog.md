@@ -1,3 +1,21 @@
+## Version 2.32
+
+- Redundant null check in pipe_count eliminated.
+
+- Updated the process_char function and the process_raw_line function as follows:
+	'\' will no longer escape single quotes when single quotes are open, but will continue to escape double quotes when double quotes are open.
+	'\' will only be treated as an escape character between double quotes when escaping '"', '$' or '\'.
+
+- This update bashifies the parsing results for the following lines:
+	echo "test \| test"
+	"\lol"
+	\lol
+	echo test \" | cat
+	echo test \" | echo test \"
+
+- Escapabale characters between double quotes have been put into a constant called DQUOTE_ESC_CHARS.
+
+
 ### Version 2.31
 
 - The pipe array will now only reserve as many pipes as needed, rather than one more than needed as it did before. The equation used to derive the proper write and read pipe_fds from the pipe number has been modified to work with the new pipe array.

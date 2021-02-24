@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/24 02:04:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/24 16:44:16 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,53 +93,52 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 **
 ** This function returns chr, which may be changed as desired.
 **
-** Should functionalize conditionals so they are easier to read...
 //////////////////////////////////////////////////////////////////
-** NOTE: bash behaviour does:
-** echo "test \| test"
-** "test \| test"
-**
-** Mine does:
-** echo "test \| test"
-** test | test
-**
-** Escape only relevant in double quotes when behind $ in bash implementation; need to tweak this. (NOT IMPLEMENTED)
-**
-** echo test \" | echo test \" also not functioning properly, revise escape detection...
+** Should functionalize conditionals so they are easier to read...
 //////////////////////////////////////////////////////////////////
 */
 
 char			process_char(char *chr, t_micli *micli)
 {
-	if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '\\') //if single quotes are not open and escape flag is found
+	//micli->tokdata.escape_flag = 0;
+	//Escape flag activates when '\' is detected AND the '\' is not itself escaped AND the '\' is both not between single quotes and not between double quotes but in front of an unescapable character (character not in the dquote_esc_chars list).
+	// Note that for whatever reason, bash behaviour escapes even unescapable characters when they are *not* between double quotes. I.e.:
+	// bash: "\lol" -> \lol
+	// bash: \lol -> lol
+	// Don't blame me, I'm just replicating it. :p Since we don't have multiline commands, hanging escapes are just treated as if new-lined.
+	if (*chr == '\\' && !micli->tokdata.escape_flag && (micli->tokdata.quote_flag != 2 && !( micli->tokdata.quote_flag == 1 && ft_memchr(DQUOTE_ESC_CHARS, *(chr + 1), 3) == NULL ) ))
+	//if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '\\') //if single quotes are not open and escape flag is found
 	{
 		micli->tokdata.escape_flag = 1;
 		*chr = DEL; //Flag for deletion
 	}
-	else if (!micli->tokdata.escape_flag &&
-		( (micli->tokdata.quote_flag == 0 && (*chr == '"' || *chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
-		(micli->tokdata.quote_flag == 1 && *chr == '"') || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
-		(micli->tokdata.quote_flag == 2 && *chr == '\'') ) ) //if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
+	//When are quotes opened or closed?
+	//When the quotes are unescaped AND no quotes have been activated and either kind of quotes are found OR double quotes are open and double quotes are found
+	//OR, in any case, when single quotes are open and single quotes are found.
+	else if ( (!micli->tokdata.escape_flag && //if unescaped
+		 ((micli->tokdata.quote_flag == 0 && (*chr == '"' || *chr == '\'')) || //if no quotes are open and any quote is found, toggle flag for THAT quote
+		(micli->tokdata.quote_flag == 1 && *chr == '"') ) ) || //if double quotes are open (state 01 in binary or 1 in decimal) and double quotes are found, toggle double quote flag. this resets to 0.
+		(micli->tokdata.quote_flag == 2 && *chr == '\'') ) //regardless whether or not escaped, if single quotes are open and single quotes are found (state 10 in binary or 2 in decimal), toggle single quote flag. this resets to 0.
 	{
 		micli->tokdata.var_flag = 0; //Bash behaviour, this flag seems to be reset when quotes are opened or closed...
 		micli->tokdata.quote_flag = toggle_quote_flag(*chr, micli->tokdata.quote_flag); //check for any quotes and toggle appropriate flag
 		*chr = DEL; //Flag for deletion
 	}
-	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if single quotes are not open and the '$' character is found
+	else if (!micli->tokdata.escape_flag && micli->tokdata.quote_flag != 2 && *chr == '$' && var_alloc((chr + 1), micli)) //if unescacped, single quotes are not open and the '$' character is found
 	{
 		micli->tokdata.var_flag = 1;
 		*chr = SUB; //Flag for variable substitution
-		micli->tokdata.toksize += get_var_lengths(micli->token.var_lst); //Add all resolved variable string lengths to toksize
+		micli->tokdata.toksize += get_var_lengths(micli->token.var_lst); //In place of the substituted character, add the RESOLVED variable string length to toksize
 	}
 	else if (  !micli->tokdata.escape_flag && micli->tokdata.var_flag && (*chr && *chr != ';' && *chr != '|' && !ft_isspace(*chr))) //if escape flag is not set and variable flag is set and space, '|', NUL or ; is NOT found
 	{
 		*chr = DEL; //Flag var name for deletion
 	}
-	else //we do not count micli->tokdata.toksize for opening/closing quotes for memory allocation purposes, as they are deleted.
+	else //we do not count micli->tokdata.toksize for any deleted characters for memory allocation purposes (unescaped quotes, variable names, etc). Variables will add the resolved length of their values to toksize.
 	{
 		micli->tokdata.var_flag = 0;
 		micli->tokdata.escape_flag = 0; //reset escape flag
-		micli->tokdata.toksize++; //Already counts the NULL, doesn't need to be incremented for null
+		micli->tokdata.toksize++; //Already counts the NULL, so doesn't need to be incremented for null
 	}
 	return (*chr);
 }
@@ -357,13 +356,17 @@ void	process_raw_line(char *line, t_micli *micli)
 		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart, micli))) //If the last command line ended in ';' we might be at the start of a new pipeline; if pipes are then detected in the new command line, we are definitely at the start of a new pipeline...
 			pipe_reset(&micli->pipes, micli); //Pipe reset could return error codes to print out failure messages, or something... currently closes shell on failure
 		//Everything in this while is part of a cmdline. We leave the while when something that is not part of the command line is found. This may be NULL (stands in for \n and EOF), or special characters ';' or '|'.
-		//Quoted or escaped special characters become normal. Characters cannot be escaped between quotes. (actually sme can between double quotes, but neither of the two that are relevant here ;))
+		//Quoted or escaped special characters become normal. Characters cannot be escaped between quotes, except '"', '$' and '\' between double quotes only.
 		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments cmdline (if not between quotes). If quotes are opened and not closed we leave with NULL (EOL), meaning end of raw line, so we exit the function and quote flag will be reset on reentry into this function.
 		{
 			escape_flag = 0;
-			quote_flag = toggle_quote_flag(*lindex, quote_flag);
-			if (!quote_flag && *lindex == '\\')
+			if (*lindex == '\\' && (quote_flag != 2 && !( quote_flag == 1 && ft_memchr(DQUOTE_ESC_CHARS, *(lindex + 1), 3) == NULL ) ))
+			{
 				escape_flag = 1;
+				lindex++;
+			}
+			if (!escape_flag)
+				quote_flag = toggle_quote_flag(*lindex, quote_flag);
 			lindex++;
 		}
 		//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
