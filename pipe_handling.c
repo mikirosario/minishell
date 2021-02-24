@@ -3,14 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/20 20:56:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/24 02:05:21 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function will attempt to close all open pipes in the pipe array. Any
+** close fails, errno will be recorded and the function will exit with 0.
+** Otherwise the function will exit with 1.
+*/
+
+int		close_pipes(size_t pipe_num, t_pipes *pipes, t_micli *micli)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < pipe_num) // Try to close any open pipes.
+	{
+		if (close(pipes->array[i]) == -1)
+		{
+			micli->syserror = errno;
+			return (0);
+		}
+		i += 2;
+	}
+	return (1);
+}
 
 /*
 ** This function resets the pipeline used by piped commands in the command line.
@@ -20,10 +43,10 @@
 ** If an array of pipes has already been reserved, it is freed and the pointer
 ** set to NULL.
 **
-** The array size is calculated as (pipes->count + 2) * 2. Two extra pipes are
-** added to the array to cap the pipeline at either end (see below), and the
-** number is multiplied by two to derive the number of file descriptors (2 per
-** pipe). The array size == the total fd count.
+** The array size is calculated as (pipes->count + 1) * 2. One extra pipe is
+** added to the array to cap the pipeline at the end (see below), and the number
+** is multiplied by two to derive the number of file descriptors (2 per pipe).
+** The array size == the total fd count.
 **
 ** An integer array of the calculated size is reserved to hold the file
 ** descriptor numbers of each pipe.
@@ -34,57 +57,60 @@
 **
 ** echo 2*2 | bc | cat
 **
-** The pipe count is 2, and two additional pipes are added at either end, so the
-** number of pipes in the pipeline will be 4, and the number of file descriptors
-** will be 8. Thus the array looks like this:
+** The pipe count is 2, and one additional pipe is added at the end, so the
+** number of pipes in the pipeline will be 3, and the number of file descriptors
+** will be 6. Thus, the array looks like this:
 **
-**				pipe0			pipe1			pipe2			pipe3
-**			   0	 1		   2	 3		   4	 5		   6	 7
-** pipes	[read][write]	[read][write]	[read][write]	[read][write]
+**				pipe0			pipe1			pipe2
+**			   0	 1		   2	 3		   4	 5
+** pipes	[read][write]	[read][write]	[read][write]
 **
-** NOTE:
-** The first pipe isn't actually used and probably isn't needed but currently
-** used because of the equation I currently use to calculate position. When I
-** have a clearer head and clean this up a bit more I'll see about eliminating
-** it. Some of the code is inherited from the old sequential algorithm with
-** which we actually circled back to the first pipe in the list. :p
+** The pipeline, when in use, will look like this:
 **
-** The pipeline looks like this:
+**		    	pipe0	 		pipe1			pipe1
+**			[write][read]	[write][read]	[write][read]
+** stdout	1			0	3			2	5			4	stdin
+**		↓	↑	   		↓	↑	  		↓	↑			↓	↑
+**	  	cmd1			cmd2			cmd3			cmd4
 **
-**			pipe0	    	pipe1	 		pipe2			pipe3
-**	 	[write][read]	[write][read]	[write][read]	[write][read]
-**					0	3			2	5			4	7			6	stdin
-**					x	↑	   		↓	↑	  		↓	↑			↓	↑
-**				  	cmd1			cmd2			cmd3			cmd4
+** For a given command, the proper write_fd is currently given by the equation
+** write_fd = pipe_num * 2 + 1.
 **
-** For a given command, the proper read_fd is currently given by pipe_num * 2.
-** The proper fd for reading is currently given by read_fd + 3 (that is, the
-** write fd of the following pipe).
+** The proper fd for reading is currently given by write_fd - 3 (that is, the
+** read fd of the preceding pipe).
+** 
+** Note that for pipe 0 this will cause an overflow, but this is okay, because
+** the read_fd for the first command in a pipeline will never actually be used
+** (the mechanism for preventing this is explained in cmd_execution.c).
+** Similarly, the calculated write_fd for the last command in a pipeline will
+** be outside the array, but will likewise never be used.
+**
+** Also note that this method will cause an overflow in a pipeline of size
+** SIZE_MAX + 2 (that is, with SIZE_MAX / 2 - 1 pipes). Therefore, if the pipe
+** count is greater than this limit, we prohibit this pipeline to avoid a crash.
+** Aren't we so nice? :) MANUUUUU, COMPRUEBA MIS MATES... O_O
 */
 
 int		pipe_reset(t_pipes *pipes, t_micli *micli)
 {
 	size_t	i;
-	size_t	j;
 
 	i = 0;
 	pipes->index = 0;
+	if (pipes->count == PIPE_MAX)
+		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
 	if (pipes->array) //Free pipe array if already reserved
 		pipes->array = ft_del(pipes->array); //Free pipe array...
-	pipes->array_size = (pipes->count + 2) * 2;
+	pipes->array_size = (pipes->count + 1) * 2;
 	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli); //Reserve pipe_count + 2 pipes, maybe stick this value in 'fdcount'.
 	while (i < pipes->array_size) //create all pipes
 	{
 		if (pipe(&pipes->array[i]) == -1) //in case of pipe creation failure
 		{
 			micli->syserror = errno;
-			j = 0;
-			while (j < i) // Try to close any open pipes.
-			{
-				close(pipes->array[i]);
-				i += 2;
-			}
+			close_pipes(i, pipes, micli);
 			exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
+			//NOTE: If pipe creation failed, errno will reflect this. If pipe creation failed and then close pipes failed, errno will report close pipe failure.
 		}
 		i += 2;
 	}

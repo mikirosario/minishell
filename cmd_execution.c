@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/20 21:48:13 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/23 23:42:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,16 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 **																	↓
 **																	0 == end cmd
 **
+**					 ^  	pipe0	  ^		pipe2	  ^		pipe3
+**					 |	[write][read] |	[write][read] | [write][read]
+**			   stdout	1			0	3			2	5			4	stdin
+**					↓	↑	   		↓	↑	  		↓	↑			↓	↑
+**				  	cmd1			cmd2			cmd3			cmd4
+**	pipes.index	==	0	----------> 1	---------->	2	---------->	3
+**	pipes.count ==  3											  - 3
+**																	↓
+**																	0 == end cmd
+**
 ** If we have reached the last command, all of the pipe file descriptors in the
 ** parent's process are closed and the parent waits for the last child to
 ** terminate. Unlike bash, only the last child's exit status is saved, but this
@@ -290,8 +300,10 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 				int writefd_pos;
 				int readfd_pos;
 
-				readfd_pos = micli->pipes.index * 2; //Equation to derive appropriate read fd in the pipe array from the pipe number
-				writefd_pos = readfd_pos + 3; //Equation to derive apropriate write fd from the read fd
+				//readfd_pos = micli->pipes.index * 2; //Equation to derive appropriate read fd in the pipe array from the pipe number
+				//writefd_pos = readfd_pos + 3; //Equation to derive apropriate write fd from the read fd
+				writefd_pos = micli->pipes.index * 2 + 1; //New equation to derive appropriate write fd in the pipe array from the pipe number, with no need for initial phantom pipe
+				readfd_pos = writefd_pos - 3; //Causes sign overflow for first pipe, but the first pipe in a set should always leave pipeflag in 01 state, so we should never use the overflow value... please give me a break on this one, compiler, I know what I'm doing... :p
 				//printf("PIPE FLAG: %u\nPIPE INDEX: %zu\nREAD FD: %d\nWRITE FD: %d\n", micli->pipe_flag, micli->pipes.index, readfd_pos, writefd_pos);
 				//close stdout (1), normally used for write to terminal, and make a duplicate
 				// of fd[1], write end of pipe, and assign file descriptor 1 to it.

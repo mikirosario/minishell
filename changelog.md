@@ -1,3 +1,13 @@
+### Version 2.31
+
+- Bug in the pipe_reset function caused already-created pipes not to be closed properly in case of pipe creation failure. This has been fixed.
+
+- The close_pipes function has been made independent of pipe_reset. Both live in the pipe_handling.c file.
+
+- The close_pipes function will now also abort minishell if any pipe closure fails. If pipe creation and pipe closure both fail in succession, minishell will display the pipe closure failure as its error before terminating.
+
+- An A || B check in process_line has been simplified to a single null character check.
+
 ## Version 2.3
 
 - Pipes now execute all commands in the pipeline concurrently (though they are still *called* sequentially), and the three-pipe system has been replaced with an n-pipes system.

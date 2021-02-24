@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/20 21:48:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/24 02:04:07 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,6 +327,9 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 ** or NULL (meaning \n or EOF) is found, at which point the fragment from lstart
 ** until the ; or NULL is passed to the process_cmdline function for
 ** tokenization.
+**
+** Test functionality with this sequence:
+** echo 2*2 | bc | cat; echo this \| "is |" 'a |' test; echo 2+3 | bc 
 */
 
 void	process_raw_line(char *line, t_micli *micli)
@@ -335,9 +338,9 @@ void	process_raw_line(char *line, t_micli *micli)
 	char	*lindex;
 	unsigned char	quote_flag;
 	unsigned char	escape_flag;
-	char	new_pipeline;
+	char	cmdline_end;
 
-	new_pipeline = ';';
+	cmdline_end = ';';
 	escape_flag = 0;
 	lindex = line; //Start lindex at beginning of line
 	if (!syntax_check(line))
@@ -351,11 +354,11 @@ void	process_raw_line(char *line, t_micli *micli)
 	{
 		lstart = lindex; //set start at start of next command
 		// lstart = ft_skipspaces(lindex); //Skip any consecutive spaces to get to start of next command
-		if (new_pipeline == ';' && (micli->pipes.count = pipe_count(lstart, micli))) //If we might be at the start of a new pipeline, and pipes are detected in the pipeline
-			pipe_reset(&micli->pipes, micli);
-		//lindex = lstart; //set index at start of next command 
-
-		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments cmdline (if not between quotes). If quotes are opened and not closed we leave with NULL (EOL), meaning end of raw line, so we exit the function and quote flag will be reset on reentry.
+		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart, micli))) //If the last command line ended in ';' we might be at the start of a new pipeline; if pipes are then detected in the new command line, we are definitely at the start of a new pipeline...
+			pipe_reset(&micli->pipes, micli); //Pipe reset could return error codes to print out failure messages, or something... currently closes shell on failure
+		//Everything in this while is part of a cmdline. We leave the while when something that is not part of the command line is found. This may be NULL (stands in for \n and EOF), or special characters ';' or '|'.
+		//Quoted or escaped special characters become normal. Characters cannot be escaped between quotes. (actually sme can between double quotes, but neither of the two that are relevant here ;))
+		while (*lindex && ((quote_flag || escape_flag) || (*lindex != ';' && *lindex != '|'))) //If we find ';' or '|' or NULL it signifies end of command+arguments cmdline (if not between quotes). If quotes are opened and not closed we leave with NULL (EOL), meaning end of raw line, so we exit the function and quote flag will be reset on reentry into this function.
 		{
 			escape_flag = 0;
 			quote_flag = toggle_quote_flag(*lindex, quote_flag);
@@ -364,6 +367,7 @@ void	process_raw_line(char *line, t_micli *micli)
 			lindex++;
 		}
 		//Everything from lstart to lindex is your kingdom, I mean is a whole cmdline (command + arguments). ;) Must be executed before continuing...
+		//If the command is piped, all piped commands will be executed in sequence.
 		process_cmdline(lstart, lindex, micli); //Pass the address of token start (lstart) and token end (lindex) and process before continuing. 
 
 		//Store command result in cmd_result variable...
@@ -371,8 +375,10 @@ void	process_raw_line(char *line, t_micli *micli)
 
 
 		//We arrive here with end of last command line, which may be a NULL, a space, a ';' or a '|'. We advance one if we have ';' or '|' and skip any remaining spaces. There should only be one command line end between commands as the syntax_check ensures this before we get here.
-		if ((new_pipeline = *lindex) == ';' || *lindex == '|')
+		if ((cmdline_end = *lindex)) //If end of last command line was not NULL, advance one.
 			lindex++;
+		//if ((cmdline_end = *lindex) == ';' || *lindex == '|')
+		//	lindex++;
 		lindex = ft_skipspaces(lindex); //If after skipping all the spaces after the last command line we find a NULL, it's end of line after all.
 	}
 }

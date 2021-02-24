@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/20 20:09:11 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/24 00:08:00 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #define READLINE_BUFSIZE 1024
 #define BUILTINS "exit,cd,pwd,unset"
 #define	CMDLINE_END ";|"
+#define PIPE_MAX __SIZE_MAX__ / 2 - 1
 #define DEL 127
 #define SUB 26
 #define NUL ""
