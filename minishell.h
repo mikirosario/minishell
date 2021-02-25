@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/24 16:37:38 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/25 21:25:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
 unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
 /* String Parsing */
+int		isvarchar(char chr);
 char	*find_var(char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
