@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/21 19:32:45 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/25 19:15:47 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,11 @@ int    	ft_pwd(const char **argv);
 int	    ft_echo(const char **argv, t_micli *micli);
 int	    ft_unset(char **argv, char **envp, t_micli *micli);
 int		ft_env(char **envp);
-int		ft_export(const char **argv, char **envp, t_micli *micli);
+
+/* Export */
+int		ft_export(const char **argv, t_micli *micli);
+int		ft_countarr(char **envp);
+char	**ft_envdup(char **envp);
 
 /* Redirections */
 

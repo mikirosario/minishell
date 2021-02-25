@@ -19,7 +19,7 @@ int		exec_builtin(char *cmd, t_micli *micli)
 	else if (!(ft_strcmp(cmd, "env")))
 		return (ft_env(micli->envp));
 	else if (!(ft_strcmp(cmd, "export")))
-		return (ft_export((const char **)micli->cmdline->micli_argv, micli->envp, micli));
+		return (ft_export((const char **)micli->cmdline->micli_argv, micli));
 	return (128);
 }
 

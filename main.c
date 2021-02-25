@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/14 20:25:49 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/25 19:14:57 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,12 @@ int 	main(int argc, char **argv, char **envp)
 	t_micli micli;
 
 	ft_bzero(&micli, sizeof(t_micli));
-	micli.envp = envp;
+	micli.envp = ft_envdup(envp);
 	//micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
 	(void)argc;
 	(void)argv;
-
+	
 	//signal
 	// catch_signal();
 	//catch_signal(&micli);
