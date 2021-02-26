@@ -4,7 +4,7 @@
 
 - The variable flag has been overhauled and is now a pointer to the character after the last character in the variable name, to simplify variable flagging and unflagging. The variable flag will now be reset by a single check for the end of a variable name at the beginning of process_char.
 
-- The process_char function has been totally overhauled and given its own file, process_char.c. The special character conditions in process_char have been functionalized for clarity. Descriptions have been updated. Old code has been left commented in case bugs are discovered and testing is needed.
+- The process_char function has been totally overhauled and given its own file, process_char.c. The special character conditions in process_char have been functionalized for clarity and some logical formulations have been inverted to optimize CPU use by placing more likely determining conditions first. Descriptions have been updated. Old code has been left commented for now in case bugs are discovered and comparative testing is needed.
 
 - The var_alloc function has been modified to permit the resolution of variables with names beginning with a digit to more closely replicate bash functionality.
 
