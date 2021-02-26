@@ -24,7 +24,7 @@
 	'\' will only be treated as an escape character between double quotes when escaping '"', '$' or '\'.
 
 - This update bashifies the parsing results for the following lines:<br/>
-	echo "test \| test"<br/> 
+	echo "test \\| test"<br/> 
 	"\lol"<br/> 
 	\lol<br/> 
 	echo test \" | cat<br/> 
