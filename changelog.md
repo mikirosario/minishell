@@ -2,9 +2,9 @@
 
 - The process_char function has been updated to account for the following newly discovered special variable names: '!', '@', '$' and any digit, though they will always resolve to a null character at present. '$$' should resolve to the PID of the running shell instance, but I don't know what the rest are for.
 
-- The variable flag has been overhauled and is now a pointer to the character after the last character in the variable name, to simplify variable flagging and unflagging. The variable flag will now be reset by a single check for the end of a variable name at the beinning of process_char.
+- The variable flag has been overhauled and is now a pointer to the character after the last character in the variable name, to simplify variable flagging and unflagging. The variable flag will now be reset by a single check for the end of a variable name at the beginning of process_char.
 
-- The proces_char function has been totally overhauled and given its own file, process_char.c. The special character conditions in process_char have been functionalized for clarity. Descriptions have been updated. Old code has been left commented in case bugs are discovered and testing is needed.
+- The process_char function has been totally overhauled and given its own file, process_char.c. The special character conditions in process_char have been functionalized for clarity. Descriptions have been updated. Old code has been left commented in case bugs are discovered and testing is needed.
 
 - The var_alloc function has been modified to permit the resolution of variables with names beginning with a digit to more closely replicate bash functionality.
 
