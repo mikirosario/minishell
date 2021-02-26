@@ -1,3 +1,9 @@
+### Version 2.34
+
+- Incorporated Miguel's envp_dup function to make a copy of the originally inherited envp array.
+
+- The plan is to remove undefined variables from the envp array copies whose pointers will be sent to child processes, but this is not yet implemented.
+
 ### Version 2.33
 
 - The process_char function has been updated to account for the following newly discovered special variable names: '!', '@', '$' and any digit, though they will always resolve to a null character at present. '$$' should resolve to the PID of the running shell instance, but I don't know what the rest are for.
