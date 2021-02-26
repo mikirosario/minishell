@@ -8,12 +8,12 @@
 
 - The var_alloc function has been modified to permit the resolution of variables with names beginning with a digit to more closely replicate bash functionality.
 
-- This update bashifies the parsing results for the following lines:
-	echo $unlistedvar*
-	echo $9
-	echo $9283
-	echo $@n
-	echo $!n
+- This update bashifies the parsing results for the following lines:<br/>
+	echo $unlistedvar*<br/>
+	echo $9<br/>
+	echo $9283<br/>
+	echo $@n<br/>
+	echo $!n<br/>
 
 ### Version 2.32
 
@@ -23,12 +23,12 @@
 	'\' will no longer escape single quotes when single quotes are open, but will continue to escape double quotes when double quotes are open.
 	'\' will only be treated as an escape character between double quotes when escaping '"', '$' or '\'.
 
-- This update bashifies the parsing results for the following lines:
-	echo "test \| test"
-	"\lol"
-	\lol
-	echo test \" | cat
-	echo test \" | echo test \"
+- This update bashifies the parsing results for the following lines:<br/>
+	echo "test \| test"<br/> 
+	"\lol"<br/> 
+	\lol<br/> 
+	echo test \" | cat<br/> 
+	echo test \" | echo test \"<br/> 
 
 - Escapabale characters between double quotes have been put into a constant called DQUOTE_ESC_CHARS.
 
