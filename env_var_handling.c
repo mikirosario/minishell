@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/15 19:04:44 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/26 03:24:24 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,42 +140,66 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 ** This function identifies variable names and saves them to a string so that
 ** they can later be resolved.
 **
-** Names are considered to end when invalid variable characters are
-** found in the string following the initial '$'. The first character
-** must be a letter or underscore. Remaining letters must be letters, numbers or
-** an underscore. Ref:
+** The function tests each character in the string passed as var_name to see
+** whether it meets the criteria to be considered the end of the variable name.
 **
-** https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
+** Variable names end when any character is found that cannot be a valid
+** variable name according to the isvarchar function, OR when one of the special
+** conditions are met (see below).
+**
+** -------------------------THE SPECIAL CONDITIONS------------------------------
+** 1. The name begins with '?'.
+**		A name beginning with ? is considered to refer to the exit status of the
+**		last executed command and ends immediately. Micli saves the exit status
+**		of the last executed command at micli->cmd_result.
+** 2. The name begins with '$'.
+**		A name beginning with $ is considered to refer to the PID of current
+**		shell instance. It is reserved here, but STILL UNIMPLEMENTED. This is
+**		not a subject requirement, so will implement this if we have time.
+** 2. The name begins with '!', '@' or a digit (0-9).
+**		Bash also seems to treat these characters as special, accepting them
+**		(for scripting, maybe?) and always ending the variable name immediately
+**		after they are found, regardless of what the next character is. Not sure
+**		what they do, though, and would have to investigate.
+** -----------------------------------------------------------------------------
 **
 ** Once the extent of the variable name is determined and a copy of it is made,
 ** the copy's address is sent to the var_buffer function to find the associated
-** variable in envp, for later insertion of the variable value into the
+** variable value in envp, for later insertion of the variable value into the
 ** corresponding token (substituting the memory addresses starting from where
-** its '$' character was detected).
+** its '$' character was detected). The declared token size will be increased by
+** the length of the variable value so as to acommodate it.
 **
-** Variable values inserted in place of unescaped '$' names in order of their
-** appearance in the token. '$' characters without a valid name in front of them
-** are treated as if escaped.
+** Variable values are inserted in place of unescaped '$' charcters in order of
+** their appearance in the token. '$' characters without a valid name in front
+** of them are treated as if escaped. Note that special conditions are
+** considered valid names.
+**
+** Once the variable has been resolved by var_buffer, the copy of the variable
+** name is freed.
+**
+** If a variable name is found and resolved, this function returns the address
+** of the first character after the last character in the variable name. If a
+** valid variable name is not found, a NULL pointer is returned.
 **
 ** NOTE: PRINTFS ARE DEBUG CODE; REMOVE FROM FINAL VERSION.
 */
 
-int		var_alloc(char *var_name, t_micli *micli)
+char	*var_alloc(char *var_name, t_micli *micli)
 {
 	size_t	i;
-	int		name_state;
 	char	*varnamecpy;
 
 	i = 0;
-	if (var_name[i] == '?') //If the initial varchar is '?', it's special and it refers to micli->cmd_result
+	if (var_name[i] == '?' || var_name[i] == '$' || var_name[i] == '!' || var_name[i] == '@' || ft_isdigit(var_name[i])) //If the initial varchar is special. If it is '?', it's special and it refers to micli->cmd_result. I still don't know what the others refer to in bash, but they also seem to be special as they are all accepted, and immediately terminate the variable name...
 		i++;
-	else if ((name_state = isvarchar(var_name[i++])) != 1) //Initial varchar must be a letter or underscore https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
+	else if (!isvarchar(var_name[i++])/* != 1*/) //If first character is not a varchar.
 	{
 		//ft_printf("INVALID VAR NAME: %.*s\n", i, var_name);
-		return (0);
+		return (NULL);
 	}
-	else
-		while (var_name[i] && (name_state = isvarchar(var_name[i]))) //find end of varname. subsequent varchars may be alphanumeric or underscore.
+	else //For all characters after the first, until a character is found that is not a varchar (may be null, as null is not a var char)
+		while (/*var_name[i] && */isvarchar(var_name[i])) //find end of varname. subsequent varchars may be alphanumeric or underscore.
 			i++;
 	//ft_printf("VAR NAME: %.*s\n", i, var_name); //var_name is var_name[0] --> var_name[i - 1];
 	varnamecpy = clean_calloc(i + 1, sizeof(char), micli);
@@ -186,5 +210,5 @@ int		var_alloc(char *var_name, t_micli *micli)
 	var_buffer(varnamecpy, i, micli);
 
 	varnamecpy = ft_del(varnamecpy);
-	return(1);
+	return(&var_name[i]); //Return the address of the end of the variable name.
 }

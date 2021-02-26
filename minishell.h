@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/25 21:25:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/26 04:22:10 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct	s_tokendata
 	unsigned char	quote_flag:2; //This flag has 2 bits. First bit is single quotes, second bit is double quotes. 00 = quotes closed, 01 = double quotes open single quotes closed, 10 = single quotes open double quotes closed, 11 = double and single quotes open.
 	unsigned char	escape_flag:1; //This flag has 1 bit. If it is set, the following character has been 'escaped' and should be read as a character rather than an operator.
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
-	unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
+	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
+	char			*var_flag;
 }				t_tokendata;
 
 typedef struct	s_token
@@ -121,6 +122,7 @@ int		isvarchar(char chr);
 char	*find_var(char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
+char	process_char(char *chr, t_micli *micli);
 
 /* Copying */
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
@@ -142,7 +144,7 @@ void	clear_cmdline(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
-int		var_alloc(char *var_name, t_micli *micli);
+char	*var_alloc(char *var_name, t_micli *micli);
 char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
