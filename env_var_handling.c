@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/18 18:19:35 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/26 21:36:04 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ char	*find_var(const char *name, size_t name_len, char **envp)
 
 	ptr = NULL;
 	if (envp && (ptr = envp))
-		while (/*ft_printf("PTR ADDR: %s\n", *ptr) && */*ptr && (ft_strncmp(name, *ptr, name_len) || *(*ptr + name_len) != '='))
+		while (ft_printf("PTR ADDR: %s\n", *ptr) && *ptr && (ft_strncmp(name, *ptr, name_len) || *(*ptr + name_len) != '='))
 			ptr++;
 	return(*ptr);
 }

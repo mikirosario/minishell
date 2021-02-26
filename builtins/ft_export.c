@@ -1,24 +1,13 @@
 #include "../minishell.h"
 
-char	*ft_findvar(const char *name, size_t name_len, char **envp)
-{	
-	char	**ptr;
-
-	ptr = NULL;
-	if (envp && (ptr = envp))
-		while (*ptr && (ft_strncmp(name, *ptr, name_len)))
-			ptr++;
-	return(*ptr);
-}
-
-int		find_pos(const char *name, char **envp, int countarr)
+char	find_pos(const char *name, size_t name_len, char **envp)
 {
 	int i;
 
 	i = 0;
-	while(envp[i] != name && i < countarr)
+	while(ft_strncmp(name, envp[i], name_len))
 		i++;
-	return (i);	
+	return(i);
 }
 
 int		ft_countarr(char **envp)
@@ -49,58 +38,17 @@ char		**ft_envdup(char **envp)
 	return (new_envp);
 }
 
-void	increase(char **envp, t_micli *micli)
-{
-	*envp = ft_realloc(*envp, 5 * sizeof(char), micli);
-}
-
-// const char		*split_string(const char **argv)
-// {
-// 	int limit;
-// 	int i;
-// 	// char string;
-
-// 	limit = '=';
-// 	i = 0;
-// 	// if (argv != NULL)
-// 	// 	argv = string;
-// 	while (argv[i] != '\0')
-// 		if (argv[i] != limit)
-// 	i++;
-// 	return(argv[i]);
-// }
-
-// int		ft_check_key_argv(const char **argv)
-// {
-// 	int i;
-
-// 	i = 0;
-// 	while(argv[i] != '=' || argv[i] != '\0')
-// 	{
-// 		//check first letter is a letter or a '_'
-// 		if (ft_isalpha(argv[1]) || argv[1] == '_')
-// 			printf("first letter is ok \n");
-// 		//check if the left string is valid
-// 		if(ft_isalpha(argv[i + 1]) || ft_isdigit(argv[i + 1]) || argv[i] == '_')
-// 			printf("second part is ok \n");
-// 		i++;
-// 	}
-// 	//if its valid return 1
-// 	return (1);
-// }
-
 int		ft_export(const char **argv, t_micli *micli)
 {
-	size_t name_len;
-	const char *find;
-	int i;
-	int j;
-	char *store;
-	int countarr;
+	size_t	name_len;
+	char	*find;
+	int		i;
+	int		j;
+	char	*store;
+	int		countarr;
 	char	*tmp_envp;
-	int findpos;
-	//char **micli->envp;
-	// const char *checkargv;
+	int		findpos;
+	char	**tmp;
 
 	//if export has valid arguments arguments (ex: argument=) if it doesnt have a =
 	//at the end of the argument it should return the prompt without any message or
@@ -120,35 +68,40 @@ int		ft_export(const char **argv, t_micli *micli)
 		//check the length of argv
 		name_len = ft_strlen(argv[1]);
 		//check if argv is a existing variable
-		find = ft_findvar(argv[1], name_len, micli->envp);
+		find = find_var(argv[1], name_len, micli->envp);
+		findpos = find_pos(argv[1], name_len, micli->envp);
 		if (find != 0) //found var
 		{
-
-			findpos = find_pos(argv[1], micli->envp, countarr);
-			// if(findpos != 0)
-			printf("%d\n", findpos);
-			micli->envp[2] = "222";
-			// ft_printf("%d\n", findpos);
-			// ft_printf("%d\n", micli->envp[findpos]);
-			// ft_printf("%p | %p\n", &find, ft_findvar2(argv[1], name_len, envp));
-			ft_printf("var found\n");
+			//check if argv is the same size as envp
+			//if not free it, and resize it
+			//then copy it
+			if (name_len != ft_strlen(micli->envp[findpos]))
+			{
+				free(micli->envp[findpos]);
+				micli->envp[findpos] = clean_calloc(name_len + 1, sizeof(char), micli);
+				ft_memcpy(micli->envp[findpos], argv[1], name_len + 1);
+			}
+			//if are the same size, free it and copy
+			else
+			{
+				free(micli->envp[findpos]);
+				ft_memcpy(micli->envp[findpos], argv[1], name_len + 1);
+			}
 		}
 		// //else if
 		if (find == 0) //not found
 		{
-			//micli->envp[25] = (char*)argv[2];
-			printf("number of elements in array %d\n", countarr);
-			// increase size of array
-			//do things with data
-			increase(micli->envp, micli);
-			printf("number of elements in array %d\n", countarr);
-			//
-			free(micli->envp);
-			//store = argv[1];
-			ft_printf("var not found\n");
-			//ft_memset(argv[1], )
-			//create existing var
-			//create_var = var_alloc((char*)argv[1], micli);
+			i = 0;
+			tmp = micli->envp;
+			micli->envp = clean_calloc(countarr + 2, sizeof(char*), micli);
+			while(i < countarr)
+			{
+				micli->envp[i] = tmp[i];
+				i++;
+			}
+			free(tmp);
+			micli->envp[countarr] = clean_calloc(name_len + 1, sizeof(char), micli);
+			ft_memcpy(micli->envp[countarr], argv[1], name_len + 1);
 		}
 	}
 	//if export has no arguments
