@@ -30,7 +30,7 @@
 	echo test \" | cat<br/> 
 	echo test \" | echo test \"<br/> 
 
-- Escapabale characters between double quotes have been put into a constant called DQUOTE_ESC_CHARS.
+- Escapable characters between double quotes have been put into a constant called DQUOTE_ESC_CHARS.
 
 
 ### Version 2.31
