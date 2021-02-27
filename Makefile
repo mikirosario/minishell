@@ -6,7 +6,7 @@
 #    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/02/27 19:11:50 by mrosario         ###   ########.fr        #
+#    Updated: 2021/02/27 19:15:18 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = minishell
 
 SRC = main.c exit_handling.c memory_reservation.c memory_free.c process_line.c \
 flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c builtins.c \
-pipe_handling.c process_char.c cd.c
+pipe_handling.c process_char.c cd.c envp_dup.c
 
 LIBFT = ./libft/libft.a
 

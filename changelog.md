@@ -1,6 +1,16 @@
+### Version 2.34-a
+
+- Experimental branch with cd that updates envp PWD and OLDPWD.
+
+- Passes relative and absolute paths to execve. Launch successfully. Memory deallocation problem when trying to free cmd for some reason... investigate.
+
 ### Version 2.34
 
 - Updated exec_cmd function description to reflect changes made in version 2.31.
+
+- Incorporated Miguel's envp_dup function to make a copy of the originally inherited envp array.
+
+- The plan is to remove undefined variables from the envp array copies whose pointers will be sent to child processes, but this is not yet implemented.
 
 ### Version 2.33
 

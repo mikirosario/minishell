@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 19:11:23 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/27 19:58:09 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,8 @@ void	clear_cmdline(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
+int		replace_envp_var(char *var_name, char *replacement_var, t_micli *micli);
+char	**ft_envdup(char **envp, t_micli *micli);
 char	*var_alloc(char *var_name, t_micli *micli);
 char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);

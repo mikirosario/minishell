@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/27 17:16:20 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 19:05:36 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/27 20:04:59 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,24 +36,31 @@ int		replace_envp_var(char *var_name, char *replacement_var, t_micli *micli)
 {
 	char *replace_var;
 	char *old_var;
+	size_t i;
 
+	i = 0;
 	if (!(replace_var = find_var(var_name, ft_strlen(var_name), micli->envp)))
 		return (0);
+	while (micli->envp[i] != replace_var) // Apañito... :p find_var, podrías devolver un doble puntero bribón
+		i++;
 	old_var = replace_var;
-	replace_var = clean_ft_strdup(replacement_var, micli);
+	micli->envp[i] = clean_ft_strdup(replacement_var, micli);
 	old_var = ft_del(old_var);
 	return (1);
 }
 
 int     cd(const char **argv, t_micli *micli) 
 {
-    char *prefix;
-	char *new_pwd;
+    //char *prefix;
+	char *old_pwd;
+	char *new_pwd;	
 	char *cwd;
 
-	prefix = NULL;
-	cwd = NULL;
+	old_pwd = "OLD";
 	new_pwd = "PWD=";
+	cwd = NULL;
+
+
 	// char **old_envp;
 
 	// old_envp = micli->envp;
@@ -76,6 +83,10 @@ int     cd(const char **argv, t_micli *micli)
         }
 		else
 		{
+			old_pwd = clean_ft_strjoin(old_pwd, find_var("PWD", 3, micli->envp), micli);
+			printf("WTF: %s\n", old_pwd);
+			replace_envp_var("OLDPWD", old_pwd, micli);
+			old_pwd = ft_del(old_pwd);
 			cwd = (getcwd(cwd, 0));
 			new_pwd = clean_ft_strjoin(new_pwd, cwd, micli);
 			cwd = ft_del(cwd);

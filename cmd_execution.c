@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 16:50:37 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/27 21:14:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,6 +260,7 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 {
 	char	*exec_path;
+	char	*cmd_is_path;
 	char	*path_var;
 	int		stat_loc;
 	size_t	i;
@@ -268,6 +269,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 
 	i = 0;
 	exec_path = NULL;
+	cmd_is_path = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	
 	// i = 0;
@@ -278,14 +280,18 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	
 	//printf("%s\n", path_var);
-
-	exec_path = find_cmd_path(cmd, path_var, micli);
-	if (exec_path)
+	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/')) //if ispath
+		cmd_is_path = cmd; //exec path is cmd
+	else
+		exec_path = find_cmd_path(cmd, path_var, micli);
+	if (cmd_is_path || exec_path)
 	{
 		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin
 			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
+			if (cmd_is_path)
+				exec_path = cmd; //guarreo
 			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
 			else if (micli->pipe_flag && !(pid = fork())) //piped child inherits micli->pipes.array[]
