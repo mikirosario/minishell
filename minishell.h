@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 17:11:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/02/27 19:11:23 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,pwd,unset"
+#define BUILTINS "exit,cd,pwd,unset"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
 #define PIPE_MAX __SIZE_MAX__ / 2 - 1
@@ -161,6 +161,7 @@ void	ctrl_bar(int signum);
 // void	signal_d();
 
 /* Builtins */
+int     cd(const char **argv, t_micli *micli);
 int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int		ft_pwd();

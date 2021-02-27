@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 03:24:24 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/27 18:27:39 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,14 @@ char	*find_var(char *name, size_t name_len, char **envp)
 {	
 	char	**ptr;
 
-	ptr = NULL;
+	//ptr = NULL; Senseless...
 	if (envp && (ptr = envp))
+	{
 		while (/*ft_printf("PTR ADDR: %s\n", *ptr) && */*ptr && (ft_strncmp(name, *ptr, name_len) || *(*ptr + name_len) != '='))
 			ptr++;
-	return(*ptr);
+		return (*ptr);
+	}
+	return(NULL);
 }
 
 /*

@@ -9,7 +9,7 @@ int 	exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	else if (!(ft_strcmp(cmd, "cd")))
-		return(ft_cd((const char **)micli->cmdline.micli_argv, micli));
+		return(cd((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(strcmp(cmd, "pwd")))
 		return(ft_pwd(micli));
 	else if (!(strcmp(cmd, "echo")))
