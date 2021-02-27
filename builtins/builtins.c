@@ -15,7 +15,7 @@ int		exec_builtin(char *cmd, t_micli *micli)
 	else if (!(ft_strcmp(cmd, "echo")))
 		return (ft_echo((const char **)micli->cmdline->micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "unset")))
-		return (ft_unset(micli->cmdline->micli_argv, micli->envp, micli));
+		return (ft_unset(micli->cmdline->micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "env")))
 		return (ft_env(micli->envp));
 	else if (!(ft_strcmp(cmd, "export")))
@@ -162,7 +162,7 @@ int		ft_pwd(const char **argv)
 // }
 
 
-int		ft_unset(char **argv, char **envp, t_micli *micli)
+int		ft_unset(char **argv, t_micli *micli)
 {
 	size_t name_len;
 	char *store;
@@ -171,20 +171,20 @@ int		ft_unset(char **argv, char **envp, t_micli *micli)
 	// int size = 0;
 	// int pos = 0;
 	// size_t size;
-	while(envp[i])
+	while(micli->envp[i])
 		i++;
 	printf("elements in array %d\n", i);
 
 	if (argv[1] != 0)
 	{
 		name_len = ft_strlen(argv[1]);
-		store = find_var(argv[1], name_len, &envp[1]);
+		store = find_var(argv[1], name_len, &micli->envp[1]);
 		if ( store != 0)
 		{
 			//set element to 0
 			ft_memset(store, 0, sizeof(store));
 			//reorder array and remove empty element
-			temp = envp;
+			temp = micli->envp;
 			micli->envp = clean_calloc(i, sizeof(char *), micli);
 			i = 0;
 			while(*temp)

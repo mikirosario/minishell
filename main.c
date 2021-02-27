@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 20:40:58 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/27 19:10:22 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,7 @@ int 	main(int argc, char **argv, char **envp)
 	(void)argv;
 	
 	//signal
-	// catch_signal();
-	//catch_signal(&micli);
+	catch_signal();
 	//command loop
 	micli_loop(&micli);
 

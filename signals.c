@@ -1,47 +1,48 @@
 #include "minishell.h"
 
-// int   catch_signal() 
-// {
-//    int status;
-//    pid_t result;
+void   catch_signal() 
+{
+	int status;
 
-//    result = waitpid(pid, &status, WNOHANG);
-//    if (result == 0)
-//    {
-//       // Child still alive
-//       signal(SIGINT, ctrl_c);
-//       signal(SIGQUIT, ctrl_bar);
-//    }
-//    else if (result == -1)
-//    {
-//       // error
-//    }
-//    else
-//    {
-//       // child exited
-//       // if ctrl_c return prompt
-//       // if ctrl_bar return nothing
-//    }
-//    //signal(SIGCHLD, SIG_IGN);
-   
-//    return(0);
+	status = ft_child_status();
+	if (status == 0)// Child still alive
+	{
+		signal(SIGINT, ctrl_c);
+		signal(SIGQUIT, ctrl_bar);
+		signal(4, ctrl_d);
+	}
+	if (status == -1)
+		ft_printf("Signal error");
+}
+
+int		ft_child_status()
+{
+	int status;
+	pid_t child_status;
+	pid_t pid;
+
+	pid = fork();
+	child_status = waitpid(pid, &status, WNOHANG);
+	if (child_status == 0) //child alive
+		return (0);
+	if (child_status == -1) //error
+		return (-1);
+	return (1);
+}
+// void	ft_wait(int signum)
+// {
+// 	wait(NULL);
 // }
 
-// int   catch_signal() 
-// {
-//    signal(SIGINT, ctrl_c);
-//    signal(SIGQUIT, ctrl_bar);
-//    return(0);
-// }
 /*
 ** Ctrl+C interrupt the program and terminates the application
 */
 
-void	ctrl_c(int signum)
+void	ctrl_c()
 {
    //if child process is running do...
    //if(micli->child_know.child_flag == 1)
-      printf("Ctrl -%d\n", signum);
+	ft_printf("\n");
    //else return a new prompt
    //else if(ft_printf("else ctrl_c"));
 }
@@ -50,20 +51,22 @@ void	ctrl_c(int signum)
 ** Ctrl+\ tells the application to exit as soon as possible without saving
 */
 
-void	ctrl_bar(int signum)
+void	ctrl_bar()
 {
    //if child process is runnning do..
    //if(micli->child_know.child_flag == 1)
-	   printf("Ctrl -%dQuit: 3\n", signum);
+	ft_printf("Quit: 3\n");
    //else do nothing
    //else if(ft_printf("else ctrl_c"));
 }
 
-/*
-** Ctrl+D ends input stream
-*/
-
-// void  ctrl_d(int signum)
-// {
-
-// }
+void	ctrl_d()
+{
+	signal(SIGCHLD, SIG_IGN);
+	// Parent process installs signal handler for the SIGCHLD
+	// calls wait, when child terminated the SIGCHLD is delivered
+	// signal(SIGCHLD, ft_wait(signum));
+	// ctrl_d;
+	write(1, "exit\n", 5);
+	exit(0);
+}

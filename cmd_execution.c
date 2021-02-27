@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/14 20:33:25 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/27 20:04:20 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,8 +205,6 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** from executing until the child function has terminated. We store the child
 ** process termination status in the variable micli->cmd_result. (NEED TO LINK THIS TO THE '?' ENVIRONMENTAL VARIABLE, WHEN CREATED)
 **
-** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
-**
 ** If find_cmd_path has to reserve memory to store an assembled pathname, the memory is freed.
 */
 
@@ -216,9 +214,6 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char	*path_var;
 	int		stat_loc;
 	pid_t	pid;
-	pid_t	result; //SIGNAL
-	int		status; //SIGNAL
-
 	
 	exec_path = NULL;
 	micli->cmdline->micli_argv = create_micli_argv(cmd, arglst, micli);
@@ -241,26 +236,6 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		{
 			if (!(pid = fork()))
 				execve(exec_path, micli->cmdline->micli_argv, micli->envp);
-			///////SIGNALS
-			result = waitpid(pid, &status, WNOHANG);
-			if (result == 0)
-			{
-				// Child still alive
-				signal(SIGINT, ctrl_c);
-				signal(SIGQUIT, ctrl_bar);
-			}
-			// else if (result == -1)
-			// {
-			// 	// error
-			// }
-			else
-			{
-				printf("singal!");
-				// child exited
-				// if ctrl_c return prompt
-				// if ctrl_bar return nothing
-			}
-			//////////////////
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
 			// ft_printf("STAT_LOC: %d\n", micli->cmd_result);

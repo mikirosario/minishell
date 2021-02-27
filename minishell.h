@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 20:41:43 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/27 20:00:29 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,9 +132,12 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 /* Signal Call */
 
 //int		catch_signal(t_micli *micli);
-// int		catch_signal();
-void	ctrl_c(int signum);
-void	ctrl_bar(int signum);
+void	catch_signal();
+int		ft_child_status();
+void	ctrl_c();
+void	ctrl_bar();
+void	ctrl_d();
+void	ft_wait(int signum);
 // void	signal_d();
 
 /* Builtins */
@@ -143,7 +146,7 @@ int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int    	ft_pwd(const char **argv);
 int	    ft_echo(const char **argv, t_micli *micli);
-int	    ft_unset(char **argv, char **envp, t_micli *micli);
+int	    ft_unset(char **argv, t_micli *micli);
 int		ft_env(char **envp);
 
 /* Export */
