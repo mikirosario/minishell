@@ -1,3 +1,7 @@
+### Version 2.34
+
+- Updated exec_cmd function description to reflect changes made in version 2.31.
+
 ### Version 2.33
 
 - The process_char function has been updated to account for the following newly discovered special variable names: '!', '@', '$' and any digit, though they will always resolve to a null character at present. '$$' should resolve to the PID of the running shell instance, but I don't know what the rest are for.

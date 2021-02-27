@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/23 23:42:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/27 16:50:37 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,27 +226,18 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** assigning stdin or stdout to the duplicates through the dup2 function.
 **
 ** All of the pipes.array file descriptors IN THE CHILD are then closed to
-** eliminate their references as counted in the file struct.
+** eliminate their references as counted in the associated file structs.
 **
 ** When pipes.count - pipes.index == 0, we have reached the last piped command.
 **
-**					  ------->pipes.count == 3<--------
-**					  ^				  ^				  ^
-**			pipe0	  ^  	pipe1	  ^		pipe2	  ^		pipe3
-**	 	[write][read] |	[write][read] |	[write][read] | [write][read]
-**					0	3			2	5			4	7			6	stdin
-**					x	↑	   		↓	↑	  		↓	↑			↓	↑
-**				  	cmd1			cmd2			cmd3			cmd4
-**	pipes.index	==	0	----------> 1	---------->	2	---------->	3
-**	pipes.count ==  3											  - 3
-**																	↓
-**																	0 == end cmd
-**
-**					 ^  	pipe0	  ^		pipe2	  ^		pipe3
+**					 -------->pipes.count == 3<--------
+**					 ^				  ^				  ^
+**					 ^  	pipe0	  ^		pipe1	  ^		pipe2
 **					 |	[write][read] |	[write][read] | [write][read]
 **			   stdout	1			0	3			2	5			4	stdin
 **					↓	↑	   		↓	↑	  		↓	↑			↓	↑
 **				  	cmd1			cmd2			cmd3			cmd4
+**					child1			child2			child3			child4
 **	pipes.index	==	0	----------> 1	---------->	2	---------->	3
 **	pipes.count ==  3											  - 3
 **																	↓
@@ -262,6 +253,8 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
 **
 ** If find_cmd_path had to reserve memory to store an assembled pathname, the memory is freed.
+**
+** LAST ADDITIONAL PIPE UNNECESSARY????????
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
