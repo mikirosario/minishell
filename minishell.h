@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 20:00:29 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/28 20:07:06 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@
 #include <sys/wait.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
-#define BUILTINS "exit,cd,echo,pwd,unset,env,export"
-#define REDIRECTIONS ""
+#define READLINE_BUFSIZE 1024
+#define BUILTINS "exit,cd,pwd,unset,export"
+//#define	CMDLINE_END ";|"
+#define DQUOTE_ESC_CHARS "\"$\\"
+#define PIPE_MAX __SIZE_MAX__ / 2 - 1
 #define DEL 127
 #define SUB 26
 #define NUL ""
@@ -43,7 +45,8 @@ typedef struct	s_tokendata
 	unsigned char	quote_flag:2; //This flag has 2 bits. First bit is single quotes, second bit is double quotes. 00 = quotes closed, 01 = double quotes open single quotes closed, 10 = single quotes open double quotes closed, 11 = double and single quotes open.
 	unsigned char	escape_flag:1; //This flag has 1 bit. If it is set, the following character has been 'escaped' and should be read as a character rather than an operator.
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
-	unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
+	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
+	char			*var_flag;
 }				t_tokendata;
 
 typedef struct	s_child
@@ -77,22 +80,36 @@ typedef struct	s_builtins
 	int 		argflag;
 }				t_builtins;
 
+typedef struct	s_pipes
+{
+	int		*array;
+	size_t	array_size;
+	size_t	count;
+	size_t	index;
+}				t_pipes;
+
+
 typedef struct	s_micli
 {
-	t_tokendata	tokdata;
-	t_cmdline	*cmdline;
-	t_token		*token;
-	t_builtins	builtins;
-	t_child		child_know;
+	t_tokendata		tokdata;
+	t_cmdline		cmdline;
+	t_token			token;
+	t_builtins		builtins;
+	t_pipes			pipes;
 	//size_t		builtin_strlen;
-	int			position;
-	int			bufsize;
-	int			c;
-	int			syserror;
-	int			cmd_result;
-	char		**envp;
-	char		*buffer;
-	char		*tmp;
+	int				pipe[6]; //three-pipe array
+	int				position;
+	int				bufsize;
+	int				c;
+	int				syserror;
+	int				cmd_result;
+	char			*cmd_result_str;
+	char			**envp;
+	char			*buffer;
+	char			*tmp;
+	unsigned char	quote_flag:1; //Raw_line quote flag...
+	unsigned char	pipe_flag:2;
+	unsigned char	pipe_reset_flag:2; //Pipe controls which pipe in the pipe array needs to be reopened for following exec cycle
 }				t_micli;
 
 /* Command Execution */
@@ -100,18 +117,29 @@ typedef struct	s_micli
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
-
-unsigned char	toggle_quote_flag(char quotes, char quote_flag);
+unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
+unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
 /* String Parsing */
-
+int		isvarchar(char chr);
 char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
+char	process_char(char *chr, t_micli *micli);
 
 /* Copying */
 
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
+
+/* Concurrent Pipe Handling */
+size_t	pipe_count(const char *line, t_micli *micli);
+int		pipe_reset(t_pipes *pipes, t_micli *micli);
+
+// /* Sequential Pipe Handling */
+// int		pipe_reset(unsigned char pipe_reset_flag, int *pipe);
+// void	close_write_end_preceding_pipe(unsigned char pipe_reset_flag, int *pipes);
+// void	pipe_selector(unsigned char pipe_reset_flag, int *writepos, int *readpos);
+// size_t	pipe_count(const char *line, t_micli *micli);
 
 /* Memory Freeing */
 
@@ -121,8 +149,8 @@ void	clear_cmdline(t_micli *micli);
 char	**free_split(char **split); //Move to libft
 
 /* Memory Reservation */
-
-int		var_alloc(char *var_name, t_micli *micli);
+char	**ft_envdup(char **envp, t_micli *micli);
+char	*var_alloc(char *var_name, t_micli *micli);
 char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
@@ -151,8 +179,8 @@ int		ft_env(char **envp);
 
 /* Export */
 int		ft_export(const char **argv, t_micli *micli);
-int		ft_countarr(char **envp);
-char	**ft_envdup(char **envp);
+size_t	ft_countarr(char **envp);
+
 
 /* Redirections */
 
@@ -164,7 +192,7 @@ void	exit_success(t_micli *micli);
 void	exit_failure(t_micli *micli);
 
 /* Error Handling */
-
-void	print_error(char *error, char *error_location);
+int		syntax_check(char *line);
+int		print_error(char *error, char *error_location);
 
 #endif

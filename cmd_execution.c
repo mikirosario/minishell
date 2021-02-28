@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/27 20:04:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/02/27 21:37:31 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 ** defined (currently) in minishell.h (might put this in a config file later).
 **
 ** If cmd is in the BUILTIN string, we return the same address as the one cmd
-** points to (micli->cmdline->cmd).
+** points to (micli->cmdline.cmd).
 **
 ** If cmd is not found in BUILTIN we open all the directories in path_array one
 ** by one and check every entry in each directory one by one. If any of these
@@ -180,7 +180,7 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** line, with all of its arguments.
 **
 ** First we create an argv array for the command using create_micli_argv and
-** save the result in the char pointer array micli->cmdline->micli_argv. This
+** save the result in the char pointer array micli->cmdline.micli_argv. This
 ** array contains the command name (cmd) as the first pointer, and each argument
 ** to the command as the remaining pointers, in the same order as they were
 ** input into shell.
@@ -201,11 +201,67 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** assembled with find_cmd_path, and if we haven't found anything we leave the
 ** function without doing anything.
 **
-** If a binary is executed in a child process we use waitpid to stop the parent
+** If a command is executed in a child process we use waitpid to stop the parent
 ** from executing until the child function has terminated. We store the child
-** process termination status in the variable micli->cmd_result. (NEED TO LINK THIS TO THE '?' ENVIRONMENTAL VARIABLE, WHEN CREATED)
+** process termination status in the variable micli->cmd_result. This can be
+** displayed by the user with the $? variable.
 **
-** If find_cmd_path has to reserve memory to store an assembled pathname, the memory is freed.
+** --- PIPES ---
+**
+** If a pipeline has been requested by the user, then the command will be
+** launched in special pipeline mode and the parent will NOT wait for any child
+** except the last child in the pipeline. The variable micli->pipes.array_size
+** contains the number of file descriptors. The variable micli->pipes.count
+** contains the number of pipes detected in the original line. The variable
+** micli->pipes.index keeps track of the current pipe, starting with pipe0.
+**
+** Pipeline mode uses the micli->pipe_flag to determine the command's read/write
+** status. The command may be launched as write-only (first command in the
+** pipeline), read-only (last command in the pipeline) or read-write (any
+** command sandwiched between commands in the pipeline). 1 == write-only, 2 ==
+** read-only 3 == read-write.
+**
+** Depending on the read/write status, the child will duplicate the read and/or
+** write file descriptors of the preceding and/or current pipe, respectively,
+** assigning stdin or stdout to the duplicates through the dup2 function.
+**
+** All of the pipes.array file descriptors IN THE CHILD are then closed to
+** eliminate their references as counted in the file struct.
+**
+** When pipes.count - pipes.index == 0, we have reached the last piped command.
+**
+**					  ------->pipes.count == 3<--------
+**					  ^				  ^				  ^
+**			pipe0	  ^  	pipe1	  ^		pipe2	  ^		pipe3
+**	 	[write][read] |	[write][read] |	[write][read] | [write][read]
+**					0	3			2	5			4	7			6	stdin
+**					x	↑	   		↓	↑	  		↓	↑			↓	↑
+**				  	cmd1			cmd2			cmd3			cmd4
+**	pipes.index	==	0	----------> 1	---------->	2	---------->	3
+**	pipes.count ==  3											  - 3
+**																	↓
+**																	0 == end cmd
+**
+**					 ^  	pipe0	  ^		pipe2	  ^		pipe3
+**					 |	[write][read] |	[write][read] | [write][read]
+**			   stdout	1			0	3			2	5			4	stdin
+**					↓	↑	   		↓	↑	  		↓	↑			↓	↑
+**				  	cmd1			cmd2			cmd3			cmd4
+**	pipes.index	==	0	----------> 1	---------->	2	---------->	3
+**	pipes.count ==  3											  - 3
+**																	↓
+**																	0 == end cmd
+**
+** If we have reached the last command, all of the pipe file descriptors in the
+** parent's process are closed and the parent waits for the last child to
+** terminate. Unlike bash, only the last child's exit status is saved, but this
+** technically isn't *pipe* functionality, but *exit status* functionality. :p
+** If you REALLY want me to malloc an exit status array I'll do it, but I think
+** it would kind of be wasting time. ;p
+**
+** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
+**
+** If find_cmd_path had to reserve memory to store an assembled pathname, the memory is freed.
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
@@ -213,14 +269,17 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char	*exec_path;
 	char	*path_var;
 	int		stat_loc;
+	size_t	i;
+
 	pid_t	pid;
-	
+
+	i = 0;
 	exec_path = NULL;
-	micli->cmdline->micli_argv = create_micli_argv(cmd, arglst, micli);
+	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	
 	// i = 0;
-	// while (micli->cmdline->micli_argv[i])
-	// 	ft_printf("%s\n", micli->cmdline->micli_argv[i++]);
+	// while (micli->cmdline.micli_argv[i])
+	// 	ft_printf("%s\n", micli->cmdline.micli_argv[i++]);
 	
 
 	path_var = find_var("PATH", 4, micli->envp);
@@ -231,17 +290,92 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (exec_path)
 	{
 		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin
-			/*micli->cmd_result = */exec_builtin(exec_path, micli);
+			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		else
 		{
-			if (!(pid = fork()))
-				execve(exec_path, micli->cmdline->micli_argv, micli->envp);
-			waitpid(pid, &stat_loc, WUNTRACED);
-			micli->cmd_result = WEXITSTATUS(stat_loc);
-			// ft_printf("STAT_LOC: %d\n", micli->cmd_result);
+			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
+				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+			else if (micli->pipe_flag && !(pid = fork())) //piped child inherits micli->pipes.array[]
+			{
+				int writefd_pos;
+				int readfd_pos;
+
+				//readfd_pos = micli->pipes.index * 2; //Equation to derive appropriate read fd in the pipe array from the pipe number
+				//writefd_pos = readfd_pos + 3; //Equation to derive apropriate write fd from the read fd
+				writefd_pos = micli->pipes.index * 2 + 1; //New equation to derive appropriate write fd in the pipe array from the pipe number, with no need for initial phantom pipe
+				readfd_pos = writefd_pos - 3; //Causes sign overflow for first pipe, but the first pipe in a set should always leave pipeflag in 01 state, so we should never use the overflow value... please give me a break on this one, compiler, I know what I'm doing... :p
+				//printf("PIPE FLAG: %u\nPIPE INDEX: %zu\nREAD FD: %d\nWRITE FD: %d\n", micli->pipe_flag, micli->pipes.index, readfd_pos, writefd_pos);
+				//close stdout (1), normally used for write to terminal, and make a duplicate
+				// of fd[1], write end of pipe, and assign file descriptor 1 to it.
+				if (ft_isbitset(micli->pipe_flag, 0)) //if micli->pipe_flag rightmost bit is set: 11 == read-write or 01 == write-only
+					dup2(micli->pipes.array[writefd_pos], STDOUT_FILENO); //stdout == 1
+				//close stdin (0) normally used for read from terminal, and make a duplicate
+				//of fd[0], read end of pipe, and assign file descriptor 0 to it.
+				if (ft_isbitset(micli->pipe_flag, 1)) //if micli->pipeflag leftmost bit is set: 11 == read-write or 10 == read-only
+					dup2(micli->pipes.array[readfd_pos], STDIN_FILENO); //stdin == 0;
+				while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
+					close(micli->pipes.array[i++]);
+				execve(exec_path, micli->cmdline.micli_argv, micli->envp);//now execute command... =_=
+			}
+			if (!micli->pipe_flag || (micli->pipes.count - micli->pipes.index == 0))
+			{	
+				while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
+					close(micli->pipes.array[i++]);
+				waitpid(pid, &stat_loc, WUNTRACED);
+				micli->cmd_result = WEXITSTATUS(stat_loc);
+				micli->pipe_flag = 0; //Reset pipe_flag
+				//printf("CMD RESULT: %d\n", micli->cmd_result);
+			}
+			else if (micli->pipe_flag)
+			{
+
+				micli->pipes.index++; //increment pipe_index for child pipe_count comparison
+			}
 			exec_path = ft_del(exec_path);
 		}
 	}
 	else
+	{
+		micli->cmd_result = 127;
 		ft_printf("%s: command not found\n", cmd);
+	}
 }
+
+//Sequential else
+
+// else
+// 		{
+// 			micli->pipe_reset_flag = micli->pipe_reset_flag == 2 ? 0 : micli->pipe_reset_flag + 1; //If the pipe reset flag reaches 3, reset to 0.
+// 			pipe_reset(micli->pipe_reset_flag, micli->pipe); //Si devuelve 0, ha fallado... devuelve ese error tipo "NO PUEDORRRRL MÁS PIPES"
+// 			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
+// 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+// 			else if (micli->pipe_flag && !(pid = fork())) //piped child
+// 			{
+// 				int writefd_pos;
+// 				int readfd_pos;
+// 				int i;
+
+// 				i = 0;
+
+// 				pipe_selector(micli->pipe_reset_flag, &writefd_pos, &readfd_pos);
+// 				//close stdout (1), normally used for write to terminal, and make a duplicate
+// 				// of fd[1], write end of pipe, and assign file descriptor 1 to it.
+// 				if (ft_isbitset(micli->pipe_flag, 0)) //if micli->pipe_flag rightmost bit is set: 11 == read-write or 01 == write-only
+// 					dup2(micli->pipe[writefd_pos], 1);
+// 				//close stdin (0) normally used for read from terminal, and make a duplicate
+// 				//of fd[0], read end of pipe, and assign file descriptor 0 to it.
+// 				if (ft_isbitset(micli->pipe_flag, 1)) //if micli->pipeflag leftmost bit is set: 11 == read-write or 10 == read-only
+// 					dup2(micli->pipe[readfd_pos], 0);
+// 				while (i < 6)
+// 					close(micli->pipe[i++]);
+// 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);//now execute command... =_=
+// 			}
+// 			if (micli->pipe_flag)
+// 			{
+// 				printf("PIPE FLAG: %u\nPIPE RESET FLAG: %u\n", micli->pipe_flag, micli->pipe_reset_flag);
+// 				close_write_end_preceding_pipe(micli->pipe_reset_flag, micli->pipe);
+// 			}
+// 			waitpid(pid, &stat_loc, WUNTRACED);
+// 			micli->cmd_result = WEXITSTATUS(stat_loc);
+// 			exec_path = ft_del(exec_path);
+// 		}

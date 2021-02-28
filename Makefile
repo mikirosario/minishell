@@ -6,7 +6,7 @@
 #    By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/02/19 17:31:53 by mvillaes         ###   ########.fr        #
+#    Updated: 2021/02/28 18:26:06 by mvillaes         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ BUILTINS := builtins
 
 SRC = main.c exit_handling.c memory_reservation.c memory_free.c process_line.c \
 flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c \
+pipe_handling.c process_char.c envp_dup.c \
 $(BUILTINS)/ft_export.c \
 $(BUILTINS)/builtins.c \
 

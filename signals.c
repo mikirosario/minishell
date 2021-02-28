@@ -1,34 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
+/*   Updated: 2021/02/28 20:07:44 by mvillaes         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void   catch_signal() 
+void	catch_signal() 
 {
-	int status;
+	// int status;
 
-	status = ft_child_status();
-	if (status == 0)// Child still alive
-	{
+	// status = ft_child_status();
+	// if (status == 0)// Child still alive
+	// {
 		signal(SIGINT, ctrl_c);
 		signal(SIGQUIT, ctrl_bar);
 		signal(4, ctrl_d);
-	}
-	if (status == -1)
-		ft_printf("Signal error");
+	// }
+	// if (status == -1)
+	// 	ft_printf("Signal error");
 }
 
-int		ft_child_status()
-{
-	int status;
-	pid_t child_status;
-	pid_t pid;
+// int		ft_child_status()
+// {
+// 	int status;
+// 	pid_t child_status;
+// 	pid_t pid;
 
-	pid = fork();
-	child_status = waitpid(pid, &status, WNOHANG);
-	if (child_status == 0) //child alive
-		return (0);
-	if (child_status == -1) //error
-		return (-1);
-	return (1);
-}
+// 	pid = fork();
+// 	child_status = waitpid(pid, &status, WNOHANG);
+// 	if (child_status == 0) //child alive
+// 		return (0);
+// 	if (child_status == -1) //error
+// 		return (-1);
+// 	return (1);
+// }
 // void	ft_wait(int signum)
 // {
 // 	wait(NULL);

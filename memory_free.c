@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/12 00:51:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/02/26 19:01:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,27 +64,17 @@ char	**free_split(char **split)
 
 void	clear_cmdline(t_micli *micli)
 {
-	t_list	*tmp;
-
-	tmp = micli->token->var_lst;
-	if (tmp)
-		while (tmp)
-		{
-			//ft_printf("VAR LIST: %s\n", tmp->content);
-			tmp = tmp->next;
-		}
 	//Check token struct for anything that needs to be freed and free as needed.
-	if (micli->cmdline->cmd)
-		micli->cmdline->cmd = ft_del(micli->cmdline->cmd);
-	if (micli->cmdline->micli_argv)
-		micli->cmdline->micli_argv = ft_del(micli->cmdline->micli_argv);
-	//	ft_lstiter(micli->cmdline->arguments, free); //My lstiter leads to unallocated pointers being freed... :p
-	if (micli->cmdline->arguments)
-		ft_lstclear(&micli->cmdline->arguments, free);
-	if (micli->token->var_lst)
-		micli->token->var_lst = ft_lstfree(micli->token->var_lst);
-	micli->cmdline->arguments = NULL;
-	micli->token = NULL; //token struct memory is reserved locally by the process_cmdline function for the moment, so does not need to be freed, only the pointer nullified for validity of the check.
+	if (micli->cmdline.cmd)
+		micli->cmdline.cmd = ft_del(micli->cmdline.cmd);
+	if (micli->cmdline.micli_argv)
+		micli->cmdline.micli_argv = ft_del(micli->cmdline.micli_argv);
+	//	ft_lstiter(micli->cmdline.arguments, free); //My lstiter leads to unallocated pointers being freed... :p
+	if (micli->cmdline.arguments)
+		ft_lstclear(&micli->cmdline.arguments, free);
+	if (micli->token.var_lst)
+		micli->token.var_lst = ft_lstfree(micli->token.var_lst);
+	micli->cmdline.arguments = NULL;
 }
 
 /*
@@ -94,10 +84,25 @@ void	clear_cmdline(t_micli *micli)
 
 void	freeme(t_micli *micli)
 {
+	// This is debug code that prints all var_lst content at freeme time.
+	// t_list	*tmp;
+
+	// tmp = micli->token.var_lst;
+	// if (tmp)
+	// 	while (tmp)
+	// 	{
+	// 		//ft_printf("VAR LIST: %s\n", tmp->content);
+	// 		tmp = tmp->next;
+	// 	}
+	if (micli->cmd_result_str)
+		micli->cmd_result_str = ft_del(micli->cmd_result_str);
 	if (micli->buffer)
 		micli->buffer = ft_del(micli->buffer);
-	if (micli->cmdline)
-		clear_cmdline(micli);
+	clear_cmdline(micli);
 	if (micli->tokdata.path_array)
 		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
+	if (micli->pipes.array)
+		micli->pipes.array = ft_del(micli->pipes.array); //Free pipe array...
+	if (micli->envp)
+		micli->envp = free_split(micli->envp);
 }

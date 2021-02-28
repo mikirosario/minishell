@@ -9,17 +9,17 @@ int		exec_builtin(char *cmd, t_micli *micli)
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	else if (!(ft_strcmp(cmd, "cd")))
-		return (ft_cd((const char **)micli->cmdline->micli_argv, micli));
+		return (ft_cd((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "pwd")))
-		return (ft_pwd((const char**)micli->cmdline->micli_argv));
+		return (ft_pwd((const char**)micli->cmdline.micli_argv));
 	else if (!(ft_strcmp(cmd, "echo")))
-		return (ft_echo((const char **)micli->cmdline->micli_argv, micli));
+		return (ft_echo((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "unset")))
-		return (ft_unset(micli->cmdline->micli_argv, micli));
+		return (ft_unset(micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "env")))
 		return (ft_env(micli->envp));
 	else if (!(ft_strcmp(cmd, "export")))
-		return (ft_export((const char **)micli->cmdline->micli_argv, micli));
+		return (ft_export((const char **)micli->cmdline.micli_argv, micli));
 	return (128);
 }
 
@@ -210,7 +210,7 @@ int		ft_env(char **envp)
 
 	store = *envp;
 	i = 0;
-	while (store)
+	while (store && envp != NULL)
 	{
 		printf("%s\n", store);
 		store = *(envp + ++i);
