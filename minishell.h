@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/01 18:35:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/01 20:53:25 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,12 @@ typedef struct	s_tokendata
 	char			**path_array;
 	char			*tok_start;
 	char			*tok_end;
+	char			*var_flag;
 	unsigned char	quote_flag:2; //This flag has 2 bits. First bit is single quotes, second bit is double quotes. 00 = quotes closed, 01 = double quotes open single quotes closed, 10 = single quotes open double quotes closed, 11 = double and single quotes open.
+	unsigned char	redirect_flag:2; //This flag has 2 bits. 00 = No redirect 01 = write to file, trunc. 10 = write to file, append 11 = read from file.
 	unsigned char	escape_flag:1; //This flag has 1 bit. If it is set, the following character has been 'escaped' and should be read as a character rather than an operator.
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
 	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
-	char			*var_flag;
 }				t_tokendata;
 
 typedef struct	s_token
@@ -59,6 +60,7 @@ typedef struct	s_cmdline
 	char	*cmd;
 	t_list	*arguments;
 	char	**micli_argv;
+	int		*redir_fd;
 }				t_cmdline;
 
 
