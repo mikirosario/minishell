@@ -1,3 +1,7 @@
+### Version 2.35
+
+- Minishell now accepts absolute and relative paths with '/path', './path', '../path' and '~/path'.
+
 ### Version 2.34
 
 - Incorporated Miguel's envp_dup function to make a copy of the originally inherited envp array.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/23 23:42:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/01 14:49:19 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,27 +226,18 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** assigning stdin or stdout to the duplicates through the dup2 function.
 **
 ** All of the pipes.array file descriptors IN THE CHILD are then closed to
-** eliminate their references as counted in the file struct.
+** eliminate their references as counted in the associated file structs.
 **
 ** When pipes.count - pipes.index == 0, we have reached the last piped command.
 **
-**					  ------->pipes.count == 3<--------
-**					  ^				  ^				  ^
-**			pipe0	  ^  	pipe1	  ^		pipe2	  ^		pipe3
-**	 	[write][read] |	[write][read] |	[write][read] | [write][read]
-**					0	3			2	5			4	7			6	stdin
-**					x	↑	   		↓	↑	  		↓	↑			↓	↑
-**				  	cmd1			cmd2			cmd3			cmd4
-**	pipes.index	==	0	----------> 1	---------->	2	---------->	3
-**	pipes.count ==  3											  - 3
-**																	↓
-**																	0 == end cmd
-**
-**					 ^  	pipe0	  ^		pipe2	  ^		pipe3
+**					 -------->pipes.count == 3<--------
+**					 ^				  ^				  ^
+**					 ^  	pipe0	  ^		pipe1	  ^		pipe2
 **					 |	[write][read] |	[write][read] | [write][read]
 **			   stdout	1			0	3			2	5			4	stdin
 **					↓	↑	   		↓	↑	  		↓	↑			↓	↑
 **				  	cmd1			cmd2			cmd3			cmd4
+**					child1			child2			child3			child4
 **	pipes.index	==	0	----------> 1	---------->	2	---------->	3
 **	pipes.count ==  3											  - 3
 **																	↓
@@ -262,11 +253,14 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
 **
 ** If find_cmd_path had to reserve memory to store an assembled pathname, the memory is freed.
+**
+** LAST ADDITIONAL PIPE UNNECESSARY????????
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 {
 	char	*exec_path;
+	char	*builtin;
 	char	*path_var;
 	int		stat_loc;
 	size_t	i;
@@ -275,6 +269,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 
 	i = 0;
 	exec_path = NULL;
+	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	
 	// i = 0;
@@ -286,12 +281,15 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	
 	//printf("%s\n", path_var);
 
-	exec_path = find_cmd_path(cmd, path_var, micli);
-	if (exec_path)
+	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/')) //if ispath
+		exec_path = cmd; //exec path is cmd if cmd is path
+	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL
+		builtin = cmd;
+	if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
 	{
-		if (exec_path == cmd) //if find_cmd_path return value points to the same destination as the original cmd pointer, it means this command was found among the builtins and will be executed as a builtin
-			micli->cmd_result = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
-		else
+		if (builtin != NULL) //if builtin is defined, command is a builtin, después guarreo para evitar que al liberar exec_path se libere memoria apuntada por cmd antes de tiempo :p 
+			micli->cmd_result = exec_builtin(builtin, micli); //function must return exit status of executed builtin (piped builtins not yet functional)
+		else //otherwise it's a path, send the path to execve.
 		{
 			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
@@ -331,7 +329,8 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 
 				micli->pipes.index++; //increment pipe_index for child pipe_count comparison
 			}
-			exec_path = ft_del(exec_path);
+			if (exec_path != cmd) //guarreo para evitar liberar memoria apuntada por cmd antes de tiempo provocando un double free :p
+				exec_path = ft_del(exec_path);
 		}
 	}
 	else

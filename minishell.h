@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 18:44:51 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/01 18:35:35 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,cd,pwd,unset"
+#define BUILTINS "exit,pwd,unset"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
 #define PIPE_MAX __SIZE_MAX__ / 2 - 1
