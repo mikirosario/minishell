@@ -1,3 +1,7 @@
+### Version 2.35
+
+- Minishell now accepts absolute and relative paths with '/path', './path', '../path' and '~/path'.
+
 ### Version 2.34
 
 - Updated exec_cmd function description to reflect changes made in version 2.31.
