@@ -1,64 +1,84 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
+/*   Updated: 2021/02/28 20:07:44 by mvillaes         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-//typedef void (*sighandler_t)(int);
-
-//sighandler_t signal(int signum, sighandler_t handler);
-//
-//first arg is the signal number, each signal has a predefined integer value assigned.
-//ex: 2 = SIGINT and 20 SIGTSTP
-//second arg is a pointer to a singal handler. The signal handler is a function that
-//must accept an int as the only parameter and return void as descibed by the typedef
-
-
-int catch_signal() 
+void	catch_signal() 
 {
-   signal(SIGINT, ctrl_c);
-   signal(SIGQUIT, ctrl_bar);
+	// int status;
 
-//    while(1) {
-//       //printf("Going to sleep for a second...\n");
-//       sleep(1); 
-//    }
-   return(0);
+	// status = ft_child_status();
+	// if (status == 0)// Child still alive
+	// {
+		signal(SIGINT, ctrl_c);
+		signal(SIGQUIT, ctrl_bar);
+		signal(4, ctrl_d);
+	// }
+	// if (status == -1)
+	// 	ft_printf("Signal error");
 }
 
-void	ctrl_c(int signum)
+// int		ft_child_status()
+// {
+// 	int status;
+// 	pid_t child_status;
+// 	pid_t pid;
+
+// 	pid = fork();
+// 	child_status = waitpid(pid, &status, WNOHANG);
+// 	if (child_status == 0) //child alive
+// 		return (0);
+// 	if (child_status == -1) //error
+// 		return (-1);
+// 	return (1);
+// }
+// void	ft_wait(int signum)
+// {
+// 	wait(NULL);
+// }
+
+/*
+** Ctrl+C interrupt the program and terminates the application
+*/
+
+void	ctrl_c()
 {
-   printf("Ctrl -%d\n", signum);
-   //exit(1);
+   //if child process is running do...
+   //if(micli->child_know.child_flag == 1)
+	ft_printf("\n");
+   //else return a new prompt
+   //else if(ft_printf("else ctrl_c"));
 }
 
-void	ctrl_bar(int signum)
+/*
+** Ctrl+\ tells the application to exit as soon as possible without saving
+*/
+
+void	ctrl_bar()
 {
-	printf("Ctrl -%d\n", signum);
+   //if child process is runnning do..
+   //if(micli->child_know.child_flag == 1)
+	ft_printf("Quit: 3\n");
+   //else do nothing
+   //else if(ft_printf("else ctrl_c"));
 }
 
-// void	ctrl_d(int signum)
-// {
-// 	printf("Ctrl -%d\n", signum);
-// }
-
-// //ctrl+C interrupt the program and terminates the application
-// void	signal_c()
-// {
-// 	// if program is executing
-// 	(void) signal(SIGINT, SIG_DFL);
-// 	// if no program is executing
-// 	// new line
-// }
-// // //ctrl+bar
-// // tells the application to exit as soon as possible without saving anything;
-// void	singal_bar()
-// {
-// 	// 
-// 	(void) signal(SIGQUIT, SIG_DFL);
-// }
-// // ctrl+D generates a EOF/end of imput (normally EOF=-1)
-// void	signal_d()
-// {
-// 	//send EOF (?)
-// }
-
-
-// usefull link
-// http://people.cs.pitt.edu/~alanjawi/cs449/code/shell/UnixSignals.htm
+void	ctrl_d()
+{
+	signal(SIGCHLD, SIG_IGN);
+	// Parent process installs signal handler for the SIGCHLD
+	// calls wait, when child terminated the SIGCHLD is delivered
+	// signal(SIGCHLD, ft_wait(signum));
+	// ctrl_d;
+	write(1, "exit\n", 5);
+	exit(0);
+}

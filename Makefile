@@ -6,15 +6,19 @@
 #    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/02/26 18:21:45 by mrosario         ###   ########.fr        #
+#    Updated: 2021/03/02 18:17:01 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
+BUILTINS := builtins
+
 SRC = main.c exit_handling.c memory_reservation.c memory_free.c process_line.c \
-flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c builtins.c \
-pipe_handling.c process_char.c envp_dup.c
+flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c \
+pipe_handling.c process_char.c envp_dup.c \
+$(BUILTINS)/ft_export.c \
+$(BUILTINS)/builtins.c \
 
 LIBFT = ./libft/libft.a
 

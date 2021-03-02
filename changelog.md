@@ -1,3 +1,15 @@
+## Version 2.4
+
+- Builtins export and env now partially functional and working with both defined and undefined variables as in bash.
+
+- Builtin pwd functional.
+
+- Builtins have been moved into their own directory.
+
+- Note, builtins are not yet spawned into child processes like normal commands, so they still cannot be piped.
+
+
+
 ### Version 2.35
 
 - Minishell now accepts absolute and relative paths with '/path', './path', '../path' and '~/path'.

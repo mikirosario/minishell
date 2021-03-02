@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/01 20:53:25 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/02 19:47:34 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,pwd,unset"
+#define BUILTINS "exit,pwd,export,env,echo"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
 #define PIPE_MAX __SIZE_MAX__ / 2 - 1
@@ -49,6 +49,12 @@ typedef struct	s_tokendata
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
 	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
 }				t_tokendata;
+
+// typedef struct	s_child
+// {
+// 	int		child_flag;
+// }				t_child;
+
 
 typedef struct	s_token
 {
@@ -108,11 +114,8 @@ typedef struct	s_micli
 	unsigned char	pipe_reset_flag:2; //Pipe controls which pipe in the pipe array needs to be reopened for following exec cycle
 }				t_micli;
 
-
-
-
-
 /* Command Execution */
+
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 
 /* Flag Handling */
@@ -121,12 +124,13 @@ unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
 /* String Parsing */
 int		isvarchar(char chr);
-char	*find_var(char *name, size_t name_len, char **envp);
+char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
 char	process_char(char *chr, t_micli *micli);
 
 /* Copying */
+
 char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
 /* Concurrent Pipe Handling */
@@ -140,6 +144,7 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli);
 // size_t	pipe_count(const char *line, t_micli *micli);
 
 /* Memory Freeing */
+
 t_list	*ft_lstfree(t_list *lst);
 void	freeme(t_micli *micli);
 void	clear_cmdline(t_micli *micli);
@@ -156,21 +161,35 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Signal Call */
 
-int		catch_signal();
-void	ctrl_c(int signum);
-void	ctrl_bar(int signum);
-// void	signal_c();
-// void	singal_bar();
+//int		catch_signal(t_micli *micli);
+void	catch_signal();
+int		ft_child_status();
+void	ctrl_c();
+void	ctrl_bar();
+void	ctrl_d();
+void	ft_wait(int signum);
 // void	signal_d();
 
 /* Builtins */
+
 int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
-int		ft_pwd();
+int    	ft_pwd(const char **argv);
 int	    ft_echo(const char **argv, t_micli *micli);
-int	    ft_unset(char **argv, char **envp);
+int	    ft_unset(char **argv, t_micli *micli);
+int		ft_env(char **envp);
+
+/* Export */
+int		ft_export(const char **argv, t_micli *micli);
+size_t	ft_countarr(char **envp);
+
+
+/* Redirections */
+
+
 
 /* Exit Handling */
+
 void	exit_success(t_micli *micli);
 void	exit_failure(t_micli *micli);
 
