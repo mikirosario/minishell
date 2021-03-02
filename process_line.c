@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 04:21:30 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/02 20:25:59 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,6 +187,8 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 {
 	ft_bzero(&micli->token, sizeof(t_token));
 	ft_bzero(&micli->cmdline, sizeof(t_cmdline));
+	micli->cmdline.fd_redir_in = STDIN_FILENO; // Initialize default redir_in fd as stdin
+	micli->cmdline.fd_redir_out = STDOUT_FILENO; // Initialize default redir_out fd as stdout
 	ft_bzero(&micli->tokdata, sizeof(t_tokendata));
 	// Save line to array?? Not a requirement, but good feature to have...
 	micli->tokdata.tok_start = startl; //start of first token is at line start

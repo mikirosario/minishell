@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/02 19:47:34 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/02 21:18:35 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct	s_tokendata
 	char			*tok_start;
 	char			*tok_end;
 	char			*var_flag;
+	char			*redir_end; //This flag would save the address of the character after the redirect instruction ends; all preceding characters are to be flagged for deletion
 	unsigned char	quote_flag:2; //This flag has 2 bits. First bit is single quotes, second bit is double quotes. 00 = quotes closed, 01 = double quotes open single quotes closed, 10 = single quotes open double quotes closed, 11 = double and single quotes open.
 	unsigned char	redirect_flag:2; //This flag has 2 bits. 00 = No redirect 01 = write to file, trunc. 10 = write to file, append 11 = read from file.
 	unsigned char	escape_flag:1; //This flag has 1 bit. If it is set, the following character has been 'escaped' and should be read as a character rather than an operator.
@@ -63,10 +64,12 @@ typedef struct	s_token
 
 typedef struct	s_cmdline
 {
-	char	*cmd;
-	t_list	*arguments;
-	char	**micli_argv;
-	int		*redir_fd;
+	char			*cmd;
+	t_list			*arguments;
+	char			**micli_argv;
+	int				*fd_redir_in;
+	int				*fd_redir_out;
+	unsigned char	redir_out_flag:2; //This flag will indicate whether a redirect output instruction will truncate or append file. 00 no redir, 01 trunc, 10 append.
 }				t_cmdline;
 
 
