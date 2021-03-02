@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/02 18:36:14 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/02 19:07:44 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,10 @@ typedef struct	s_tokendata
 	char			*var_flag;
 }				t_tokendata;
 
-typedef struct	s_child
-{
-	int		child_flag;
-}				t_child;
+// typedef struct	s_child
+// {
+// 	int		child_flag;
+// }				t_child;
 
 
 typedef struct	s_token
