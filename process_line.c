@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/02 20:25:59 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/04 03:09:45 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,25 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 /*
 ** Once the start and end of a token are identified, this function is called to
 ** reserve enough memory to contain the token and then copy the token to that
-** memory location, which will be pointed to from within an instance of the
-** token struct.
+** memory location.
 **
-** The token command is pointed to by the token->cmd pointer. A linked list is
-** created for command arguments, which will be pointed to by the
-** token->arguments pointer.
+** The token containing the command is pointed to by the token->cmd pointer. A
+** linked list is created for tokens containing arguments to the command, which
+** is pointed to by the cmdline->arguments pointer.
 **
-** An argv array is created out of the linked list.
+** An argv array will later be created out of token->cmd and the linked list of
+** arguments.
+**
+** If the redir_end flag has been set, it is because redirect instructions are
+** now being read. If that is the case, all tokens until the redir_end flag is
+** unset will be sequestered in a separate linked list from the command
+** arguments, which will be pointed to by the cmdline->redir_tokens pointer.
+**
+** These tokens will contain the file names to be opened. Any environment
+** variables used within those names should resolve normally by micli_cpy.
+**
+** The '<' or '>' or ">>" redirects are not saved, so additional function is
+** needed to set the read/write mode appropriately... will see how >I do this.
 **
 ** The index pointer micli->tokdata->tok_end will then skip any spaces and
 ** advance to the beginning of the next token. If a ';' or '\0' is found then
@@ -73,11 +84,16 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 ** command line, so the program should leave the calling function,
 ** process_cmdline, and re-enter it.
 **
-** If a '|' is found then that will be the same address as endl and the next
-** token will be a new command line, and the output of the current command line
-** must be piped to it. This will set the pipe flag.
+** If the redir_end flag has been set, then after spaces are skipped, any '<' or
+** '>' will be skipped, and spaces will be skipped again to get to the next file
+** name. Might alter this to save read modes too.
 **
-** Otherwise the next token will be an argument to the current command line.
+** If a '|' is found then that will be the same address as endl and the next
+** token will be the start of a new command line, and the output of the current
+** command line must be piped to it. This will set the pipe flag.
+**
+** Otherwise the next token will be an argument to the current command line, or
+** a file name for the current redirect.
 */
 
 void			process_token(t_micli *micli)
@@ -91,7 +107,24 @@ void			process_token(t_micli *micli)
 		micli->cmdline.cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //From position 0 at startl to position of index upon flag trigger is the size of the command name
 		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
-	else //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
+	//HERE WE NEED REDIRECT FLAG TO SEQUESTER REDIRECT DATA...
+	else if (micli->cmdline.redir_end && (micli->tokdata.tok_end > micli->cmdline.redir_start && micli->tokdata.tok_end <= micli->cmdline.redir_end))
+	{
+			dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
+			if (!micli->cmdline.redir_tokens)
+				micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
+			else
+				ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
+			micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
+	}
+	//Empieza el guarreo aquí. Resulta que con tanto el espacio no escapado como el '<' o '>' no escapado como condiciones de
+	//terminar un token, si entramos aquí con echo test>out, tok_start sería 't' y tok_end sería '>'. Pero en cambio si
+	//hacemos echo test > out, el espacio después de test ya provoca que test se recoja como token, y ahora tok_start y
+	//tok_end ambos apuntan a '>', con lo que al recogerse se recoge como argumento de un solo byte, que apunta a un
+	// carácter nulo. (teniendo en cuenta que tok_end no es inclusive). Para evitar esto, necesitamos esta instrucción de
+	// no recoger argumento si no hay nada que recoger (start == end), que en este caso solo se debería dar con los dichosos
+	// '<'.
+	else if (micli->tokdata.tok_start != micli->tokdata.tok_end) //if micli->tokdata.cmd_flag has been triggered already, everything from index to &index[i] is an argument
 	{
 		micli->tokdata.args++; //Increment argument counter, starts at 0. We'll use this to reserve memory for an argument pointer array once the argument list is done.
 
@@ -106,6 +139,12 @@ void			process_token(t_micli *micli)
 	}
 	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
+	if (micli->cmdline.redir_end)
+	{
+		while (*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<')
+			micli->tokdata.tok_end++;
+		micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
+	}
 
 	//advance index pointer to BEGINNING of next token, unless it's already endl (which will be a NULL, not a space, so nothing will be skipped). Beginning of next token may be its first character or '|' or ';', which ends a command line and means the next token will also be a new command.
 	micli->tokdata.tok_start = micli->tokdata.tok_end; //token_start pointer points to beginning of next token, or to endl
@@ -121,6 +160,7 @@ void			process_token(t_micli *micli)
 	// 	ft_printf("Argument %d: %s\n", micli->tokdata.args, dst);
 
 	micli->tokdata.toksize = 0; //reset string size counter, don't remove this
+
 }
 
 /*
@@ -186,9 +226,7 @@ void			process_token(t_micli *micli)
 int		process_cmdline(char *startl, char *endl, t_micli *micli)
 {
 	ft_bzero(&micli->token, sizeof(t_token));
-	ft_bzero(&micli->cmdline, sizeof(t_cmdline));
-	micli->cmdline.fd_redir_in = STDIN_FILENO; // Initialize default redir_in fd as stdin
-	micli->cmdline.fd_redir_out = STDOUT_FILENO; // Initialize default redir_out fd as stdout
+	ft_bzero(&micli->cmdline, sizeof(t_cmdline)); //repeat instruction in clear_cmdline... make up my mind where to put this
 	ft_bzero(&micli->tokdata, sizeof(t_tokendata));
 	// Save line to array?? Not a requirement, but good feature to have...
 	micli->tokdata.tok_start = startl; //start of first token is at line start
@@ -196,16 +234,16 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	//Looking for the end of cmds/arguments (aka. tokens)
 	while (micli->tokdata.tok_start < endl)
 	{
-
 		*micli->tokdata.tok_end = process_char(micli->tokdata.tok_end, micli);
 		
 		//What defines the end of a token?
-		if ( (micli->tokdata.quote_flag == 0 && (ft_isspace(*micli->tokdata.tok_end))) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found, end of token (OR endl has been reached, because we don't do multiline commands)
+		// '<' or '>' will now define start of special redir token... redir token must be interpreted but supressed from arguments
+		if ( ( !micli->tokdata.quote_flag && !micli->tokdata.escape_flag && (ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl ) //if quotes are closed and a space has been found or a redirect order has been found, end of token (OR if endl has been reached, because we don't do multiline commands)
 		{
 			process_token(micli);
 			micli->token.var_lst = ft_lstfree(micli->token.var_lst); //Free token's variable list, if created
 			//clear_token(micli);
-		}
+		}		
 		else //we handle micli->tokdata.tok_end indexing inside the preceding if when we find end of a cmd/argument by advancing it to start of next argument.
 			micli->tokdata.tok_end++;
 	}
@@ -221,6 +259,19 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	// }
 	exec_cmd(micli->cmdline.cmd, micli->cmdline.arguments, micli);
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
+	t_list *tmp = micli->cmdline.redir_tokens;
+	while (tmp)
+	{
+		ft_printf("Sequestered Redirect Instruction: %s\n", tmp->content);
+		tmp = tmp->next;
+	}
+	tmp = micli->cmdline.arguments;
+	int tmpctr = 1;
+	while (tmp)
+	{
+		ft_printf("Argument %d: %s\n", tmpctr++, tmp->content);
+		tmp = tmp->next;
+	}
 	clear_cmdline(micli); //Free memory reserved for cmdline parsing
 	return (0);	
 }

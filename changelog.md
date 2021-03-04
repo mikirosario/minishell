@@ -1,3 +1,17 @@
+### Version 2.41
+
+- Introduced a function called find_redir_end that, when passed a pointer to the beginning of a string of redirect instructions, finds and returns a pointer to the end of the redirect instructions within that string.
+
+- Introduced a mode into process_char that detects the beginning of a series of redirect instructions and sets a flag to mark it, and another flag to mark the end of the redirect instructions.
+
+- The process_token function now uses the pointers to the start and end of redirect instructions to sequester all file paths within a redirect string into a linked list pointed to by micli->cmdline.redir_tokens, for later use to create/open files as needed. Consequently, redirect strings are no longer taken by micli as arguments. Arguments both before and after a redirect string are taken and passed to the original command, as in bash.
+
+- Note that the byte of a leading '>' or '<' is still counted before being sequestered, so the debugger still claims it as '1 byte reserved', but memory is not actually allocated for it and no linked list member is associated with it.
+
+- Added a bzero instruction to clear_cmdline. May move the bzero instructions from start of process_cmdline function to dedicated clear functions, though presently I've only done this for the clear_cmdline bzero, which is now duplicated as a result.
+
+- Created a much needed 'rebug' instruction in the Makefile to fclean and recompile in debug mode. ;)
+
 ## Version 2.4
 
 - Builtins export and env now partially functional and working with both defined and undefined variables as in bash.
@@ -7,8 +21,6 @@
 - Builtins have been moved into their own directory.
 
 - Note, builtins are not yet spawned into child processes like normal commands, so they still cannot be piped.
-
-
 
 ### Version 2.35
 

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
+#    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/02 18:17:01 by mrosario         ###   ########.fr        #
+#    Updated: 2021/03/04 01:42:47 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ BUILTINS := builtins
 
 SRC = main.c exit_handling.c memory_reservation.c memory_free.c process_line.c \
 flag_toggles.c cmd_execution.c env_var_handling.c iamerror.c signals.c \
-pipe_handling.c process_char.c envp_dup.c \
+pipe_handling.c process_char.c envp_dup.c redirection.c \
 $(BUILTINS)/ft_export.c \
 $(BUILTINS)/builtins.c \
 
@@ -49,4 +49,6 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all debug clean fclean re%
+rebug: fclean debug
+
+.PHONY: all debug clean fclean re rebug
