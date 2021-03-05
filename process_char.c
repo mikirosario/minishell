@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_char.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/04 02:11:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/05 20:42:20 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,9 +255,10 @@ char			process_char(char *chr, t_micli *micli)
 	//if (*chr == '\\' && !micli->tokdata.escape_flag && (micli->tokdata.quote_flag != 2 && !( micli->tokdata.quote_flag == 1 && ft_memchr(DQUOTE_ESC_CHARS, *(chr + 1), 3) == NULL ) ))
 	if (is_end_var_name(chr, micli->tokdata.var_flag))
 		micli->tokdata.var_flag = NULL;
-	if (!micli->cmdline.redir_end)
+	if ((*chr == '>' || *chr == '<') && !micli->tokdata.escape_flag && !micli->tokdata.quote_flag) //If it's a redirect command
 	{
-		if ((*chr == '>' || *chr == '<') && !micli->tokdata.escape_flag && !micli->tokdata.quote_flag) //If it's a redirect command)
+		micli->tokdata.toksize++;
+		if (!micli->cmdline.redir_end) 
 		{
 			micli->cmdline.redir_start = chr;
 			micli->cmdline.redir_end = find_redir_end(chr);

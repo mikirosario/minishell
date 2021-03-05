@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/04 03:09:45 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/05 21:32:17 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,16 @@ void			process_token(t_micli *micli)
 		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	//HERE WE NEED REDIRECT FLAG TO SEQUESTER REDIRECT DATA...
-	else if (micli->cmdline.redir_end && (micli->tokdata.tok_end > micli->cmdline.redir_start && micli->tokdata.tok_end <= micli->cmdline.redir_end))
+	else if (micli->cmdline.redir_end && ((micli->tokdata.tok_end > micli->cmdline.redir_start && micli->tokdata.tok_end <= micli->cmdline.redir_end) || micli->tokdata.tok_start == micli->tokdata.tok_end))
 	{
-			dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
-			if (!micli->cmdline.redir_tokens)
-				micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
-			else
-				ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
+		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
+		if (!micli->cmdline.redir_tokens)
+			micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
+		else
+			ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
+		if (micli->tokdata.tok_start == micli->tokdata.tok_end)
+			micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 1), micli);
+		else
 			micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 	}
 	//Empieza el guarreo aquí. Resulta que con tanto el espacio no escapado como el '<' o '>' no escapado como condiciones de
@@ -139,7 +142,7 @@ void			process_token(t_micli *micli)
 	}
 	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
-	if (micli->cmdline.redir_end)
+	if (micli->tokdata.tok_start == micli->tokdata.tok_end)
 	{
 		while (*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<')
 			micli->tokdata.tok_end++;

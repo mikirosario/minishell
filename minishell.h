@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/04 01:12:13 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/05 20:06:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,16 +71,17 @@ typedef struct	s_cmdline
 	char			**micli_argv;
 	int				*fd_redir_in;
 	int				*fd_redir_out;
+	unsigned		redir_in_flag:1; //This flag will indicate whether or not to pereform a redirect input instruction
 	unsigned char	redir_out_flag:2; //This flag will indicate whether a redirect output instruction will truncate or append file. 00 no redir, 01 trunc, 10 append.
 }				t_cmdline;
 
 
-typedef struct	s_varlist
-{
-	char				*varname;
-	char				*varcontent;
-	struct s_varlist	*next;
-}				t_varlist;
+// typedef struct	s_varlist
+// {
+// 	char				*varname;
+// 	char				*varcontent;
+// 	struct s_varlist	*next;
+// }				t_varlist;
 
 typedef struct	s_builtins
 {
