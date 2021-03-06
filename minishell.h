@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/05 20:06:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/06 19:12:46 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 //#include <sys/types.h>
 //#include <sys/uio.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <dirent.h>
@@ -26,7 +27,7 @@
 #include "libft.h"
 
 #define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,pwd,export,env,echo"
+#define BUILTINS "exit,pwd,export,env"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
 #define PIPE_MAX __SIZE_MAX__ / 2 - 1
@@ -47,6 +48,8 @@ typedef struct	s_tokendata
 	unsigned char	redirect_flag:2; //This flag has 2 bits. 00 = No redirect 01 = write to file, trunc. 10 = write to file, append 11 = read from file.
 	unsigned char	escape_flag:1; //This flag has 1 bit. If it is set, the following character has been 'escaped' and should be read as a character rather than an operator.
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
+	unsigned char	redir_in_flag:1; //This flag will indicate whether or not to pereform a redirect input instruction
+	unsigned char	redir_out_flag:2; //This flag will indicate whether a redirect output instruction will truncate or append file. 00 no redir, 01 trunc, 10 append.
 	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
 }				t_tokendata;
 
@@ -66,13 +69,13 @@ typedef struct	s_cmdline
 	char			*cmd;
 	t_list			*arguments;
 	t_list			*redir_tokens;
+	t_list			*redir_out;
+	t_list			*redir_in;
 	char			*redir_start;
 	char			*redir_end; //This flag saves the address of the character after the redirect instruction set ends; all preceding characters are sequestered from the argument list
 	char			**micli_argv;
-	int				*fd_redir_in;
-	int				*fd_redir_out;
-	unsigned		redir_in_flag:1; //This flag will indicate whether or not to pereform a redirect input instruction
-	unsigned char	redir_out_flag:2; //This flag will indicate whether a redirect output instruction will truncate or append file. 00 no redir, 01 trunc, 10 append.
+	int				fd_redir_in;
+	int				fd_redir_out;
 }				t_cmdline;
 
 

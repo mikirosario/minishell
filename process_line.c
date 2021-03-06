@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/05 21:32:17 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/06 19:28:35 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,47 @@ void			process_token(t_micli *micli)
 			micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
 		else
 			ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
-		if (micli->tokdata.tok_start == micli->tokdata.tok_end)
-			micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 1), micli);
+		if (micli->tokdata.tok_start == micli->tokdata.tok_end) //if tok_start == tok_end there is a '>' or '<' or ">>"
+		{
+			if (*micli->tokdata.tok_end == '>' && *(micli->tokdata.tok_end + 1) == '>') //for '>>' copy 2 chars '>>'
+			{
+				micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 2), micli);
+				micli->tokdata.redir_out_flag = 2; //append mode
+			}
+			else
+			{
+				micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 1), micli); //for '<' or '>' copy 1 char
+				if (*micli->tokdata.tok_end == '>')
+					micli->tokdata.redir_out_flag = 1; //trunc mode
+				else
+					micli->tokdata.redir_in_flag = 1; //read mode
+			}
+			// if (*dst == '>')
+			// 	micli->cmdline.redir_out = ft_lstlast(micli->cmdline.redir_tokens); //if output instruction, save address to its list member to redir_out
+			// else
+			// 	micli->cmdline.redir_in = ft_lstlast(micli->cmdline.redir_tokens); //if input instruction, save a pointer to its list member to redir_in
+		}
 		else
+		{
 			micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
+			if (micli->tokdata.redir_out_flag)
+			{
+				if (micli->cmdline.fd_redir_out) //If a file has already been opened, close it
+					close(micli->cmdline.fd_redir_out);
+				if (micli->tokdata.redir_out_flag == 1)
+					micli->cmdline.fd_redir_out = open(dst, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN WRONLY TRUNC MODE, permissions 644
+				else
+					micli->cmdline.fd_redir_out = open(dst, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN WRONLY APPEND MODE, permissions 644
+			}
+			else if (micli->tokdata.redir_in_flag)
+			{
+				if (micli->cmdline.redir_in)
+					close(micli->cmdline.fd_redir_in);
+				micli->cmdline.fd_redir_in = open(dst, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN RONLY MODE, permissions 644
+			}
+			// micli->tokdata.redir_out_flag = 0; //MOVE THESE TO TOKDATA SO THEY LIVE AS LONG AS TOKEN ONLY...
+			// micli->tokdata.redir_in_flag = 0;
+		}
 	}
 	//Empieza el guarreo aquí. Resulta que con tanto el espacio no escapado como el '<' o '>' no escapado como condiciones de
 	//terminar un token, si entramos aquí con echo test>out, tok_start sería 't' y tok_end sería '>'. Pero en cambio si
@@ -142,7 +179,7 @@ void			process_token(t_micli *micli)
 	}
 	//micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
-	if (micli->tokdata.tok_start == micli->tokdata.tok_end)
+	if ((*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<') && micli->tokdata.tok_start == micli->tokdata.tok_end)
 	{
 		while (*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<')
 			micli->tokdata.tok_end++;

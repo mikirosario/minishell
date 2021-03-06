@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/05 20:42:20 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/06 19:13:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,23 @@ char			process_char(char *chr, t_micli *micli)
 		micli->tokdata.var_flag = NULL;
 	if ((*chr == '>' || *chr == '<') && !micli->tokdata.escape_flag && !micli->tokdata.quote_flag) //If it's a redirect command
 	{
-		micli->tokdata.toksize++;
+		// if (*(chr + 1) == '>' && *chr == '>')
+		// {
+		// 	micli->tokdata.redir_out_flag = 2; //append mode
+		// 	micli->tokdata.toksize += 2;
+		// }
+		// else
+		// {
+		// 	if (*chr == '>')
+		// 		micli->tokdata.redir_out_flag = 1; //trunc mode
+		// 	else
+		// 		micli->tokdata.redir_in_flag = 1;
+		// 	micli->tokdata.toksize += 1;
+		// }
+		if (*(chr + 1) == '>' && *chr == '>')
+			micli->tokdata.toksize += 2;
+		else
+			micli->tokdata.toksize += 1;
 		if (!micli->cmdline.redir_end) 
 		{
 			micli->cmdline.redir_start = chr;
