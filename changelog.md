@@ -1,3 +1,9 @@
+### Version 2.42
+
+- The program now sequesters '<', '>' and '>>' instructions along with file names. I may supress the redir_token linked list entirely when done with debugging... shouldn't be necessary once I get the fds.
+
+- The program now opens files in read, write trunc and write append mode depending on the instruction preceding the file name.
+
 ### Version 2.41
 
 - Introduced a function called find_redir_end that, when passed a pointer to the beginning of a string of redirect instructions, finds and returns a pointer to the end of the redirect instructions within that string.
