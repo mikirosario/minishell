@@ -1,33 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 19:14:16 by mvillaes         ###   ########.fr       */
+/*   Created: 2021/03/06 17:09:59 by mvillaes          #+#    #+#             */
+/*   Updated: 2021/03/06 17:25:57 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void 	waiting(int signum)
+void	print_env(char *str)
 {
-	(void)signum;
-	signal(SIGINT, waiting);
+	while (*str != 0)
+	{
+		if (*str != '"')
+			write(1, str, 1);
+		str++;
+	}
+	write(1, "\n", 1);
 }
 
-void	sigrun(int signum)
+int	ft_env(char **envp)
 {
-	if (signum == SIGINT)
+	int		i;
+	char	*store;
+
+	store = *envp;
+	i = 0;
+	while (store && envp != NULL)
 	{
-		write(1, "\033[2D\033[J\n🚀 ", ft_strlen("\033[2D\033[J\n🚀 "));
-		signal(SIGINT, sigrun);
+		if (ft_strchr(store, '='))
+			print_env(store);
+		store = *(envp + ++i);
 	}
-	else if (signum == SIGQUIT)
-	{
-		write(1, "\033[2D\033[J", ft_strlen("\033[2D\033[J"));
-		signal(SIGQUIT, sigrun);
-	}
+	return (0);
 }

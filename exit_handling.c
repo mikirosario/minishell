@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:06:33 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/26 19:03:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/06 19:45:42 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,5 @@ void	exit_failure(t_micli *micli)
 void	exit_success(t_micli *micli)
 {
 	freeme(micli);
-	exit(EXIT_FAILURE);
+	exit(EXIT_SUCCESS);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/01 14:49:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/05 21:29:09 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	int		stat_loc;
 	size_t	i;
 
-	pid_t	pid;
+	//pid_t	pid;
 
 	i = 0;
 	exec_path = NULL;
@@ -291,9 +291,9 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			micli->cmd_result = exec_builtin(builtin, micli); //function must return exit status of executed builtin (piped builtins not yet functional)
 		else //otherwise it's a path, send the path to execve.
 		{
-			if (!micli->pipe_flag && !(pid = fork())) //unpiped child
+			if (!micli->pipe_flag && !(micli->pid = fork())) //unpiped child
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-			else if (micli->pipe_flag && !(pid = fork())) //piped child inherits micli->pipes.array[]
+			else if (micli->pipe_flag && !(micli->pid = fork())) //piped child inherits micli->pipes.array[]
 			{
 				int writefd_pos;
 				int readfd_pos;
@@ -319,7 +319,8 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			{	
 				while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
 					close(micli->pipes.array[i++]);
-				waitpid(pid, &stat_loc, WUNTRACED);
+				signal(SIGINT, waiting);
+				waitpid(micli->pid, &stat_loc, WUNTRACED);
 				micli->cmd_result = WEXITSTATUS(stat_loc);
 				micli->pipe_flag = 0; //Reset pipe_flag
 				//printf("CMD RESULT: %d\n", micli->cmd_result);

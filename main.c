@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/02 18:14:05 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/06 19:59:09 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,21 @@ char	micli_loop(t_micli *micli)
 	char shutdown;
 	
 	shutdown = 0;
-
 	while (!shutdown)//no parece que esté usando shutdown...
 	{
 		write(1, "🚀 ", 6);
 		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
+		//signal(SIGINT, sigrun);
+		//signal(SIGQUIT, sigrun);
+		dup2(STDOUT_FILENO, 1);
+		write(1, "🚀 ", 6);
+		if (ft_get_next_line((int)micli->buffer, 0) == EOF)
+		{
+			write(1, "exitloop\n", 9);
+			//exit_success(micli);
+		}
 	}
 	return (0);
 }
@@ -126,7 +134,9 @@ int 	main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	//signal
-	catch_signal();
+	signal(SIGQUIT, sigrun);
+	signal(SIGINT, sigrun);
+
 	//command loop
 	micli_loop(&micli);
 

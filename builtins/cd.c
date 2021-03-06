@@ -1,33 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 19:14:16 by mvillaes         ###   ########.fr       */
+/*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
+/*   Updated: 2021/03/06 17:29:15 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void 	waiting(int signum)
+int	ft_cd(const char **argv, t_micli *micli)
 {
-	(void)signum;
-	signal(SIGINT, waiting);
-}
+	char	*home;
 
-void	sigrun(int signum)
-{
-	if (signum == SIGINT)
+	if (argv[1] == 0 || *argv[1] == '~')
 	{
-		write(1, "\033[2D\033[J\n🚀 ", ft_strlen("\033[2D\033[J\n🚀 "));
-		signal(SIGINT, sigrun);
+		home = find_var("HOME", 4, micli->envp);
+		chdir(home += 5);
+		return (0);
 	}
-	else if (signum == SIGQUIT)
+	if (argv[1] != 0 && *argv[1] != '~')
 	{
-		write(1, "\033[2D\033[J", ft_strlen("\033[2D\033[J"));
-		signal(SIGQUIT, sigrun);
+		if (chdir(argv[1]) == -1)
+		{
+			ft_printf("cd: %s: %s\n", argv[1], strerror(errno));
+			return (1);
+		}
+		return (0);
 	}
+	return (0);
 }
