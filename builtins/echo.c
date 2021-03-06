@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 20:56:31 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/06 21:15:20 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ int	ft_echo(const char **argv, t_micli *micli)
 	i = 1;
 	micli->builtins.argflag = 0;
 	if (!argv[i])
+	{
 		ft_printf("\n");
+		return (0);
+	}
 	i = 1;
 	while (!(ft_memcmp(argv[i], n, len)))
 	{
