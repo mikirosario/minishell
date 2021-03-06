@@ -1,3 +1,9 @@
+## Version 2.5
+
+- The program now handles file redirects, creating and closing new files as needed.
+
+- Redirects ended by a pipe to another command are still not handled as in bash. The piped command is executed as if unpiped and hangs waiting for input.
+
 ### Version 2.42
 
 - The program now sequesters '<', '>' and '>>' instructions along with file names. I may supress the redir_token linked list entirely when done with debugging... shouldn't be necessary once I get the fds.
