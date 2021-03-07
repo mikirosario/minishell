@@ -1,3 +1,11 @@
+## Version 2.6
+
+- Consolidated all command executions (builtins, pipes, redirects) in a single child type, currently with a single function.
+
+- Redirects ended by a pipe to another command now handled as in bash.
+
+- Moved fd_redir_flags back to cmdline struct.
+
 ## Version 2.5
 
 - The program now handles file redirects, creating and closing new files as needed.

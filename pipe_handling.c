@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/24 21:56:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/07 20:44:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,9 @@ int		close_pipes(size_t pipe_num, t_pipes *pipes, t_micli *micli)
 ** If an array of pipes has already been reserved, it is freed and the pointer
 ** set to NULL.
 **
-** The array size is calculated as (pipes->count + 1) * 2. One extra pipe is
-** added to the array to cap the pipeline at the end (see below), and the number
-** is multiplied by two to derive the number of file descriptors (2 per pipe).
-** The array size == the total fd count.
+** The array size is calculated as (pipes->count) * 2. The number of pipes is
+** multiplied by two to derive the number of file descriptors (2 per pipe). The
+** array size == the total fd count.
 **
 ** An integer array of the calculated size is reserved to hold the file
 ** descriptor numbers of each pipe.
@@ -57,38 +56,43 @@ int		close_pipes(size_t pipe_num, t_pipes *pipes, t_micli *micli)
 **
 ** echo 2*2 | bc | cat
 **
-** The pipe count is 2, and one additional pipe is added at the end, so the
-** number of pipes in the pipeline will be 3, and the number of file descriptors
-** will be 6. Thus, the array looks like this:
+** The pipe count is 2, so the number of pipes in the pipeline will be 2, and
+** the number of file descriptors will be 4. Thus, the array looks like this:
 **
-**				pipe0			pipe1			pipe2
-**			   0	 1		   2	 3		   4	 5
-** pipes	[read][write]	[read][write]	[read][write]
+**				pipe0			pipe1
+**			   0	 1		   2	 3
+** pipes	[read][write]	[read][write]
 **
 ** The pipeline, when in use, will look like this:
 **
-**		    	pipe0	 		pipe1			pipe1
-**			[write][read]	[write][read]	[write][read]
-** stdout	1			0	3			2	5			4	stdin
-**		↓	↑	   		↓	↑	  		↓	↑			↓	↑
-**	  	cmd1			cmd2			cmd3			cmd4
+**		pipe0	 		pipe1
+**			[write][read]	[write][read]
+** stdin	1			0	3			2	stdout
+**		↓	↑	   		↓	↑	  		↓	↑
+**	  	cmd0			cmd1			cmd2
 **
-** For a given command, the proper write_fd is currently given by the equation
-** write_fd = pipe_num * 2 + 1.
+** For a given command, the proper write_fd position in the pipe array is given
+** by the equation write_fd = cmd_index * 2 + 1. For example, for cmd0, the
+** proper write_fd position is 0 * 2 + 1 = 1. For cmd1 the proper write_fd
+** position is 1 * 2 + 1 = 3. For cmd2 the proper write_fd is 2 * 2 + 1 = 5,
+** which would cause a buffer overflow if used. :)
 **
-** The proper fd for reading is currently given by write_fd - 3 (that is, the
-** read fd of the preceding pipe).
-** 
-** Note that for pipe 0 this will cause an overflow, but this is okay, because
+** The proper read_fd position in the pipe array is given by write_fd - 3 (that
+** is, the read fd of the preceding pipe). For cmd2 that is 5 - 3 = 2. For cmd1
+** that is 3 - 3 = 0. For cmd0 that is 1 - 3 == -2, which causes a sign
+** overflow.
+**
+** Note that for cmd0 there will be a sign overflow, but this is okay, because
 ** the read_fd for the first command in a pipeline will never actually be used
-** (the mechanism for preventing this is explained in cmd_execution.c).
-** Similarly, the calculated write_fd for the last command in a pipeline will
-** be outside the array, but will likewise never be used.
+** Similarly, the calculated write_fd position for the last command in a
+** pipeline will be outside the reserved array, but will likewise never be used.
+** This is because of the pipe flag. The precise mechanism for preventing this
+** with the pipe flag is explained in cmd_execution.c.
 **
-** Also note that this method will cause an overflow in a pipeline of size
-** SIZE_MAX + 2 (that is, with SIZE_MAX / 2 - 1 pipes). Therefore, if the pipe
-** count is greater than this limit, we prohibit this pipeline to avoid a crash.
-** Aren't we so nice? :) MANUUUUU, COMPRUEBA MIS MATES... O_O
+** Also note that this method will cause an overflow in a pipe array of size
+** SIZE_MAX (that is, with SIZE_MAX / 2 pipes). Therefore, if the pipe count is
+** greater than this limit, we prohibit this pipeline to avoid a crash.
+** Aren't we so nice? :)
 */
 
 int		pipe_reset(t_pipes *pipes, t_micli *micli)
@@ -96,12 +100,12 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 	size_t	i;
 
 	i = 0;
-	pipes->index = 0;
-	if (pipes->count == PIPE_MAX)
+	pipes->cmd_index = 0;
+	if (pipes->count > PIPE_MAX)
 		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
 	if (pipes->array) //Free pipe array if already reserved
 		pipes->array = ft_del(pipes->array); //Free pipe array...
-	pipes->array_size = (pipes->count + 1) * 2;
+	pipes->array_size = (pipes->count) * 2;
 	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli); //Reserve pipe_count + 2 pipes, maybe stick this value in 'fdcount'.
 	while (i < pipes->array_size) //create all pipes
 	{

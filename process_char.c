@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/06 19:13:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/07 21:44:11 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,15 +259,15 @@ char			process_char(char *chr, t_micli *micli)
 	{
 		// if (*(chr + 1) == '>' && *chr == '>')
 		// {
-		// 	micli->tokdata.redir_out_flag = 2; //append mode
+		// 	micli->cmdline.redir_out_flag = 2; //append mode
 		// 	micli->tokdata.toksize += 2;
 		// }
 		// else
 		// {
 		// 	if (*chr == '>')
-		// 		micli->tokdata.redir_out_flag = 1; //trunc mode
+		// 		micli->cmdline.redir_out_flag = 1; //trunc mode
 		// 	else
-		// 		micli->tokdata.redir_in_flag = 1;
+		// 		micli->cmdline.redir_in_flag = 1;
 		// 	micli->tokdata.toksize += 1;
 		// }
 		if (*(chr + 1) == '>' && *chr == '>')
