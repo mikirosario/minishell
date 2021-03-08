@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/08 23:28:44 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/08 23:41:01 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include <sys/wait.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1
+#define READLINE_BUFSIZE 1024
 #define BUILTINS "exit,pwd,export,env,echo"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
