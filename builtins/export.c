@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 21:38:43 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/08 17:38:34 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ int	ft_export(const char **argv, t_micli *micli)
 		name_len = ft_name_len(argv[1]);
 		str_len = ft_strlen(argv[1]);
 		find = find_var(argv[1], name_len, micli->envp);
-		if (find != 0)
+		if (find != 0 && var_check(argv[1]) == 1)
 			upd(argv, str_len, name_len, micli);
-		if (find == 0)
+		if (find == 0 && var_check(argv[1]) == 1)
 			new_var(argv, str_len, micli);
 	}
 	if (!argv[1])
@@ -34,6 +34,17 @@ int	ft_export(const char **argv, t_micli *micli)
 		export_print(micli);
 	}
 	return (0);
+}
+
+int		var_check(const char *str)
+{
+	char first;
+
+	first = str[0];
+	if (isvarchar(first) == 1 || isvarchar(first) == 2)
+		return (1);
+	else
+		return (0);
 }
 
 void	upd(const char **argv, size_t str_len, size_t name_len, t_micli *micli)

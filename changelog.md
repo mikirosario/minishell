@@ -1,3 +1,8 @@
+
+### Version 2.4-a
+
+- Modified find_var to work with both defined and undefined variables.
+
 ## Version 2.4
 
 - Builtins export and env now partially functional and working with both defined and undefined variables as in bash.

@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/06 20:46:18 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/07 21:42:55 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,6 +181,7 @@ int		export_print(t_micli *micli);
 void	export_order(t_micli *micli);
 void	new_var(const char **argv, size_t str_len, t_micli *micli);
 void	upd(const char **argv, size_t str_len, size_t name_len, t_micli *micli);
+int		var_check(const char *str);
 
 
 
