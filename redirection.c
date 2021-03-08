@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 20:47:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/04 00:49:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/08 23:25:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,6 @@
 **			start		  stop
 **			redir		  redir
 **			sequester	  sequester
-**
-** Currently the bastards are sequestered onto a linked list, but I might change
-** that to a single-line buffer further down so I can parse it easier. Depends
-** on how I dig myself out of this paradigmatic mess. xD For now they're not
-** bothering the command, at least. xD
 */
 
 char *find_redir_end(char *redir_str)

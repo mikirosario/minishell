@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/07 21:46:37 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/08 23:28:44 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include <sys/wait.h>
 #include "libft.h"
 
-#define READLINE_BUFSIZE 1024
+#define READLINE_BUFSIZE 1
 #define BUILTINS "exit,pwd,export,env,echo"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
@@ -66,7 +66,7 @@ typedef struct	s_cmdline
 {
 	char			*cmd;
 	t_list			*arguments;
-	t_list			*redir_tokens;
+	//t_list		*redir_tokens; //Obsoleted by new code
 	t_list			*redir_out;
 	t_list			*redir_in;
 	char			*redir_start;
@@ -108,9 +108,9 @@ typedef struct	s_micli
 	t_builtins		builtins;
 	t_pipes			pipes;
 	//size_t		builtin_strlen;
+	//size_t		position; obsoleted by new code implementation
+	//size_t		bufsize; obsoleted by new code implementation
 	int				pipe[6]; //three-pipe array
-	int				position;
-	int				bufsize;
 	int				c;
 	int				syserror;
 	int				cmd_result;
@@ -166,6 +166,7 @@ char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
 char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
+void	*ft_general_realloc(void *ptr, size_t type_size, size_t count, t_micli *micli); //this realloc should substitute original realloc
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Signal Call */

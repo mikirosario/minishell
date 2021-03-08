@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_line.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/07 21:53:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/08 23:31:03 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,25 +108,32 @@ void			process_token(t_micli *micli)
 		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy cmd to space pointed to by token->cmd and delete any enclosing quotations. micli_cpy is a special function for this.
 	}
 	//HERE WE NEED REDIRECT FLAG TO SEQUESTER REDIRECT DATA...
+	//If the redirect_end pointer is set and we are either past the start of the redirect instructions and
+	// before the end of them(before the end check probably superflous) OR token start == token end,
+	// which means we hit a '>' as hitting a '>' also now define token end and further into this function I trap
+	// the pointer on '>' until start == end condition is met.
 	else if (micli->cmdline.redir_end && ((micli->tokdata.tok_end > micli->cmdline.redir_start && micli->tokdata.tok_end <= micli->cmdline.redir_end) || micli->tokdata.tok_start == micli->tokdata.tok_end))
 	{
-		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
-		if (!micli->cmdline.redir_tokens)
-			micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
-		else
-			ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
-		if (micli->tokdata.tok_start == micli->tokdata.tok_end) //if tok_start == tok_end there is a '>' or '<' or ">>"
+		//USE THIS TO TURN REDIRECT TOKEN LIST BACK ON FOR DEBUGGING; ALSO REACTIVATE REDIR_TOKENS IN HEADER
+		// dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
+		// if (!micli->cmdline.redir_tokens)
+		// 	micli->cmdline.redir_tokens = ft_lstnew(dst); //needs to use clean_calloc
+		// else
+		// 	ft_lstadd_back(&micli->cmdline.redir_tokens, ft_lstnew(dst)); //needs to use clean_calloc
+		if (micli->tokdata.tok_start == micli->tokdata.tok_end) //if tok_start == tok_end there is a '>' or '<' or ">>", so we want the associated instruction data. Is it a write append, write trunc or read instruction?
 		{
 			if (*micli->tokdata.tok_end == '>' && *(micli->tokdata.tok_end + 1) == '>') //for '>>' copy 2 chars '>>'
 			{
-				micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 2), micli);
-				micli->cmdline.redir_out_flag = 2; //append mode
+				//USE THIS TO TURN REDIRECT TOKEN LIST BACK ON FOR DEBUGGING
+				//micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 2), micli);
+				micli->cmdline.redir_out_flag = 2; //write append mode
 			}
 			else
 			{
-				micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 1), micli); //for '<' or '>' copy 1 char
+				//USE THIS TO TURN REDIRECT TOKEN LIST BACK ON FOR DEBUGGING
+				//micli_cpy(dst, micli->tokdata.tok_start, (micli->tokdata.tok_end + 1), micli); //for '<' or '>' copy 1 char
 				if (*micli->tokdata.tok_end == '>')
-					micli->cmdline.redir_out_flag = 1; //trunc mode
+					micli->cmdline.redir_out_flag = 1; //write trunc mode
 				else
 					micli->cmdline.redir_in_flag = 1; //read mode
 			}
@@ -135,26 +142,28 @@ void			process_token(t_micli *micli)
 			// else
 			// 	micli->cmdline.redir_in = ft_lstlast(micli->cmdline.redir_tokens); //if input instruction, save a pointer to its list member to redir_in
 		}
-		else
+		else //If it's not a redirect instruction, it's a file name, so do this
 		{
-			micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
-			if (micli->cmdline.redir_out_flag)
+			dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli); //reserve memory for a copy of the file name
+			micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli); //copy the file name; each file name is its own token, so tok_start to tok_end is the file name
+			if (micli->cmdline.redir_out_flag) //now, depending on the preceding instruction flag we've set...
 			{
 				if (micli->cmdline.fd_redir_out) //If a file has already been opened, close it
 					close(micli->cmdline.fd_redir_out);
-				if (micli->cmdline.redir_out_flag == 1)
+				if (micli->cmdline.redir_out_flag == 1) //1 is for trunc
 					micli->cmdline.fd_redir_out = open(dst, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN WRONLY TRUNC MODE, permissions 644
-				else
+				else //2 is for append
 					micli->cmdline.fd_redir_out = open(dst, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN WRONLY APPEND MODE, permissions 644
 			}
-			else if (micli->cmdline.redir_in_flag)
+			else if (micli->cmdline.redir_in_flag) //if it's a read instruction
 			{
-				if (micli->cmdline.redir_in)
+				if (micli->cmdline.redir_in)//if a file has already been opened, close it
 					close(micli->cmdline.fd_redir_in);
 				micli->cmdline.fd_redir_in = open(dst, O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); //OPEN IN RONLY MODE, permissions 644
 			}
-			// micli->cmdline.redir_out_flag = 0; //MOVE THESE TO TOKDATA SO THEY LIVE AS LONG AS TOKEN ONLY...
-			// micli->cmdline.redir_in_flag = 0;
+			dst = ft_del(dst); //free the memory
+			micli->cmdline.redir_out_flag = 0; //MOVE THESE TO TOKDATA SO THEY LIVE AS LONG AS TOKEN ONLY...
+			micli->cmdline.redir_in_flag = 0; //WHEN TOKDATA IS NOT AN UTTER MESS THAT IS... xD
 		}
 	}
 	//Empieza el guarreo aquí. Resulta que con tanto el espacio no escapado como el '<' o '>' no escapado como condiciones de
@@ -291,9 +300,6 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	micli->pipe_flag = toggle_pipe_flag(*micli->tokdata.tok_end, micli->pipe_flag); //set pipe flag
 	micli->tokdata.quote_flag = 0; //reset quote flag
 	micli->tokdata.escape_flag = 0; //reset escape flag
-	//These variables need to survive for a whole cmdline... should be moved back to cmdline then...
-	// micli->cmdline.redir_in_flag = 0;
-	// micli->cmdline.redir_out_flag = 0; 
 	// t_list *tmp = micli->cmdline.arguments;
 	// while (tmp)
 	// {
@@ -302,19 +308,19 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 	// }
 	exec_cmd(micli->cmdline.cmd, micli->cmdline.arguments, micli);
 	//ft_printf("%c\n", micli->tokdata.quote_flag + 48); Debug code to check quote flag status :)
-	t_list *tmp = micli->cmdline.redir_tokens;
-	while (tmp)
-	{
-		ft_printf("Sequestered Redirect Instruction: %s\n", tmp->content);
-		tmp = tmp->next;
-	}
-	tmp = micli->cmdline.arguments;
-	int tmpctr = 1;
-	while (tmp)
-	{
-		ft_printf("Argument %d: %s\n", tmpctr++, tmp->content);
-		tmp = tmp->next;
-	}
+	// t_list *tmp = micli->cmdline.redir_tokens;
+	// while (tmp)
+	// {
+	// 	ft_printf("Sequestered Redirect Instruction: %s\n", tmp->content);
+	// 	tmp = tmp->next;
+	// }
+	// tmp = micli->cmdline.arguments;
+	// int tmpctr = 1;
+	// while (tmp)
+	// {
+	// 	ft_printf("Argument %d: %s\n", tmpctr++, tmp->content);
+	// 	tmp = tmp->next;
+	// }
 	clear_cmdline(micli); //Free memory reserved for cmdline parsing
 	return (0);	
 }

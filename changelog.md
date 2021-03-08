@@ -1,10 +1,20 @@
+### Version 2.61
+
+- Length of "🚀 " incorrectly given to write as '6', now corrected to '5'.
+
+- Rewrote micli_read loop to better use the read buffer and reduce the instructions. Now READLINE_BUFSIZE characters at a time will be read and copied to the buffer instead of 1 character at a time. The buffer will be reallocated with an additional READLINE_BUFSIZE if more bytes need to be copied, as before.
+
+- Removed the linked list that copied and saved sequestered redirect instructions for debugging. File paths are still copied before being sent to the open command.
+
+- I've written a more general version of ft_realloc to work with any kind of array, not just a character string, but it now needs to be told what the size of the array members will be. It hasn't yet been implemented so as not to break functions on other branches that use the prior implementation. Implementation will be coordinated in a future update.
+
 ## Version 2.6
 
 - Consolidated all command executions (builtins, pipes, redirects) in a single child type, currently with a single function.
 
 - Redirects ended by a pipe to another command now handled as in bash.
 
-- Moved fd_redir_flags back to cmdline struct.
+- Moved fd_redir_flags back to cmdline struct as its lifespan is that of a command, not a token.
 
 ## Version 2.5
 

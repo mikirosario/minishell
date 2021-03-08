@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/04 00:35:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/08 23:30:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,13 @@ void	clear_cmdline(t_micli *micli)
 	//	ft_lstiter(micli->cmdline.arguments, free); //My lstiter leads to unallocated pointers being freed... :p
 	if (micli->cmdline.arguments)
 		ft_lstclear(&micli->cmdline.arguments, free);
-	if (micli->cmdline.redir_tokens)
-		ft_lstclear(&micli->cmdline.redir_tokens, free);
+	//if (micli->cmdline.redir_tokens)
+	//	ft_lstclear(&micli->cmdline.redir_tokens, free);
 	if (micli->token.var_lst)
 		micli->token.var_lst = ft_lstfree(micli->token.var_lst);
 	ft_bzero(&micli->cmdline, sizeof(t_cmdline));
 	micli->cmdline.arguments = NULL;
-	micli->cmdline.redir_tokens = NULL;
+	//micli->cmdline.redir_tokens = NULL;
 }
 
 /*

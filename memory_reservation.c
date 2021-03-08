@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/10 20:22:39 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/08 21:20:56 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,20 @@ char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
 		micli->syserror = errno;
 	else
 		ft_memcpy(ptr, tmp, size);
+	//printf("Bufsize: %zu\n", size); (Debug code)
+	tmp = ft_del(tmp);
+	return (ptr);
+}
+
+void	*ft_general_realloc(void *ptr, size_t type_size, size_t count, t_micli *micli)
+{
+	void *tmp;
+
+	tmp = ptr;
+	if (!ptr || !(ptr = malloc(count * type_size)))
+		micli->syserror = errno;
+	else
+		ft_memcpy(ptr, tmp, count * type_size);
 	//printf("Bufsize: %zu\n", size); (Debug code)
 	tmp = ft_del(tmp);
 	return (ptr);
