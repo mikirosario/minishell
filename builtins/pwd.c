@@ -1,33 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/07 17:52:17 by mvillaes         ###   ########.fr       */
+/*   Created: 2021/03/06 17:11:55 by mvillaes          #+#    #+#             */
+/*   Updated: 2021/03/09 20:09:21 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void 	waiting(int signum)
+int	ft_pwd(const char **argv)
 {
-	(void)signum;
-	signal(SIGINT, waiting);
-}
+	char	cwd[FILENAME_MAX];
 
-void	sigrun(int signum)
-{
-	if (signum == SIGINT)
+	if (argv[1] == 0 || *argv[1] != '-')
 	{
-		write(1, "\033[2D\033[J\n🚀 ", ft_strlen("\033[2D\033[J\n🚀 "));
-		signal(SIGINT, sigrun);
+		if (getcwd(cwd, sizeof(cwd)) != NULL)
+			ft_printf("%s\n", cwd);
+		return (0);
 	}
-	else if (signum == SIGQUIT)
-	{
-		write(1, "\033[2D\033[J", ft_strlen("\033[2D\033[J"));
-		signal(SIGQUIT, sigrun);
-	}
+	if (*argv[1] == '-')
+		ft_printf("Argument \"\%s\" is not supported in micli\n", argv[1]);
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 19:52:32 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/09 21:50:33 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@
 #include <dirent.h>
 #include <sys/wait.h>
 #include "libft.h"
+#include <signal.h>
 
 #define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,pwd,export,env,echo"
+#define BUILTINS "exit,pwd,export,env,echo,cd,unset"
 //#define	CMDLINE_END ";|"
 #define DQUOTE_ESC_CHARS "\"$\\"
 #define PIPE_MAX __SIZE_MAX__ / 2
@@ -50,12 +51,6 @@ typedef struct	s_tokendata
 	unsigned char	cmd_flag:1; //This flag has 1 bit. If it is set, the command has been tokenized, thus all subsequent tokens are arguments
 	//unsigned char	var_flag:1; //This flag has 1 bit. If it is set, the following character string until the next space is a variable, which will be resolved before continuing.
 }				t_tokendata;
-
-// typedef struct	s_child
-// {
-// 	int		child_flag;
-// }				t_child;
-
 
 typedef struct	s_token
 {
@@ -107,6 +102,7 @@ typedef struct	s_micli
 	t_token			token;
 	t_builtins		builtins;
 	t_pipes			pipes;
+	pid_t			pid; //child process exist
 	//size_t		builtin_strlen;
 	//size_t		position; obsoleted by new code implementation
 	//size_t		bufsize; obsoleted by new code implementation
@@ -169,14 +165,13 @@ void	*ft_realloc(void *ptr, size_t size, t_micli *micli);
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Signal Call */
+void	catch_signal(int signum);
+void 	waiting(int signum);
+void	sigrun(int sig);
 
-//int		catch_signal(t_micli *micli);
-void	catch_signal();
-int		ft_child_status();
-void	ctrl_c();
-void	ctrl_bar();
-void	ctrl_d();
-void	ft_wait(int signum);
+// void	do_nothing(int nb);
+// void	signal_handler(int nb);
+
 // void	signal_d();
 
 /* Builtins */
@@ -184,13 +179,23 @@ void	ft_wait(int signum);
 int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int    	ft_pwd(const char **argv);
+void	oldpwd(t_micli *micli);
+// void	update_oldpwd(t_micli *micli);
 int	    ft_echo(const char **argv, t_micli *micli);
 int	    ft_unset(char **argv, t_micli *micli);
 int		ft_env(char **envp);
 
 /* Export */
 int		ft_export(const char **argv, t_micli *micli);
+char	find_pos(const char *name, size_t name_len, char **envp);
+size_t	ft_name_len(const char *str);
 size_t	ft_countarr(char **envp);
+int		export_print(t_micli *micli);
+void	export_order(t_micli *micli);
+void	new_var(const char **argv, size_t str_len, t_micli *micli);
+void	upd(const char **argv, size_t str_len, size_t name_len, t_micli *micli);
+int		var_check(const char *str);
+
 
 
 /* Redirections */

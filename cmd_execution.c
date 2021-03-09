@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 21:44:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/09 21:57:07 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -331,8 +331,12 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/')) //if ispath
 		exec_path = cmd; //exec path is cmd if cmd is path
 	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL
+	{
 		if (!(strncmp((builtin = cmd), "exit", 5))) //compare exit string including null char
 			exit_success(micli);
+		else if (!(strncmp(builtin, "export", 7)))
+			ft_export((const char **)micli->cmdline.micli_argv, micli);
+	}
 	if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
 	{
 		// if (builtin != NULL) //if builtin is defined, command is a builtin, después guarreo para evitar que al liberar exec_path se libere memoria apuntada por cmd antes de tiempo :p 

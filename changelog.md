@@ -2,6 +2,8 @@
 
 - By freeing memory before execve I destroyed argv and envp before sending them, causing chaos. Sorry.
 
+- Some builtins need to be executed locally rather than in children to function properly (export, cd, etc.). Not yet implemented.
+
 ### Version 2.62
 
 - The new generalized ft_realloc has been further modified to be more like the old realloc. It only need to be told the size of the memory to be reallocated, but will now work with any kind of array. The new generalized ft_realloc has now completely replaced the old one.
@@ -51,6 +53,10 @@
 - Added a bzero instruction to clear_cmdline. May move the bzero instructions from start of process_cmdline function to dedicated clear functions, though presently I've only done this for the clear_cmdline bzero, which is now duplicated as a result.
 
 - Created a much needed 'rebug' instruction in the Makefile to fclean and recompile in debug mode. ;)
+
+### Version 2.4-a
+
+- Modified find_var to work with both defined and undefined variables.
 
 ## Version 2.4
 
