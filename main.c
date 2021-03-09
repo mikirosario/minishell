@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/07 17:51:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/08 20:38:37 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,8 @@ char	micli_loop(t_micli *micli)
 		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
-		signal(SIGINT, sigrun);
-		//signal(SIGQUIT, sigrun);
+		//signal(SIGINT, sigrun);
+		signal(SIGQUIT, sigrun);
 		dup2(STDOUT_FILENO, 1);
 		//write(1, "🚀 ", 6);
 		if (ft_get_next_line((int)micli->buffer, 0) == EOF)
@@ -134,8 +134,8 @@ int 	main(int argc, char **argv, char **envp)
 	(void)argv;
 
 	//signal
-	signal(SIGQUIT, sigrun);
-	//signal(SIGINT, sigrun);
+	//signal(SIGQUIT, sigrun);
+	signal(SIGINT, sigrun);
 
 	//command loop
 	micli_loop(&micli);

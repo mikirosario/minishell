@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/08 17:38:34 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/09 18:37:47 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,26 @@ int	ft_export(const char **argv, t_micli *micli)
 
 int		var_check(const char *str)
 {
-	char first;
+	int		len;
+	int		i;
 
-	first = str[0];
-	if (isvarchar(first) == 1 || isvarchar(first) == 2)
-		return (1);
-	else
+	i = 0;
+	len = ft_strlen(str);
+	while (ft_isalpha(str[i]) || str[i] == '_')
+	{
+		while (i < len)
+		{
+			while (isvarchar(str[i]) == 0)
+				return (0);
+			while (isvarchar(str[i]) == 1)
+			{
+				return (1);
+				i++;
+			}	
+		}
+	}
+	if (!(ft_isalpha(str[i] || str[i] != '_')))
+		ft_printf("ERROR: invalid character on export function\n");
 		return (0);
 }
 
