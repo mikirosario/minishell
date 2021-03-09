@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 20:17:39 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/09 21:44:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,7 +397,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 			}
 			else
 			{
-				freeme(micli);
+				//freeme(micli); caca
 				execve(exec_path, micli->cmdline.micli_argv, micli->envp);//now execute command... =_=
 			}
 		}

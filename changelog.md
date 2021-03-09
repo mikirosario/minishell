@@ -1,3 +1,7 @@
+### Version 2.63
+
+- By freeing memory before execve I destroyed argv and envp before sending them, causing chaos. Sorry.
+
 ### Version 2.62
 
 - The new generalized ft_realloc has been further modified to be more like the old realloc. It only need to be told the size of the memory to be reallocated, but will now work with any kind of array. The new generalized ft_realloc has now completely replaced the old one.
