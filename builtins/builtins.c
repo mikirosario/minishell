@@ -119,7 +119,7 @@ int		ft_pwd(const char **argv)
 	}
 	if (*argv[i] == '-')
 		ft_printf("Argument \"\%s\" is not supported in micli\n", argv[i++]);
-	return (0);
+	return (1);
 }
 
 // int		ft_putenv(const char *string)

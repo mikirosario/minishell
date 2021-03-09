@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/08 23:41:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/09 19:52:32 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,8 +165,7 @@ char	*var_alloc(char *var_name, t_micli *micli);
 char	*clean_ft_strdup(char const *str, t_micli *micli);
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
 char	**clean_ft_split(const char *s, char c, t_micli *micli);
-char	*ft_realloc(char *ptr, size_t size, t_micli *micli);
-void	*ft_general_realloc(void *ptr, size_t type_size, size_t count, t_micli *micli); //this realloc should substitute original realloc
+void	*ft_realloc(void *ptr, size_t size, t_micli *micli);
 void	*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /* Signal Call */

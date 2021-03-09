@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/08 21:20:56 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/09 19:51:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 }
 
 /*
-** This function reallocates the memory of the string pointed to by ptr to a
+** This function reallocates the memory of the array pointed to by ptr to a
 ** new memory block of the size defined by size, freeing the old memory block.
 ** 
 ** If a null pointer is passed, a null pointer will be returned and nothing
@@ -80,31 +80,34 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 **
 ** Behaviour is undefined if size is less than the memory to be reallocated.
 ** Probably means segfault. So just don't do that. ;)
+**
+** Remember the size of an array is not the same as the number of elements in
+** it. An array of four integers is 4 * sizeof(int) = 16 bytes.
 */
 
-char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
-{
-	char *tmp;
+// char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
+// {
+// 	char *tmp;
 
-	tmp = ptr;
-	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
-		micli->syserror = errno;
-	else
-		ft_memcpy(ptr, tmp, size);
-	//printf("Bufsize: %zu\n", size); (Debug code)
-	tmp = ft_del(tmp);
-	return (ptr);
-}
+// 	tmp = ptr;
+// 	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
+// 		micli->syserror = errno;
+// 	else
+// 		ft_memcpy(ptr, tmp, size);
+// 	//printf("Bufsize: %zu\n", size); (Debug code)
+// 	tmp = ft_del(tmp);
+// 	return (ptr);
+// }
 
-void	*ft_general_realloc(void *ptr, size_t type_size, size_t count, t_micli *micli)
+void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
 {
 	void *tmp;
 
 	tmp = ptr;
-	if (!ptr || !(ptr = malloc(count * type_size)))
+	if (!ptr || !(ptr = malloc(size)))
 		micli->syserror = errno;
 	else
-		ft_memcpy(ptr, tmp, count * type_size);
+		ft_memcpy(ptr, tmp, size);
 	//printf("Bufsize: %zu\n", size); (Debug code)
 	tmp = ft_del(tmp);
 	return (ptr);

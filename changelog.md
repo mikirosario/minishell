@@ -1,3 +1,9 @@
+### Version 2.62
+
+- The new generalized ft_realloc has been further modified to be more like the old realloc. It only need to be told the size of the memory to be reallocated, but will now work with any kind of array. The new generalized ft_realloc has now completely replaced the old one.
+
+- Memory duplicated in children is now explicitly freed before exiting/repurposing their processes.
+
 ### Version 2.61
 
 - Length of "🚀 " incorrectly given to write as '6', now corrected to '5'.
