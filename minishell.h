@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 19:09:08 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 18:28:59 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ int		exec_builtin(char *cmd, t_micli *micli);
 int     ft_cd(const char **argv, t_micli *micli);
 int    	ft_pwd(const char **argv);
 void	oldpwd(t_micli *micli);
-// void	update_oldpwd(t_micli *micli);
+void	delete_oldpwd(t_micli *micli);
 int	    ft_echo(const char **argv, t_micli *micli);
 int	    ft_unset(char **argv, t_micli *micli);
 int		ft_env(char **envp);

@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/09 20:33:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 18:43:01 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	ft_cd(const char **argv, t_micli *micli)
 	char	*home;
 
 	oldpwd(micli);
+	//delete_oldpwd(micli);
 	if (argv[1] == 0 || *argv[1] == '~')
 	{
 		home = find_var("HOME", 4, micli->envp);
@@ -51,10 +52,22 @@ void	oldpwd(t_micli *micli)
 	ft_export(fake_argv, micli);
 }
 
-// void	initial_oldpwd(t_micli *micli)
-// {
-// 	const char	*oldpwd;
+void	delete_oldpwd(t_micli *micli)
+{
+	const char	*oldpwd;
+	char		*newold;
+	const char	**fake_argv;
+	int			findpos;
 
-// 	oldpwd = "OLDPWD";
-
-// }
+	oldpwd = "OLDPWD=";
+	newold = "OLDPWD";
+	// fake_argv = clean_calloc(3, sizeof(char *), micli);
+	// fake_argv[1] = oldpwd;
+	// ft_export(fake_argv, micli);
+	findpos = find_pos(oldpwd, 7, micli->envp);
+	// printf("oldpwd pos: %i\n", findpos);
+	free (micli->envp[findpos]);
+	fake_argv = clean_calloc(3, sizeof(char *), micli);
+	fake_argv[1] = newold;
+	ft_export(fake_argv, micli);
+}

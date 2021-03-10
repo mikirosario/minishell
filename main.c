@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/08 20:38:37 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 18:41:53 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ int 	main(int argc, char **argv, char **envp)
 	// pipe(&micli.pipe[4]);
 	// close(micli.pipe[5]);
 	micli.envp = ft_envdup(envp, &micli);
+	delete_oldpwd(&micli);
 	//micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
 	(void)argc;
