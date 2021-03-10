@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/10 18:45:36 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 18:54:53 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	ft_cd(const char **argv, t_micli *micli)
 	char	*home;
 
 	oldpwd(micli);
-	//delete_oldpwd(micli);
 	if (argv[1] == 0 || *argv[1] == '~')
 	{
 		home = find_var("HOME", 4, micli->envp);
@@ -41,8 +40,8 @@ void	oldpwd(t_micli *micli)
 	const char	*oldpwd;
 	char		path[PATH_MAX];
 	const char	*current;
-	char 		*tmp;
-	const char 	**fake_argv;
+	char		*tmp;
+	const char	**fake_argv;
 
 	current = getcwd(path, sizeof(path));
 	oldpwd = "OLDPWD=";
@@ -63,6 +62,7 @@ void	delete_oldpwd(t_micli *micli)
 	newold = "OLDPWD";
 	findpos = find_pos(oldpwd, 7, micli->envp);
 	free (micli->envp[findpos]);
+	micli->envp[findpos] = NULL;
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
 	fake_argv[1] = newold;
 	ft_export(fake_argv, micli);

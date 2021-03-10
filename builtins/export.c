@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/09 18:37:47 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 19:12:28 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,24 @@ int	export_print(t_micli *micli)
 {
 	int		i;
 	char	*store;
+	int		name_len;
+	int		str_len;
 
 	store = *micli->envp;
 	i = 0;
 	while (store)
 	{
-		ft_printf("declare -x %s\n", store);
+		name_len = ft_name_len(store);
+		str_len = ft_strlen(store);
+		ft_printf("declare -x ");
+		write(1, store, name_len + 1);
+		if (str_len != name_len)
+		{
+			ft_putchar('\"');
+			ft_printf("%s\"\n", store + name_len + 1);
+		}
+		else
+			ft_putchar('\n');
 		store = *(micli->envp + ++i);
 	}
 	return (0);
