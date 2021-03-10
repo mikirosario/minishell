@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/10 18:43:01 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/10 18:45:36 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,7 @@ void	delete_oldpwd(t_micli *micli)
 
 	oldpwd = "OLDPWD=";
 	newold = "OLDPWD";
-	// fake_argv = clean_calloc(3, sizeof(char *), micli);
-	// fake_argv[1] = oldpwd;
-	// ft_export(fake_argv, micli);
 	findpos = find_pos(oldpwd, 7, micli->envp);
-	// printf("oldpwd pos: %i\n", findpos);
 	free (micli->envp[findpos]);
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
 	fake_argv[1] = newold;
