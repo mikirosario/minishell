@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/10 19:12:28 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/11 18:01:29 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,23 @@ int		var_check(const char *str)
 	int		len;
 	int		i;
 
-	i = 0;
+	i = 1;
 	len = ft_strlen(str);
-	while (ft_isalpha(str[i]) || str[i] == '_')
+	while (ft_isalpha(str[0]) || str[0] == '_')
 	{
 		while (i < len)
 		{
-			while (isvarchar(str[i]) == 0)
-				return (0);
-			while (isvarchar(str[i]) == 1)
+			if (!(ft_isalpha(str[i])) || !(ft_isdigit(str[i])) || str[i] != '_')
 			{
-				return (1);
-				i++;
-			}	
+				ft_printf("1 ERROR: invalid character on export function\n");
+				return (0);
+			}
+			i++;	
 		}
+		return (1);
 	}
-	if (!(ft_isalpha(str[i] || str[i] != '_')))
-		ft_printf("ERROR: invalid character on export function\n");
+	if (!(ft_isalpha(str[0] || str[0] != '_')))
+		ft_printf("2 ERROR: invalid character on export function\n");
 		return (0);
 }
 
@@ -121,3 +121,50 @@ int	export_print(t_micli *micli)
 	}
 	return (0);
 }
+
+// int	export_print(t_micli *micli)
+// {
+// 	int		i;
+// 	int		j;
+// 	char	*store;
+// 	int		name_len;
+// 	char	countarr;
+// 	int		str_len;
+// 	char	*tmp_envp;
+
+// 	store = *micli->envp;
+// 	countarr = ft_countarr(micli->envp);
+// 	i = 0;
+// 	while(i < countarr - 1)
+// 	{
+// 		j = 0;
+// 		while (j < countarr - i - 1)
+// 		{
+// 			if (ft_strcmp(&store[j], &store[j + 1]) > 0)
+// 			{
+// 				tmp_envp = &store[j];
+// 				store[j] = store[j + 1];
+// 				store[j + 1] = *tmp_envp;
+// 			}
+// 			j++;
+// 		}
+// 		i++;
+// 	}
+// 	i = 0;
+// 	while (store)
+// 	{
+// 		name_len = ft_name_len(store);
+// 		str_len = ft_strlen(store);
+// 		ft_printf("declare -x ");
+// 		write(1, store, name_len + 1);
+// 		if (str_len != name_len)
+// 		{
+// 			ft_putchar('\"');
+// 			ft_printf("%s\"\n", store + name_len + 1);
+// 		}
+// 		else
+// 			ft_putchar('\n');
+// 		store = *(micli->envp + ++i);
+// 	}
+// 	return (0);
+// }
