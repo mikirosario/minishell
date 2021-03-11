@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/11 18:01:29 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/11 18:42:58 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ int		var_check(const char *str)
 	{
 		while (i < len)
 		{
-			if (!(ft_isalpha(str[i])) || !(ft_isdigit(str[i])) || str[i] != '_')
+			if (!(isvarchar(str[i])))
 			{
-				ft_printf("1 ERROR: invalid character on export function\n");
+				ft_printf("🚀 export: '%s': not a valid identifier\n", str);
 				return (0);
 			}
 			i++;	
@@ -57,7 +57,7 @@ int		var_check(const char *str)
 		return (1);
 	}
 	if (!(ft_isalpha(str[0] || str[0] != '_')))
-		ft_printf("2 ERROR: invalid character on export function\n");
+		ft_printf("🚀 export: '%s': not a valid identifier\n", str);
 		return (0);
 }
 
@@ -69,7 +69,6 @@ void	upd(const char **argv, size_t str_len, size_t name_len, t_micli *micli)
 	if (name_len != str_len)
 	{
 		free(micli->envp[findpos]);
-		// micli->envp[findpos] = ft_comillas(argv[1], name_len, str_len);
 		micli->envp[findpos] = clean_calloc(str_len + 1, sizeof(char), micli);
 		ft_memcpy(micli->envp[findpos], argv[1], str_len + 1);
 	}
@@ -126,13 +125,13 @@ int	export_print(t_micli *micli)
 // {
 // 	int		i;
 // 	int		j;
-// 	char	*store;
+// 	char	**store;
 // 	int		name_len;
 // 	char	countarr;
 // 	int		str_len;
 // 	char	*tmp_envp;
 
-// 	store = *micli->envp;
+// 	store = micli->envp;
 // 	countarr = ft_countarr(micli->envp);
 // 	i = 0;
 // 	while(i < countarr - 1)
@@ -140,31 +139,31 @@ int	export_print(t_micli *micli)
 // 		j = 0;
 // 		while (j < countarr - i - 1)
 // 		{
-// 			if (ft_strcmp(&store[j], &store[j + 1]) > 0)
+// 			if (ft_strcmp(store[j], store[j + 1]) > 0)
 // 			{
-// 				tmp_envp = &store[j];
+// 				tmp_envp = store[j];
 // 				store[j] = store[j + 1];
-// 				store[j + 1] = *tmp_envp;
+// 				store[j + 1] = tmp_envp;
 // 			}
 // 			j++;
 // 		}
 // 		i++;
 // 	}
 // 	i = 0;
-// 	while (store)
+// 	while (*store)
 // 	{
-// 		name_len = ft_name_len(store);
-// 		str_len = ft_strlen(store);
+// 		name_len = ft_name_len(*store);
+// 		str_len = ft_strlen(*store);
 // 		ft_printf("declare -x ");
-// 		write(1, store, name_len + 1);
+// 		write(1, *store, name_len + 1);
 // 		if (str_len != name_len)
 // 		{
 // 			ft_putchar('\"');
-// 			ft_printf("%s\"\n", store + name_len + 1);
+// 			ft_printf("%s\"\n", *store + name_len + 1);
 // 		}
 // 		else
 // 			ft_putchar('\n');
-// 		store = *(micli->envp + ++i);
+// 		*store = *(store + ++i);
 // 	}
 // 	return (0);
 // }
