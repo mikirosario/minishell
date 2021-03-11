@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 21:50:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/11 21:55:38 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,9 @@ char	*micli_readline(t_micli *micli)
 	{
 		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
 		//If we read EOF or newline was input by user, null terminate buffer.
-		if (micli->buffer[size - 1] == EOF || micli->buffer[size - 1] == '\n')
+		if (micli->buffer[size - 1] == EOF)
+			exit_success(micli);
+		else if (micli->buffer[size - 1] == '\n')
 		{
 			micli->buffer[size - 1] = '\0'; //Convert EOF or '\n' to null termination. We'll need to handle EOF differently as it means ctrl'/'
 			//ft_printf("%u, %s\n", size, micli->buffer); //esto imprime última línea a stdout
@@ -103,13 +105,13 @@ char	micli_loop(t_micli *micli)
 	shutdown = 0;
 	while (!shutdown)//no parece que esté usando shutdown...
 	{
+		signal(SIGINT, sigrun);
 		write(STDOUT_FILENO, "🚀 ", 5);
 		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
-		//signal(SIGINT, sigrun);
 		signal(SIGQUIT, sigrun);
-		dup2(STDOUT_FILENO, 1);
+		//dup2(STDOUT_FILENO, 1);
 		//write(1, "🚀 ", 6);
 		// if (ft_get_next_line((int)micli->buffer, 0) == EOF)
 		// {
@@ -137,7 +139,7 @@ int 	main(int argc, char **argv, char **envp)
 
 	//signal
 	//signal(SIGQUIT, sigrun);
-	signal(SIGINT, sigrun);
+	//signal(SIGINT, sigrun);
 
 	//command loop
 	micli_loop(&micli);

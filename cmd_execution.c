@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 21:57:07 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/11 21:25:27 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,6 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char	*path_var;
 	int		stat_loc;
 	size_t	i;
-
 	pid_t	pid;
 
 	i = 0;
@@ -330,14 +329,24 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	
 	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/')) //if ispath
 		exec_path = cmd; //exec path is cmd if cmd is path
-	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL
+	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if cmd is builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL
 	{
-		if (!(strncmp((builtin = cmd), "exit", 5))) //compare exit string including null char
+		//local execution...
+		//built-ins like export, pwd refer to local variables, but still need to be pipeable, so they need to be modified to use exec_cmd for their print functionality.
+		if (!(ft_strncmp((builtin = cmd), "exit", 5))) //fully local
 			exit_success(micli);
-		else if (!(strncmp(builtin, "export", 7)))
+		else if (!(ft_strncmp(builtin, "export", 7)))//envp modification is local, printout by child
 			ft_export((const char **)micli->cmdline.micli_argv, micli);
+		else if (!(ft_strncmp(builtin, "cd", 3))) //fully local
+			ft_cd((const char **)micli->cmdline.micli_argv, micli);
+		else if (!(ft_strncmp(builtin, "env", 4))) //fully local
+			ft_env(micli->envp);
+		else if (!(ft_strncmp(builtin, "unset", 6))) //fully local
+			ft_unset(micli->cmdline.micli_argv, micli);
+		else if (!(ft_strncmp(builtin, "pwd", 4)))
+			ft_pwd((const char**)micli->cmdline.micli_argv);
 	}
-	if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
+	else if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
 	{
 		// if (builtin != NULL) //if builtin is defined, command is a builtin, después guarreo para evitar que al liberar exec_path se libere memoria apuntada por cmd antes de tiempo :p 
 		// 	micli->cmd_result = exec_builtin(builtin, micli); //function must return exit status of executed builtin (piped builtins not yet functional)
@@ -413,6 +422,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		{	
 			while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
 				close(micli->pipes.array[i++]);
+			signal(SIGINT, waiting);
 			waitpid(pid, &stat_loc, WUNTRACED);
 			micli->cmd_result = WEXITSTATUS(stat_loc);
 			micli->pipe_flag = 0; //Reset pipe_flag

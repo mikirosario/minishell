@@ -1,3 +1,9 @@
+### Version 2.64
+
+- All builtins are executed locally except echo. (Note export will need to be split into local and child parts).
+
+- Signal experiments.
+
 ### Version 2.63
 
 - By freeing memory before execve I destroyed argv and envp before sending them, causing chaos. Sorry.
