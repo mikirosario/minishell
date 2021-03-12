@@ -1,6 +1,7 @@
 if (!argv[1])
 	{
 		size_t *mask;
+		size_t swap;
 
 		mask = clean_calloc(countarr, sizeof(size_t), micli);
 		size_t z;
@@ -21,11 +22,11 @@ if (!argv[1])
 			j = 0;
 			while (j < countarr - i - 1)
 			{
-				if(ft_strcmp(micli->envp[j], micli->envp[j + 1]) > 0)
+				if(ft_strcmp(micli->envp[mask[j]], micli->envp[mask[j + 1]]) > 0)
 				{
-					tmp_envp = mask[j];
+					swap = mask[j];
 					mask[j] = mask[j + 1];
-					mask[j + 1] = tmp_envp;
+					mask[j + 1] = swap;
 				}
 				j++;
 			}

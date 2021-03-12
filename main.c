@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/11 21:55:38 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/12 20:16:31 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,11 @@ char	*micli_readline(t_micli *micli)
 	{
 		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
 		//If we read EOF or newline was input by user, null terminate buffer.
-		if (micli->buffer[size - 1] == EOF)
+		if (!size)
+		{
+			write(1, "exit\n", 5);
 			exit_success(micli);
+		}
 		else if (micli->buffer[size - 1] == '\n')
 		{
 			micli->buffer[size - 1] = '\0'; //Convert EOF or '\n' to null termination. We'll need to handle EOF differently as it means ctrl'/'

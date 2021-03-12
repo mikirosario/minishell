@@ -1,3 +1,9 @@
+### Version 2.65
+
+- The function cmd_execution has been modified to launch export within the parent process when it is called without arguments.
+
+- The ctrl-D (EOF) signal is now working.
+
 ### Version 2.64
 
 - All builtins are executed locally except echo. (Note export will need to be split into local and child parts).
