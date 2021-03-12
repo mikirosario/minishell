@@ -1,3 +1,7 @@
+### Version 2.66
+
+- Builtin bugfixes.
+
 ### Version 2.65
 
 - The function cmd_execution has been modified to launch export within the parent process when it is called without arguments.

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/12 20:16:31 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/12 21:23:25 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,13 +114,6 @@ char	micli_loop(t_micli *micli)
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
-		//dup2(STDOUT_FILENO, 1);
-		//write(1, "🚀 ", 6);
-		// if (ft_get_next_line((int)micli->buffer, 0) == EOF)
-		// {
-		// 	//write(1, "exitloop\n", 9);
-		// 	//exit_success(micli);
-		// }
 	}
 	return (0);
 }
@@ -135,6 +128,7 @@ int 	main(int argc, char **argv, char **envp)
 	// pipe(&micli.pipe[4]);
 	// close(micli.pipe[5]);
 	micli.envp = ft_envdup(envp, &micli);
+	delete_oldpwd(&micli);
 	//micli.builtin_strlen = ft_strlen(BUILTINS);
 	//config files
 	(void)argc;
