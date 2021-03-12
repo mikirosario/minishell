@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:17:37 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 21:17:39 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/12 21:14:17 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	exec_builtin(char *cmd, t_micli *micli)
 	else if (!(ft_strcmp(cmd, "unset")))
 		return (ft_unset(micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "env")))
-		return (ft_env(micli->envp));
+		return (ft_env(micli->envp, (const char **)micli->cmdline.micli_argv));
 	else if (!(ft_strcmp(cmd, "export")))
 		return (ft_export((const char **)micli->cmdline.micli_argv, micli));
 	return (128);
@@ -80,18 +80,3 @@ void	export_order(t_micli *micli)
 		i++;
 	}
 }
-
-/*
-** char	*ft_comillas(const char *str, size_t name_len, size_t str_len)
-** {
-** 	char	*ret;
-
-** 	ret = malloc(str_len + 3);
-** 	ft_memcpy(ret, str, name_len + 1);
-** 	ret[name_len + 1] = '"';
-** 	ft_memcpy(ret + name_len + 2, str + name_len + 1, str_len - name_len - 1);
-** 	ret[str_len + 1] = '"';
-** 	ret[str_len + 2] = '\0';
-** 	return (ret);
-** }
-*/

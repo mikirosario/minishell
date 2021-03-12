@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:30 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 20:51:18 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/12 20:25:31 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ int	ft_unset(char **argv, t_micli *micli)
 	char	*store;
 	int		i;
 	char	**temp;
+	int		z;
 
 	i = 0;
-	if (argv[1] != 0)
+	z = 1;
+	while (argv[z] != 0)
 	{
-		name_len = ft_strlen(argv[1]);
-		store = find_var(argv[1], name_len, &micli->envp[1]);
+		name_len = ft_strlen(argv[z]);
+		store = find_var(argv[z], name_len, micli->envp);
 		if (store != 0)
 		{
 			ft_memset(store, 0, sizeof(store));
@@ -37,6 +39,7 @@ int	ft_unset(char **argv, t_micli *micli)
 				temp++;
 			}
 		}
+		z++;
 	}
 	return (0);
 }

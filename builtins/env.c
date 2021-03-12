@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:59 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/06 17:25:57 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/12 20:35:13 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,18 @@ void	print_env(char *str)
 	write(1, "\n", 1);
 }
 
-int	ft_env(char **envp)
+int	ft_env(char **envp, const char **argv)
 {
 	int		i;
 	char	*store;
 
 	store = *envp;
 	i = 0;
+	if (argv[1])
+	{
+		ft_printf("env: %s: No such file or directory\n", argv[1]);
+		return (127);
+	}
 	while (store && envp != NULL)
 	{
 		if (ft_strchr(store, '='))
