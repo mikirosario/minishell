@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/18 17:57:04 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/13 21:00:52 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	print_error(char *error_message, char *error_location)
 {
-	ft_printf("%s '%.2s'\n", error_message, error_location); //Print two chars here but for echo ;| ls, for example, should only print '|'
+	ft_printf("💥 %s '%.2s'\n", error_message, error_location); //Print two chars here but for echo ;| ls, for example, should only print '|'
 	return (0);
 }
 
