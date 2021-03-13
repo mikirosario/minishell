@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 13:38:33 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/13 18:17:48 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,11 +107,13 @@ int	export_print(t_micli *micli)
 	size_t	i;
 	size_t	name_len;
 	size_t	str_len;
+	size_t countarr;
 
 	mask = export_order(micli);
+	countarr = ft_countarr(micli->envp);
 
 	i = 0;
-	while (micli->envp[mask[i]])
+	while (i < countarr)
 	{
 		name_len = ft_name_len(micli->envp[mask[i]]);
 		str_len = ft_strlen(micli->envp[mask[i]]);

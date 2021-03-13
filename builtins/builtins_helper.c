@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:17:37 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 14:35:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/13 18:26:32 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ size_t	*export_order(t_micli *micli)
 
 	countarr = ft_countarr(micli->envp);
 	mask = clean_calloc(countarr, sizeof(size_t), micli);
-
+	printf("%zu\n", countarr);
 	i = 0;
 	while(i < countarr)
 	{
