@@ -1,3 +1,11 @@
+### Version 2.73
+
+- Updated syntax_check to ban lines starting in '>' or '<'.
+
+- Note case: echo 2; < ; echo 4
+
+- Massive norminette progress.
+
 ### Version 2.72
 
 - Fixed export_print bug.

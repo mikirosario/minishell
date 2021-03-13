@@ -6,36 +6,11 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 18:29:44 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/13 18:48:17 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*
-** Finds first 'c' in line and return its address.
-**
-** If passed a null pointer, returns null.
-**
-** If line_end is passed and is greater than line, find will search only until
-** the specified line_end. Otherwise, it will search until it finds a NULL char.
-** 
-** NOT BEING USED...
-*/
-
-// char	*find(char *line, char *line_end, char c)
-// {
-// 	if (line)
-// 	{
-// 		if (line_end && line_end > line)
-// 			while (line < line_end && *line != c)
-// 				line++;
-// 		else
-// 			while (*line && *line != c)
-// 				line++;
-// 	}
-// 	return (line);
-// }
 
 /*
 ** This function defines a buffer for reading from STDIN in steps determined by
@@ -69,7 +44,6 @@
 ** number of bytes read. Once EOF or new line is found, it is replaced with a
 ** null terminator and the function returns the address of the buffer for
 ** parsing.
-**
 */
 
 char	*micli_readline(t_micli *micli)
@@ -83,7 +57,6 @@ char	*micli_readline(t_micli *micli)
 	while (1)
 	{
 		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
-		//If we read EOF or newline was input by user, null terminate buffer.
 		if (!size)
 		{
 			write(1, "exit\n", 5);
@@ -91,26 +64,22 @@ char	*micli_readline(t_micli *micli)
 		}
 		else if (micli->buffer[size - 1] == '\n')
 		{
-			micli->buffer[size - 1] = '\0'; //Convert EOF or '\n' to null termination. We'll need to handle EOF differently as it means ctrl'/'
-			//ft_printf("%u, %s\n", size, micli->buffer); //esto imprime última línea a stdout
+			micli->buffer[size - 1] = '\0';
 			return (micli->buffer);
 		}
 		bufsize += READLINE_BUFSIZE;
 		if (!(micli->buffer = ft_realloc(micli->buffer, bufsize, micli)))
-			exit_failure(micli);		
+			exit_failure(micli);
 	}
 }
 
 char	micli_loop(t_micli *micli)
 {
-	char shutdown;
-	
-	shutdown = 0;
-	while (!shutdown)//no parece que esté usando shutdown...
+	while (1)
 	{
 		signal(SIGINT, sigrun);
 		write(STDOUT_FILENO, "🚀 ", 5);
-		micli->buffer = micli_readline(micli);//this is redundant, as the function returns micli->buffer, leaving it here for clarity
+		micli->buffer = micli_readline(micli);
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
@@ -118,29 +87,15 @@ char	micli_loop(t_micli *micli)
 	return (0);
 }
 
-int 	main(int argc, char **argv, char **envp)
+int		main(int argc, char **argv, char **envp)
 {
 	t_micli micli;
 
-	ft_bzero(&micli, sizeof(t_micli));
-	// pipe(&micli.pipe[0]);
-	// pipe(&micli.pipe[2]);
-	// pipe(&micli.pipe[4]);
-	// close(micli.pipe[5]);
-	micli.envp = ft_envdup(envp, &micli);
-	delete_oldpwd(&micli);
-	//micli.builtin_strlen = ft_strlen(BUILTINS);
-	//config files
 	(void)argc;
 	(void)argv;
-
-	//signal
-	//signal(SIGQUIT, sigrun);
-	//signal(SIGINT, sigrun);
-
-	//command loop
+	ft_bzero(&micli, sizeof(t_micli));
+	micli.envp = ft_envdup(envp, &micli);
+	delete_oldpwd(&micli);
 	micli_loop(&micli);
-
-	//shutdown and cleanup
 	return (0);
 }

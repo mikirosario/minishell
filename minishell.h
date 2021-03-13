@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 13:35:12 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/13 21:37:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@
 #define SUB 26
 #define NUL ""
 #define SYN_ERROR "micli: syntax error near unexpected token"
+#define P_644 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
+#define FILE_WRITE_TR O_CREAT | O_TRUNC | O_WRONLY
+#define FILE_WRITE_AP O_CREAT | O_APPEND | O_WRONLY
+#define FILE_READ O_CREAT | O_RDONLY
 
 typedef struct	s_tokendata
 {
@@ -128,10 +132,17 @@ unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
 unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
 /* String Parsing */
+int		is_escape_char(char chr, char next_chr, unsigned char escape_flag, \
+unsigned char quote_flag);
+int		is_quote_char(char chr, unsigned char escape_flag, \
+unsigned char quote_flag);
 int		isvarchar(char chr);
 char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
+void	get_argument(t_micli *micli);
+void	process_token(t_micli *micli);
+int		is_token_end(char *endl, t_micli *micli);
 char	process_char(char *chr, t_micli *micli);
 
 /* Copying */
@@ -200,7 +211,9 @@ int		var_check(const char *str);
 
 
 /* Redirections */
-char *find_redir_end(char *redir_str);
+void	interpret_redir_instruction(const char *redir, t_micli *micli);
+void	open_redir_file(t_micli *micli);
+char	*find_redir_end(char *redir_str);
 
 
 /* Exit Handling */
