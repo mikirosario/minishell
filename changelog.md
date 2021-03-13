@@ -1,3 +1,7 @@
+### Version 2.71
+
+- Rewrote delete_oldpwd function in the process of testing the Linux/make bug. Confirmed that make does not execute properly when OLDPWD is undefined in the envp array. Still no idea why.
+
 ## Version 2.7
 
 - CD: Removed superflous variables.

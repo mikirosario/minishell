@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 13:22:19 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/13 15:58:33 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,22 +75,24 @@ void	update_pwd(t_micli *micli)
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
 	fake_argv[1] = tmp;
 	ft_export(fake_argv, micli);
-	free(tmp);
+	tmp = ft_del(tmp);
+	fake_argv = ft_del(fake_argv);
 }
+
+/*
+** OLDPWD rewrite.
+*/
 
 void	delete_oldpwd(t_micli *micli)
 {
-	const char	*oldpwd;
-	char		*newold;
-	const char	**fake_argv;
-	int			findpos;
+	char	**fake_argv;
+	char	*oldpwd;
 
-	oldpwd = "OLDPWD=";
-	newold = "OLDPWD";
-	findpos = find_pos(oldpwd, 7, micli->envp);
-	free (micli->envp[findpos]);
-	micli->envp[findpos] = NULL;
+	oldpwd = find_var("OLDPWD", 6, micli->envp);
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
-	fake_argv[1] = newold;
-	ft_export(fake_argv, micli);
+	fake_argv[1] = "OLDPWD";
+	if (oldpwd)
+		ft_unset(fake_argv, micli);
+	ft_export((const char **)fake_argv, micli);
+	fake_argv = ft_del(fake_argv);
 }
