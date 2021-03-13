@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/12 21:23:42 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/13 13:38:33 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,7 @@ int	ft_export(const char **argv, t_micli *micli)
 		z++;
 	}
 	if (!argv[1])
-	{
-		export_order(micli);
 		export_print(micli);
-	}
 	return (0);
 }
 
@@ -99,29 +96,36 @@ void	new_var(const char **argv, size_t str_len, t_micli *micli, int z)
 	ft_memcpy(micli->envp[countarr], argv[z], str_len + 1);
 }
 
+/*
+** Export print now working with a mask created in export_order that provides
+** a list of numbers corresponding to envp in alphabetical order. -Miki
+*/
+
 int	export_print(t_micli *micli)
 {
-	int		i;
-	char	*store;
-	int		name_len;
-	int		str_len;
+	size_t *mask;
+	size_t	i;
+	size_t	name_len;
+	size_t	str_len;
 
-	store = *micli->envp;
+	mask = export_order(micli);
+
 	i = 0;
-	while (store)
+	while (micli->envp[mask[i]])
 	{
-		name_len = ft_name_len(store);
-		str_len = ft_strlen(store);
+		name_len = ft_name_len(micli->envp[mask[i]]);
+		str_len = ft_strlen(micli->envp[mask[i]]);
 		ft_printf("declare -x ");
-		write(1, store, name_len + 1);
+		write(1, micli->envp[mask[i]], name_len + 1);
 		if (str_len != name_len)
 		{
 			ft_putchar('\"');
-			ft_printf("%s\"\n", store + name_len + 1);
+			ft_printf("%s\"\n", micli->envp[mask[i]] + name_len + 1);
 		}
 		else
 			ft_putchar('\n');
-		store = *(micli->envp + ++i);
+		i++;
 	}
+	mask = ft_del(mask);
 	return (0);
 }

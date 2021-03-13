@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/12 21:12:58 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/13 13:22:19 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,10 @@ void	oldpwd(t_micli *micli)
 	const char	*current;
 	char		*tmp;
 	const char	**fake_argv;
-	size_t		str_len;
 
 	current = getcwd(path, sizeof(path));
 	oldpwd = "OLDPWD=";
 	tmp = ft_strjoin(oldpwd, current);
-	str_len = ft_strlen(tmp);
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
 	fake_argv[1] = tmp;
 	ft_export(fake_argv, micli);
@@ -70,12 +68,10 @@ void	update_pwd(t_micli *micli)
 	const char	*current;
 	char		*tmp;
 	const char	**fake_argv;
-	size_t		str_len;
 
 	current = getcwd(path, sizeof(path));
 	pwd = "PWD=";
 	tmp = ft_strjoin(pwd, current);
-	str_len = ft_strlen(tmp);
 	fake_argv = clean_calloc(3, sizeof(char *), micli);
 	fake_argv[1] = tmp;
 	ft_export(fake_argv, micli);

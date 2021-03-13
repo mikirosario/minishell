@@ -1,6 +1,20 @@
+## Version 2.7
+
+- CD: Removed superflous variables.
+
+- EXPORT: Fixed sorting function export_order to return an ordering mask of size_t integers that is now used to print envp in alphabetical order without changing its actual order in memory.
+
+- UNSET: Fixed unset so that it... eh, actually works. ;p It will re-allocate the pointers in the envp list now when called and remove the old pointer list. Not the most efficient implementation ever, but functional, and the deadline looms...
+
+- Detected strange bug in Ubuntu Linux 20.04 Focal where "make" will not execute unless cd is used first. May have something to do with OLDPWD or PWD. Will try to reproduce at 42 on my laptop, though my laptop runs Ubuntu 18.04 LTS. Does not seem to happen on MacOS, but will check again.
+
 ### Version 2.66
 
-- Builtin bugfixes.
+- Builtin bugfixes. The cd function now correctly resolves '~' to home directory in all cases ("~", "~/" and "~/PATH").
+
+- Export now takes multiple arguments.
+
+- Env now displays error message if passed an argument, as in bash.
 
 ### Version 2.65
 

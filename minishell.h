@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/12 21:22:45 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/13 13:35:12 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ char	find_pos(const char *name, size_t name_len, char **envp);
 size_t	ft_name_len(const char *str);
 size_t	ft_countarr(char **envp);
 int		export_print(t_micli *micli);
-void	export_order(t_micli *micli);
+size_t	*export_order(t_micli *micli);
 void	new_var(const char **argv, size_t str_len, t_micli *micli, int z);
 void	upd(const char **argv, size_t name_len, t_micli *micli, int z);
 int		var_check(const char *str);
