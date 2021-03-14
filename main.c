@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 18:29:44 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/14 20:27:56 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,11 @@ char	micli_loop(t_micli *micli)
 int 	main(int argc, char **argv, char **envp)
 {
 	t_micli micli;
+
+	ft_printf("\033[0;32m		               __       42Madrid\n");
+	ft_printf("\033[0;32m		  __ _  (_)___/ (_) 	Mar 2021\n");
+	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
+	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 
 	ft_bzero(&micli, sizeof(t_micli));
 	// pipe(&micli.pipe[0]);
