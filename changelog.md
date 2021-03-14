@@ -1,3 +1,7 @@
+### Version 2.74
+
+- Reorganized process_cmdline, process_raw_line, process_char to clean up the code. Some additional files added.
+
 ### Version 2.73
 
 - Updated syntax_check to ban lines starting in '>' or '<'.

@@ -3,46 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   process_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/13 21:20:16 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 21:34:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/14 16:38:30 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** This function defines the conditions for considering a character within a
-** command line to be the end of a token. If the end of the command line (endl)
-** is found, it is always the end of a token, regardless of the flags.
-** Otherwise:
+** This function copies a token as an argument and places it in an argument
+** list. The argument list is stored in the cmdline struct and remains valid for
+** the life of a command line.
 **
-** The quote flag must be zero, because quoted text always constitutes a single
-** token. The character must not be escaped, as the escape flag designifies
-** special characters. Additionally, we must find either a space or a redirect
-** instruction.
+** The argument counter is incremented to count the arguments in a command line.
+** It is later used to reserve memory for the argv array.
 **
-** These conditions can be understood as follows.
+** NOTE: This function reserves memory that must be freed later by the function
+** that frees all memory occupied by the argument list. This function is called
+** ft_lstclear and is called by clear_cmdline.
 **
-** A token ends IF:
-**
-** 1. Quote flag is ZERO, and
-** 2. Escape flag is ZERO, and
-** 3. Space, '>' or '<' is found, OR
-**
-** 1. End of line (endl) is found.
-**
-** End of line is checked last as it's the least likely to be found.
+** NOTE: The ft_lstnew function reserves memory but won't exit gracefully if it
+** fails like clean_calloc does... sorry. :p
 */
 
-int		is_token_end(char *endl, t_micli *micli)
+void	get_argument(t_micli *micli)
 {
-	if ((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag && \
-	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' || \
-	*micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
-		return (1);
-	return (0);
+	char *dst;
+
+		micli->tokdata.args++;
+		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
+		if (micli->tokdata.args == 1)
+			micli->cmdline.arguments = ft_lstnew(dst);
+		else
+			ft_lstadd_back(&micli->cmdline.arguments, ft_lstnew(dst));
+		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 }
 
 /*

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 21:37:26 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/14 18:58:16 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,13 +136,18 @@ int		is_escape_char(char chr, char next_chr, unsigned char escape_flag, \
 unsigned char quote_flag);
 int		is_quote_char(char chr, unsigned char escape_flag, \
 unsigned char quote_flag);
+int		is_cmdline(char chr, unsigned char escape_flag, \
+unsigned char quote_flag);
+int		is_variable_start(char chr, t_tokendata *tokdata);
+int		is_variable_end(char *chr, char *end_var_addr);
+int		is_redirect_start(char chr, unsigned char escape_flag, \
+unsigned char quote_flag, char *redir_end);
 int		isvarchar(char chr);
 char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
 void	process_raw_line(char *line, t_micli *micli);
-void	get_argument(t_micli *micli);
+int		process_cmdline(char *startl, char *endl, t_micli *micli);
 void	process_token(t_micli *micli);
-int		is_token_end(char *endl, t_micli *micli);
 char	process_char(char *chr, t_micli *micli);
 
 /* Copying */

@@ -28,7 +28,6 @@ unsigned char	ft_togglebit(unsigned char byte, unsigned char bit)
 	return (mask ^ byte);
 }
 
-
 /*
 ** Update the pipe flag if pipes are detected.
 **
