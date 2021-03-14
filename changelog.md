@@ -1,3 +1,12 @@
+### Version 2.75
+
+- Norminette continues.
+
+- Known Bugs:
+- /bin/echoasfd a | cat (if command in pipeline doesn't exist and isn't last command, pipeline hangs)
+- echo > hanging redirect instruction doesn't return syntax error
+- If characters are typed while process is executed, they will be read from stdin in next iteration.
+
 ### Version 2.74
 
 - Reorganized process_cmdline, process_raw_line, process_char to clean up the code. Some additional files added.

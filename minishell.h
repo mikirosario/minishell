@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/14 18:58:16 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/14 21:29:11 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ typedef struct	s_micli
 /* Command Execution */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
+pid_t	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micli);
 
 /* Flag Handling */
 unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
