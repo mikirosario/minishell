@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/14 21:39:20 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/15 20:03:57 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,24 +215,10 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** contains the number of pipes detected in the original line. The variable
 ** micli->pipes.cmd_index tracks the current command, starting with command 0.
 **
-** Pipeline mode uses the micli->pipe_flag to determine the command's read/write
-** status. The command may be launched as write-only (first command in the
-** pipeline), read-only (last command in the pipeline) or read-write (any
-** command sandwiched between commands in the pipeline). 1 == write-only, 2 ==
-** read-only 3 == read-write.
-**
-** Depending on the read/write status, the child will duplicate the read file
-** descriptor of the pipe that was written to by the last command and/or the
-** write file descriptor of the pipe that the next command will read from,
-** assigning stdin or stdout to the duplicates through the dup2 function.
-**
-** All of the pipes.array file descriptors IN THE CHILD are then closed to
-** eliminate their references as counted in the associated file structs.
-**
 ** When pipes.count - pipes.cmd_index == 0, we have reached the last piped
 ** command. This can be graphically represented as follows:
 **
-**					 -------->pipes.count == 3<--------
+** 					 -------->pipes.count == 3<--------
 **					 ^				  ^				  ^
 **					 ^  	pipe0	  ^		pipe1	  ^		pipe2
 **					 |	[write][read] |	[write][read] | [write][read]
@@ -306,14 +292,13 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 {
-	char	*exec_path;
-	char	*builtin;
-	char	*path_var;
-	//int		stat_loc;
-	size_t	i;
-	pid_t	pid;
-
-	i = 0;
+	char			*exec_path;
+	char			*builtin;
+	char			*path_var;
+	unsigned char	child_res;
+////NEEDS PIPE_ABORT!!!!!!
+	//i = 0;
+	child_res = 1;
 	exec_path = NULL;
 	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
@@ -335,10 +320,12 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	|| !ft_strcmp(exec_path, "exit") || !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
 		micli->cmd_result = exec_builtin(builtin, micli);
 	else if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
-		pid = exec_child_process(exec_path, builtin, cmd, micli);
-	else
+		child_res = exec_child_process(exec_path, builtin, cmd, micli);
+	if (micli->cmd_result || (micli->pipe_flag && !child_res))
 	{
-		micli->cmd_result = 127;
-		ft_printf("%s: command not found\n", cmd);
+		if (builtin != NULL)
+			ft_printf("%s: command not found\n", cmd);
+		else
+			ft_printf("micli: %s: %s\n", cmd, strerror(2));
 	}
 }

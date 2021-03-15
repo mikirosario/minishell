@@ -33,10 +33,13 @@ unsigned char	ft_togglebit(unsigned char byte, unsigned char bit)
 **
 ** The pipe_flag is a two bit unsigned integer in the following format:
 **
-** 00 (0) = No pipe.
-** 01 (1) = w_cmd >; next command only write to pipe.
-** 11 (3) = > rw_cmd >; next command read from pipe and write to pipe.
-** 10 (2) = > r_cmd; next command only read from pipe
+** 								PIPE_FLAG
+** BINARY DECIMAL
+**
+** 	00 		0 		= No pipe.
+** 	01 		1		= first pipe, read from stdin, write to pipe
+** 	10 		2 		= last pipe, read from pipe, write to stdout
+** 	11 		3 		= middle pipe, read from and write to pipe
 */
 
 unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag)

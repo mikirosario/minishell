@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/07 20:44:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/15 15:20:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int		close_pipes(size_t pipe_num, t_pipes *pipes, t_micli *micli)
 **
 ** The pipeline, when in use, will look like this:
 **
-**		pipe0	 		pipe1
+**				pipe0	 		pipe1
 **			[write][read]	[write][read]
 ** stdin	1			0	3			2	stdout
 **		↓	↑	   		↓	↑	  		↓	↑
@@ -105,8 +105,11 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
 	if (pipes->array) //Free pipe array if already reserved
 		pipes->array = ft_del(pipes->array); //Free pipe array...
+	if (pipes->pipe_fail) //Free pipefail array if already reserved
+		pipes->pipe_fail = ft_del(pipes->pipe_fail);
 	pipes->array_size = (pipes->count) * 2;
 	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli); //Reserve pipe_count + 2 pipes, maybe stick this value in 'fdcount'.
+	pipes->pipe_fail = clean_calloc(pipes->count, sizeof(size_t), micli); //Pipe failure array to abort pipeline if any commands within pipeline before last command fail
 	while (i < pipes->array_size) //create all pipes
 	{
 		if (pipe(&pipes->array[i]) == -1) //in case of pipe creation failure

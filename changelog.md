@@ -1,3 +1,9 @@
+### Version 2.76
+
+- Norminette continues.
+
+- War against hanging pipeline bug in progress.
+
 ### Version 2.75
 
 - Norminette continues.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/14 21:29:11 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/15 19:59:25 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,12 @@ typedef struct	s_builtins
 
 typedef struct	s_pipes
 {
-	int		*array;
-	size_t	array_size;
-	size_t	count;
-	size_t	cmd_index;
+	int				*array;
+	size_t			*pipe_fail;
+	unsigned char	fail_flag;
+	size_t			array_size;
+	size_t			count;
+	size_t			cmd_index;
 }				t_pipes;
 
 
@@ -126,7 +128,7 @@ typedef struct	s_micli
 /* Command Execution */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
-pid_t	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micli);
+char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micli);
 
 /* Flag Handling */
 unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);

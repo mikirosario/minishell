@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/08 23:30:06 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 15:11:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ void	freeme(t_micli *micli)
 		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
 	if (micli->pipes.array)
 		micli->pipes.array = ft_del(micli->pipes.array); //Free pipe array...
+	if (micli->pipes.pipe_fail)
+		micli->pipes.pipe_fail = ft_del(micli->pipes.pipe_fail);
 	if (micli->envp)
 		micli->envp = free_split(micli->envp);
 }
