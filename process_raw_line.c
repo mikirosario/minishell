@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/14 18:59:25 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 21:32:15 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,12 +158,13 @@ void	process_raw_line(char *line, t_micli *micli)
 		return ;
 	lindex = line;
 	cmdline_end = ';';
-	while (*lindex)
+	while (*lindex)//LINDEX ERES SOSPECHOSO DE JODERME LA EXISTENCIA
 	{
 		lstart = lindex;
 		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart, micli)))
 			pipe_reset(&micli->pipes, micli);
 		lindex = find_cmdline_end(lindex);
+		printf("COMMANDLINE END: %s\n", lindex);
 		process_cmdline(lstart, lindex, micli);
 		if ((cmdline_end = *lindex))
 			lindex++;

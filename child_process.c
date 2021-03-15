@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 20:12:30 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 21:15:24 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,7 +351,7 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 	char	res;
 	
 	i = 0;
-	res = 1;
+	res = 0;
 		// while (i < micli->pipes.cmd_index)
 		// 	if (micli->pipes.pipe_fail[i++])
 		// 	{
@@ -360,12 +360,12 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 		// 	}
 	if (!(pid = fork()))
 		child_process(exec_path, builtin, micli);
-	if (!builtin && (micli->pipe_flag == 1 || micli->pipe_flag == 3))
+	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
 	{
 		waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-		if (stat_loc)
+		if (WEXITSTATUS(stat_loc))
 		{
-			res = 0;
+			res = 1;
 			micli->pipes.pipe_fail[micli->pipes.cmd_index] = 1;
 		}
 	}
@@ -385,8 +385,6 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 		micli->pipe_flag = 0; //Reset pipe_flag
 		//printf("CMD RESULT: %d\n", micli->cmd_result);
 	}
-	else if (micli->pipe_flag)
-		micli->pipes.cmd_index++; //increment cmd_index for child pipe_count comparison
 	if (exec_path != cmd) //guarreo para evitar liberar memoria apuntada por cmd antes de tiempo provocando un double free :p
 		exec_path = ft_del(exec_path);
 	return(res);

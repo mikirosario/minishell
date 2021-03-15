@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 20:03:57 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 21:17:15 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,7 +298,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	unsigned char	child_res;
 ////NEEDS PIPE_ABORT!!!!!!
 	//i = 0;
-	child_res = 1;
+	child_res = 0;
 	exec_path = NULL;
 	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
@@ -321,11 +321,14 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		micli->cmd_result = exec_builtin(builtin, micli);
 	else if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
 		child_res = exec_child_process(exec_path, builtin, cmd, micli);
-	if (micli->cmd_result || (micli->pipe_flag && !child_res))
+	printf("DEBUG INFO\nCMD NO.: %zu\nLAST CMD RESULT: %d\nLAST PIPED CHILD RESULT: %i\nPIPE_FAIL ARRAY RESULT: %zu\n\n", micli->pipes.cmd_index, micli->cmd_result, child_res, micli->pipes.pipe_fail[micli->pipes.cmd_index]);
+	if (exec_path && (micli->cmd_result || (micli->pipe_flag && micli->pipes.pipe_fail[micli->pipes.cmd_index])))
 	{
 		if (builtin != NULL)
 			ft_printf("%s: command not found\n", cmd);
 		else
 			ft_printf("micli: %s: %s\n", cmd, strerror(2));
 	}
+	if (micli->pipe_flag)
+		micli->pipes.cmd_index++; //increment cmd_index for child pipe_count comparison
 }
