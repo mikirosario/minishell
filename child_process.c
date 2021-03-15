@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 21:15:24 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 22:43:56 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,9 @@ void	get_new_stdin_stdout(int *in, int *out, t_micli *micli)
 ** I could free everything except argv and envp before launching execve, but
 ** honestly... there are no lost references, and it's going to be freed when the
 ** process exits anyway... give me a break. :p
+**
+** Realizing that I needed an exit_failure condition after execve in case execve
+** fails took me much longer than I feel comfortable with. xD
 */
 
 void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
@@ -174,7 +177,10 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 		}
 	}
 	else
+	{
 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+		exit(EXIT_FAILURE);
+	}
 }
 
 /*
@@ -364,10 +370,7 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 	{
 		waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
 		if (WEXITSTATUS(stat_loc))
-		{
 			res = 1;
-			micli->pipes.pipe_fail[micli->pipes.cmd_index] = 1;
-		}
 	}
 	if (micli->cmdline.fd_redir_out)
 		close(micli->cmdline.fd_redir_out);
@@ -379,7 +382,8 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 			close(micli->pipes.array[i++]);
 		signal(SIGINT, waiting);
 		waitpid(pid, &stat_loc, WUNTRACED);
-		micli->cmd_result = WEXITSTATUS(stat_loc);
+		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
+			res = 1;
 		// if (micli->cmd_result == 127)
 		// 	ft_printf("micli: %s: %s\n", cmd, strerror(2));
 		micli->pipe_flag = 0; //Reset pipe_flag

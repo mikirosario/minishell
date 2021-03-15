@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 21:29:12 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/15 22:16:12 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ char	*micli_readline(t_micli *micli)
 	while (1)
 	{
 		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
-		write(1, "OOOOOOOOOO\nOOOOOOOOOO\n", 22);
 		if (!size)
 		{
 			write(1, "exit\n", 5);

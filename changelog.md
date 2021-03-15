@@ -1,3 +1,9 @@
+### Version 2.8
+
+- War against hanging pipeline bug concludes with allied victory. A variable has been introduced to save the waitpid status of each command after launch. If any of them fail to launch it will be returned to a local child_res variable, and the exit status will be used to print an error message. Currently there is only one error message that assumes command not found or no such file or directory, but this could be expanded by using stat_loc for a more detailed status.
+
+- Amazingly, it did not occur to me that execve might just fail and return control of the calling process back to my child. I guess I just thought it would close the process all by itself. Instead, I found to my amazement as I implemented the patch to handle broken pipelines, my child would then go on its own merry way, doing all the same things that its parent would do... twice over, thrice over, as many times over as orphaned processes I left in my wake. xD D'oh! To stop this disastrous behaviour, I have introduced a failure condition after execve so the program is still closed. Don't judge me, OK, this is why I'm a student. xD
+
 ### Version 2.76
 
 - Norminette continues.
