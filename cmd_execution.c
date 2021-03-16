@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:32:28 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/16 21:01:28 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,7 +325,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (!exec_path || (micli->cmd_result || (micli->pipe_flag && child_res/*micli->pipes.pipe_fail[micli->pipes.cmd_index]*/)))
 	{
 		if (!exec_path)
-			ft_printf("%s: command not found\n", cmd);
+			ft_printf("micli: %s: command not found\n", cmd);
 		else
 			ft_printf("micli: %s: %s\n", cmd, strerror(2));
 	}

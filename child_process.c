@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:43:56 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/16 21:11:23 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,12 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 {
 	int	res;
 	
-	if (builtin != NULL)
+	if (builtin == NULL)
+	{
+		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+		exit(EXIT_FAILURE);
+	}
+	else
 	{
 		res = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
 		if (!res)
@@ -176,11 +181,7 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 			exit (EXIT_FAILURE);
 		}
 	}
-	else
-	{
-		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-		exit(EXIT_FAILURE);
-	}
+
 }
 
 /*
@@ -316,6 +317,8 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 ** have redir_out or redir_in fds, we close them too, once the ones we want are
 ** duplicated and assigned stdin/stdout. Remember, these fds should never be 0.
 ** And remember, kids, never leave your lover hanging, even in a threesome...
+**
+** Don't judge me for the while... xD
 */
 
 void	child_process(char *exec_path, char *builtin, t_micli *micli)
@@ -347,7 +350,7 @@ void	child_process(char *exec_path, char *builtin, t_micli *micli)
 	// 	if	(waitpid(pid, &stat_loc, WNOHANG | WUNTRACED))
 	// 		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
 	// 			micli->pipes.pipe_fail[micli->pipes.cmd_index] = 1;
-	// }
+	// }echo test \\| wc o echo test \\; echo test
 
 char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micli)
 {
@@ -368,6 +371,9 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 		child_process(exec_path, builtin, micli);
 	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
 	{
+		while (i < 1000000)
+		i++;
+		i = 0;
 		waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
 		if (WEXITSTATUS(stat_loc))
 			res = 1;

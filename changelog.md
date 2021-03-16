@@ -1,3 +1,9 @@
+### Version 2.81
+
+- I'm not proud of the workaround I came up with here, but deadlines are deadlines. xD
+
+
+
 ### Version 2.8
 
 - War against hanging pipeline bug concludes with allied victory. A variable has been introduced to save the waitpid status of each command after launch. If any of them fail to launch it will be returned to a local child_res variable, and the exit status will be used to print an error message. Currently there is only one error message that assumes command not found or no such file or directory, but this could be expanded by using stat_loc for a more detailed status.

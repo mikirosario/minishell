@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_cmdline.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/15 21:26:30 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/16 21:44:00 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 **
 ** 1. Quote flag is ZERO, and
 ** 2. Escape flag is ZERO, and
-** 3. Space, '>' or '<' is found, OR
+** 3. Space, '>' or '<' or '|' or ';' is found, OR
 **
 ** 1. End of line (endl) is found.
 **
@@ -38,9 +38,10 @@
 
 int		is_token_end(char *endl, t_micli *micli)
 {
-	if ((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag && \
-	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' || \
-	*micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
+	if (((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag) && \
+	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' \
+	|| *micli->tokdata.tok_end == '<'|| *(micli->tokdata.tok_end + 1) == '|')) \
+	|| micli->tokdata.tok_end == endl)
 		return (1);
 	return (0);
 }
