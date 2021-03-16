@@ -1,8 +1,8 @@
 ### Version 2.81
 
-- I'm not proud of the workaround I came up with here, but deadlines are deadlines. xD
+- I'm not proud of the workaround I came up with here for the MacOS error reporting issue for broken pipelines. Yes... it's a while that does nothing but kill cycles until so the child has a chance to exit_failure before checking its status. No, it's not my proudest moment. xD But deadlines are deadlines. :p
 
-
+- Bug that caused pipelines (|) and command line ends (;) not to be recognized after an escaped escape character fixed. echo \\| wc and echo \\; echo test now return the same result as bash. Thanks for spotting this one, Julen. :)
 
 ### Version 2.8
 

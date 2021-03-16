@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_cmdline.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/16 21:44:00 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 00:10:20 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,7 @@ int		is_token_end(char *endl, t_micli *micli)
 {
 	if (((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag) && \
 	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' \
-	|| *micli->tokdata.tok_end == '<'|| *(micli->tokdata.tok_end + 1) == '|')) \
-	|| micli->tokdata.tok_end == endl)
+	|| *micli->tokdata.tok_end == '<'))	|| micli->tokdata.tok_end == endl)
 		return (1);
 	return (0);
 }

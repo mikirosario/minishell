@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:19:33 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 00:18:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,17 @@ char	*find_cmdline_end(char *lindex)
 	while (is_cmdline(*lindex, quote_flag, escape_flag))
 	{
 		escape_flag = 0;
-		if (is_escape_char(*lindex, *(lindex + 1), escape_flag, quote_flag) \
-		&& lindex++)
+		if (is_escape_char(*lindex, *(lindex + 1), escape_flag, quote_flag))
+		{
+			lindex++;
 			escape_flag = 1;
+		}
 		if (!escape_flag)
+		{
+			if (*lindex == '|' || *lindex == ';')
+				break ;
 			quote_flag = toggle_quote_flag(*lindex, quote_flag);
+		}
 		lindex++;
 	}
 	return (lindex);
