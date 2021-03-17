@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/16 21:11:23 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 01:50:51 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 	if (builtin == NULL)
 	{
 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-		exit(EXIT_FAILURE);
+		exit(127);
 	}
 	else
 	{
@@ -375,7 +375,7 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 		i++;
 		i = 0;
 		waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-		if (WEXITSTATUS(stat_loc))
+		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
 			res = 1;
 	}
 	if (micli->cmdline.fd_redir_out)
@@ -384,8 +384,9 @@ char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micl
 		close(micli->cmdline.fd_redir_in);
 	if (exec_path && (!micli->pipe_flag || (micli->pipes.count - micli->pipes.cmd_index == 0)))
 	{	
-		while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
-			close(micli->pipes.array[i++]);
+		// while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
+		//  	close(micli->pipes.array[i++]);
+		clear_pipes(&micli->pipes, micli);
 		signal(SIGINT, waiting);
 		waitpid(pid, &stat_loc, WUNTRACED);
 		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))

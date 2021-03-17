@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/16 21:01:28 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 01:29:07 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,14 @@
 ** This function finds comma-separated builtins in the BUILTIN constant string
 ** declared in the minishell.h header. If the argument passed as cmd matches a
 ** comma-separated builtin within the BUILTIN constant string, 1 is returned.
-** Otherwise, 0 is returned.
+** Otherwise, 0 is returned. We need to compare against the string length of
+** cmd, so since the BUILTIN string indicators are comma as well as
+** null-terminated, we first check to make sure cmd is exactly the same length
+** as the proposed built-in match before bothering to compare it.
+**
+** I'm assuming that after the pointer subtraction, size_t should be enough to
+** hold the result until we become transhuman and routinely input 64 bit command
+** names.
 */
 
 int		find_builtin(char *cmd)
@@ -30,7 +37,7 @@ int		find_builtin(char *cmd)
 	{
 		while (*endl && *endl != ',')
 			endl++;
-		if ((!(strncmp(startl, cmd, ft_strlen(cmd)/*endl - startl*/))))
+		if (ft_strlen(cmd) == (size_t)(endl - startl) && !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
 			endl++;
@@ -296,8 +303,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char			*builtin;
 	char			*path_var;
 	unsigned char	child_res;
-////NEEDS PIPE_ABORT!!!!!!
-	//i = 0;
+
 	child_res = 0;
 	exec_path = NULL;
 	builtin = NULL;
@@ -325,8 +331,11 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (!exec_path || (micli->cmd_result || (micli->pipe_flag && child_res/*micli->pipes.pipe_fail[micli->pipes.cmd_index]*/)))
 	{
 		if (!exec_path)
+		{
+			micli->cmd_result = 127;
 			ft_printf("micli: %s: command not found\n", cmd);
-		else
+		}
+		else if (micli->cmd_result == 127)
 			ft_printf("micli: %s: %s\n", cmd, strerror(2));
 	}
 	if (micli->pipe_flag)

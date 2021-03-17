@@ -3,14 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/13 20:27:22 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 00:37:23 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** In case of a system error, the error is printed. Otherwise, a generic unknown error is printed.
+*/
+
+void	sys_error(t_micli *micli)
+{
+	if (micli->syserror)
+		ft_printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
+	else
+		ft_printf("\nUnknown error\n");
+}
 
 /*
 ** Prints the string passed as error_message and the first two characters of the

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:35:51 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 01:49:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,7 @@ char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
 
 /* Concurrent Pipe Handling */
 size_t	pipe_count(const char *line, t_micli *micli);
+void	clear_pipes(t_pipes *pipes, t_micli *micli);
 int		pipe_reset(t_pipes *pipes, t_micli *micli);
 
 // /* Sequential Pipe Handling */
@@ -230,5 +231,6 @@ void	exit_failure(t_micli *micli);
 /* Error Handling */
 int		syntax_check(char *line);
 int		print_error(char *error, char *error_location);
+void	sys_error(t_micli *micli);
 
 #endif

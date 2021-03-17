@@ -1,3 +1,15 @@
+### Version 2.82
+
+- Fixed bug that prevented the exit status of attempts to execute non-existent files or commands from being saved to micli->cmd_result and thus the built-in variable $?. Thanks Mario. :)
+
+- Fixed bug that caused partial matches to built-in commands to register as found built-ins.
+
+- Modified the close_pipe function to close all fds individually. I originally wrote it when I harboured a misunderstanding of file structures, thinking there were only as many file structures as there were files.
+
+- Separated the part of the pipe_reset function that freed pipe memory and zeroed pipe data members into a clear_pipe function that also calls close_pipes to leave pipe_reset the exclusive task of reestablishing a pipeline.
+
+- Separated the part of the exit_failure function that printed system or unknown errors into a seprate sys_error function located in iamerror.c and now callable from elsewhere in the program.
+
 ### Version 2.81
 
 - I'm not proud of the workaround I came up with here for the MacOS error reporting issue for broken pipelines. Yes... it's a while that does nothing but kill cycles until so the child has a chance to exit_failure before checking its status. No, it's not my proudest moment. xD But deadlines are deadlines. :p

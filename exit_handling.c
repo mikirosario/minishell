@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:06:33 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 21:49:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 01:59:00 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,7 @@
 
 void	exit_failure(t_micli *micli)
 {
-	if (micli->syserror)
-		ft_printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
-	else
-		ft_printf("\nUnknown fatal error\n");
+	sys_error(micli);
 	freeme(micli);
 	exit(EXIT_FAILURE);
 }

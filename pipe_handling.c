@@ -6,33 +6,49 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:36:22 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 01:56:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** This function will attempt to close all open pipes in the pipe array. Any
-** close fails, errno will be recorded and the function will exit with 0.
+** This function will attempt to close all open pipes in the pipe array. If any
+** close fails, errno will be recorded and the function will return a sys error.
 ** Otherwise the function will exit with 1.
 */
 
-int		close_pipes(size_t pipe_num, t_pipes *pipes, t_micli *micli)
+int		close_pipes(size_t fd_num, int *pipes_array, t_micli *micli)
 {
 	size_t	i;
 
 	i = 0;
-	while (i < pipe_num) // Try to close any open pipes.
+	while (i < fd_num) // Try to close any open fds in pipeline.
 	{
-		if (close(pipes->array[i]) == -1)
+		if (close(pipes_array[i]) == -1)
 		{
 			micli->syserror = errno;
-			return (0);
+			sys_error(micli);
 		}
-		i += 2;
+		i++;
 	}
 	return (1);
+}
+
+/*
+** This function will close any pipes in the pipe struct and free the memory
+** occupied by their file descriptors, and then zero all the data inside.
+** Nothing better than clearing your pipes.
+*/
+
+void	clear_pipes(t_pipes *pipes, t_micli *micli)
+{
+	if (pipes->array) //Free pipe array if already reserved
+	{
+		close_pipes(pipes->array_size, pipes->array, micli);
+		pipes->array = ft_del(pipes->array); //Free pipe array...
+		ft_bzero(pipes, sizeof(t_pipes));
+	}
 }
 
 /*
@@ -100,11 +116,8 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 	size_t	i;
 
 	i = 0;
-	pipes->cmd_index = 0;
 	if (pipes->count > PIPE_MAX)
-		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
-	if (pipes->array) //Free pipe array if already reserved
-		pipes->array = ft_del(pipes->array); //Free pipe array...
+		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD	
 	pipes->array_size = (pipes->count) * 2;
 	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli); //Reserve pipe_count + 2 pipes, maybe stick this value in 'fdcount'.
 	while (i < pipes->array_size) //create all pipes
@@ -112,7 +125,7 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 		if (pipe(&pipes->array[i]) == -1) //in case of pipe creation failure
 		{
 			micli->syserror = errno;
-			close_pipes(i, pipes, micli);
+			close_pipes(i, pipes->array, micli);
 			exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
 			//NOTE: If pipe creation failed, errno will reflect this. If pipe creation failed and then close pipes failed, errno will report close pipe failure.
 		}
