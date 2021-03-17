@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 01:56:06 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 05:28:46 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,9 @@ void	clear_pipes(t_pipes *pipes, t_micli *micli)
 ** SIZE_MAX (that is, with SIZE_MAX / 2 pipes). Therefore, if the pipe count is
 ** greater than this limit, we prohibit this pipeline to avoid a crash.
 ** Aren't we so nice? :)
+**
+** NOTE: If pipe creation failed, errno will reflect this. If pipe creation
+** failed and then close pipes failed, errno will report close pipe failure.
 */
 
 int		pipe_reset(t_pipes *pipes, t_micli *micli)
@@ -117,17 +120,16 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 
 	i = 0;
 	if (pipes->count > PIPE_MAX)
-		exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD	
+		exit_failure(micli);
 	pipes->array_size = (pipes->count) * 2;
-	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli); //Reserve pipe_count + 2 pipes, maybe stick this value in 'fdcount'.
-	while (i < pipes->array_size) //create all pipes
+	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli);
+	while (i < pipes->array_size)
 	{
-		if (pipe(&pipes->array[i]) == -1) //in case of pipe creation failure
+		if (pipe(&pipes->array[i]) == -1)
 		{
 			micli->syserror = errno;
 			close_pipes(i, pipes->array, micli);
-			exit_failure(micli); // MICLI FAILS!!!!! xD Maybe a little too drastic... should return to command line with error message, but that's not implemented yet.. xD
-			//NOTE: If pipe creation failed, errno will reflect this. If pipe creation failed and then close pipes failed, errno will report close pipe failure.
+			exit_failure(micli);
 		}
 		i += 2;
 	}
@@ -136,36 +138,77 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 
 /*
 ** Count number of pipes in a line until the next ';' or EOL.
+**
+** This is the function where I finally wrote a parsing method I was satisfied
+** with, so I'm proud of this function. ;) All the other parsers in minishell
+** have basically either evolved from it, or been adapted to mimic it. :D
+**
+** Status Conditions
+**
+** If escape is found and the following two expressions are NOT true:
+** 	1. We are between single quotes.
+**	2. We are between double quotes, but an escapable character has not been
+**	found after the escape.
+**
+** Then the escape flag is set and line is incremented by one to examine escaped
+** character immediately.
+**
+** If double quotes are found and the double quotes have not been escaped and we
+** are either not between quotes or we are between double quotes, OR if a single
+** quote is found and we are between single quotes, or we are not between quotes
+** and the single quote has not been escaped (single quotes can only be escaped
+** between outside of quotes):
+**
+** Then toggle the quote flag appropriately. Quote flag will toggle when there
+** are no quotes and quotes are found or there are quotes and unescaped quotes
+** of the same type are found.
+**
+** If a semicolon is found and we aren't between any quotes and the semicolon
+** hasn't been escaped:
+**
+** Then leave the while and return the pipe count (we only count pipes until the
+** next semicolon or the end of the line).
+**
+** If a pipe is found and we aren't between any quotes and the pipe hasn't been
+** escaped:
+**
+** Then count the pipe.
+**
+** Go to next character in the line, rinse and repeat.
+**
+** Return the pipe count.
+**
+** For posterity, the original formulation of the quote detection logic, before
+** it was optimized in the is_quote_char function: ^_^
+** 	if ((*line == '"' && !escape_flag && (!quote_flag || quote_flag == 1))
+**	|| (*line == '\'' && (quote_flag == 2 || (!escape_flag && !quote_flag))))
+**	quote_flag = toggle_quote_flag(*line, quote_flag);
 */
 
-size_t	pipe_count(const char *line, t_micli *micli)
+size_t	pipe_count(const char *line)
 {
 	unsigned char	quote_flag;
 	unsigned char	escape_flag;
 	size_t			pipe_count;
 	
-	(void)micli;
 	quote_flag = 0;
 	pipe_count = 0;
 	line = ft_skipspaces(line);
 	while (*line)
 	{
-		escape_flag = 0;														//Status Condition
-		//Note that single quotes prevent escaping.
-		if (*line == '\\' && quote_flag != 2 &&	!(quote_flag == 1				//If escape is found and the following two expressions are NOT true:
-		&& ft_memchr(DQUOTE_ESC_CHARS, *(line + 1), 3) == NULL))					//1. We are between single quotes.
-		{																			//2. We are between double quotes, but an escapable character has not been found after the escape.
-			escape_flag = 1;													//Escape flag is set.
-			line++;																//Line is incremented by one to examine escaped character.
+		escape_flag = 0;
+		if (is_escape_char(*line, *(line + 1), escape_flag, quote_flag))
+		{																			
+			escape_flag = 1;													
+			line++;
 		}
-		if ((*line == '"' && !escape_flag && (!quote_flag || quote_flag == 1)) 	//If double quotes are found and the double quotes have not been escaped and we are either not between quotes or we are between double quotes...
-		|| (*line == '\'' && (quote_flag == 2 || (!escape_flag && !quote_flag))))	//OR if single quote is found and we are between single quotes or the single quote has not been escaped and we are not between quotes.
-			quote_flag = toggle_quote_flag(*line, quote_flag);					//Toggle the quote flag appropriately. Quote flag will toggle when: no quotes and quotes found or quotes and unescaped quotes of same type found.
-		if (*line == ';' && !quote_flag && !escape_flag)						//If semicolon is found and we aren't between any quotes and the semicolon hasn't been escaped
-			break ;																//Leave the while and return pipe count (we only count pipes until the next semicolon or EOL)
-		if (*line == '|' && !quote_flag && !escape_flag)						//If pipe is found and we aren't between any quotes and the pipe hasn't been escaped...
-			pipe_count++;														//Count the pipe.
-		line++;																	//Go to next char.
+		if (is_quote_char(*line, escape_flag, quote_flag))
+			quote_flag = toggle_quote_flag(*line, quote_flag);
+		if (*line == ';' && !quote_flag && !escape_flag)
+			break ;
+		if (*line == '|' && !quote_flag && !escape_flag)
+			pipe_count++;
+		line++;
 	}
 	return (pipe_count);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/09 19:51:26 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/17 04:51:41 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,20 +85,6 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 ** it. An array of four integers is 4 * sizeof(int) = 16 bytes.
 */
 
-// char	*ft_realloc(char *ptr, size_t size, t_micli *micli)
-// {
-// 	char *tmp;
-
-// 	tmp = ptr;
-// 	if (!ptr || !(ptr = malloc(sizeof(char) * size)))
-// 		micli->syserror = errno;
-// 	else
-// 		ft_memcpy(ptr, tmp, size);
-// 	//printf("Bufsize: %zu\n", size); (Debug code)
-// 	tmp = ft_del(tmp);
-// 	return (ptr);
-// }
-
 void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
 {
 	void *tmp;
@@ -108,7 +94,6 @@ void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
 		micli->syserror = errno;
 	else
 		ft_memcpy(ptr, tmp, size);
-	//printf("Bufsize: %zu\n", size); (Debug code)
 	tmp = ft_del(tmp);
 	return (ptr);
 }

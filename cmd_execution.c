@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 01:29:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 05:39:22 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ int		find_builtin(char *cmd)
 	{
 		while (*endl && *endl != ',')
 			endl++;
-		if (ft_strlen(cmd) == (size_t)(endl - startl) && !(ft_strncmp(startl, cmd, endl - startl)))
+		if (ft_strlen(cmd) == (size_t)(endl - startl) \
+		&& !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
 			endl++;
@@ -77,7 +78,6 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 	ft_memcpy(ret, path, pathlen);
 	ret[pathlen] = '/';
 	ft_strlcat(ret, cmd, pathlen + cmdlen + 2);
-	//ft_printf("GREAT SUCCESS: %s\n", ret);
 	return(ret);
 }
 
@@ -142,7 +142,6 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 		}
 		micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
 	}
-
 	return (ret);
 }
 
@@ -293,8 +292,6 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** Once the redirect is done, the original file descriptor is closed. The parent
 ** process closes any opened file descriptors after the child process is
 ** spawned.
-**
-** (ctrl-C, ctrl-D, ctrl-\ TENDRÍAN QUE DETENER EL CHILD PROCESS, NO EL PARENT!!!!!!)
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
@@ -302,9 +299,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char			*exec_path;
 	char			*builtin;
 	char			*path_var;
-	unsigned char	child_res;
 
-	child_res = 0;
 	exec_path = NULL;
 	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
@@ -314,7 +309,8 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 		exec_path = cmd; //exec path is cmd if cmd is path
 	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if cmd is builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL export without arguments should be launched as child...) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL, if export is executed without arguments do not run as builtin
 		builtin = cmd;
-
+	if (!exec_path)
+		micli->cmd_result = 127;
 	//Local execution conditions
 	//builtin != NULL
 	//command is "export" and has at least one argument
@@ -326,21 +322,17 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	|| !ft_strcmp(exec_path, "exit") || !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
 		micli->cmd_result = exec_builtin(builtin, micli);
 	else if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
-		child_res = exec_child_process(exec_path, builtin, cmd, micli);
+		exec_child_process(exec_path, builtin, cmd, micli);
 	//printf("DEBUG INFO\nCMD NO.: %zu\nLAST CMD RESULT: %d\nLAST PIPED CHILD RESULT: %i\nPIPE_FAIL ARRAY RESULT: %zu\n\n", micli->pipes.cmd_index, micli->cmd_result, child_res, micli->pipes.pipe_fail[micli->pipes.cmd_index]);
-	if (!exec_path || (micli->cmd_result || (micli->pipe_flag && child_res/*micli->pipes.pipe_fail[micli->pipes.cmd_index]*/)))
+	if (micli->cmd_result == 127)
 	{
 		if (!exec_path)
-		{
-			micli->cmd_result = 127;
 			ft_printf("micli: %s: command not found\n", cmd);
-		}
-		else if (micli->cmd_result == 127)
+		else
 			ft_printf("micli: %s: %s\n", cmd, strerror(2));
 	}
 	if (micli->pipe_flag)
 		micli->pipes.cmd_index++; //increment cmd_index for child pipe_count comparison
 	else if (micli->pipes.cmd_index)
 		micli->pipes.cmd_index = 0;
-	(void)child_res;
 }

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 01:50:51 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 04:37:07 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,60 +343,123 @@ void	child_process(char *exec_path, char *builtin, t_micli *micli)
 	child_process_exec(builtin, exec_path, micli);
 }
 
-	// if ((micli->pipe_flag == 1 || micli->pipe_flag == 3))
-	// {
-	// 	if (micli->cmd_result)
-	// 		return(0);
-	// 	if	(waitpid(pid, &stat_loc, WNOHANG | WUNTRACED))
-	// 		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
-	// 			micli->pipes.pipe_fail[micli->pipes.cmd_index] = 1;
-	// }echo test \\| wc o echo test \\; echo test
+/*
+** This function will methodically check the exit status of a process and return
+** the result. WIFEXITED returns true if the process terminated normally.
+** WIFSIGNALED returns true if the process was terminated by a signal.
+** WIFSTOPPED returns true if the process was stopped.
+*/
 
-char	exec_child_process(char *exec_path, char *builtin, char *cmd, t_micli *micli)
+int		get_child_exit_status(int stat_loc)
+{
+	int exit_status;
+
+	exit_status = 0;
+	if (WIFEXITED(stat_loc))
+		exit_status = WEXITSTATUS(stat_loc);
+	else if (WIFSIGNALED(stat_loc))
+	{
+		exit_status = WTERMSIG(stat_loc);
+		if (WCOREDUMP(stat_loc))
+			ft_printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
+	}
+	else if (WIFSTOPPED(stat_loc))
+		exit_status = WSTOPSIG(stat_loc);
+	return (exit_status);
+}
+
+/*
+** At the beginning and in the middle of a pipeline, this function checks for
+** any child processes that may have exited with failure status to save their
+** exit status.
+**
+** The loop of shame happens here. I know now I should be using
+** while((-1, &stat_loc, WUNTRACED) > 0) to check all the children one by one
+** and save each of their results to some failure array or something, and not
+** this shamefulness, but I *really* need to get this project in and
+** implementing and testing that would set me back. Sorry. :( Don't copy this
+** method, it's awful. xD
+*/
+
+int	broken_pipe_check(pid_t pid)
+{
+	int		stat_loc;
+	size_t i;
+
+	i = 0;
+	while (i < 1000000)
+		i++;
+	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
+	return (get_child_exit_status(stat_loc));
+}
+
+/*
+** This function creates a child process, and then does a lot of cleaning up
+** after it, so the function might more aptly be named child_process_aftermath.
+**
+** First, if the pipe_flag is in mode 1 or 3 (beginning or middle of a pipeline)
+** we need to check for a pipeline that may have been broken by process
+** failures. So we go do that with the broken_pipe_check. This will return a
+** result we can later use to print errors as needed.
+**
+** Next, if any file descriptors were used to create or open files for redirect
+** purposes, we close them.
+**
+** Next, we usually want to wait for our child to finish what it's doing.
+** However, in a pipeline we only want to wait for our *last* child to finish,
+** while we will not wait for any older children, because each child will wait
+** for its own older sibling.
+** 
+** If the pipe_flag is not set, this is an only child. If the pipe flag is set,
+** then we are at the last child in the pipeline when the total number of pipes
+** pipes minus the cmd_index equals 0. For example: echo test | cat | more has 2
+** pipes, where echo is cmd_index 0, cat is cmd_index 1 and more is cmd_index 2.
+** When cmd_index == 2, pipe_num - cmd_index is 2 - 2 == 0. So we know it's the
+** last child that way.
+**
+** If we're waiting for the last child in a pipeline, the first thing we need to
+** do is clear all the parent's references to the pipes by closing their fds,
+** otherwise the children will hang around waiting for input from them that we
+** don't intend to give them.
+**
+** Next, we change the function that executes upon a SIGINT signal to waiting.
+** Miguel knows more about this, he did the signals. ;)
+**
+** Then we wait patiently for the child to finish.
+**
+** When it is finished we check its exit status and save the result.
+**
+** Then we reset the pipe_flag to 0.
+**
+** Lastly, sometimes exec_path will point directly to the memory occupied by
+** cmd. This happens when the user has input an absolute or relative path to
+** an executable. We don't want to free exec_path in that case, because cmd
+** lives in the cmdline struct, which is freed elsewhere in the program, so it
+** would cause a double-free.
+*/
+
+void	exec_child_process(char *exec_path, char *builtin, char *cmd, \
+t_micli *micli)
 {
 	int		stat_loc;
 	pid_t	pid;
-	size_t	i;
-	char	res;
-	
-	i = 0;
-	res = 0;
-		// while (i < micli->pipes.cmd_index)
-		// 	if (micli->pipes.pipe_fail[i++])
-		// 	{
-		// 		ft_printf("micli: %s: %s\n", cmd, strerror(2));
-		// 		return (0);
-		// 	}
+
 	if (!(pid = fork()))
 		child_process(exec_path, builtin, micli);
 	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
-	{
-		while (i < 1000000)
-		i++;
-		i = 0;
-		waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
-			res = 1;
-	}
+		micli->cmd_result = broken_pipe_check(pid);
 	if (micli->cmdline.fd_redir_out)
 		close(micli->cmdline.fd_redir_out);
 	if (micli->cmdline.fd_redir_in)
 		close(micli->cmdline.fd_redir_in);
-	if (exec_path && (!micli->pipe_flag || (micli->pipes.count - micli->pipes.cmd_index == 0)))
+	if (!micli->pipe_flag || (micli->pipes.count - micli->pipes.cmd_index == 0))
 	{	
-		// while (i < micli->pipes.array_size) //there are array_size fds (2 fds per pipe)
-		//  	close(micli->pipes.array[i++]);
 		clear_pipes(&micli->pipes, micli);
 		signal(SIGINT, waiting);
 		waitpid(pid, &stat_loc, WUNTRACED);
-		if ((micli->cmd_result = WEXITSTATUS(stat_loc)))
-			res = 1;
-		// if (micli->cmd_result == 127)
-		// 	ft_printf("micli: %s: %s\n", cmd, strerror(2));
-		micli->pipe_flag = 0; //Reset pipe_flag
-		//printf("CMD RESULT: %d\n", micli->cmd_result);
+		micli->cmd_result = get_child_exit_status(stat_loc);
+		micli->pipe_flag = 0;
 	}
-	if (exec_path != cmd) //guarreo para evitar liberar memoria apuntada por cmd antes de tiempo provocando un double free :p
+	if (exec_path != cmd)
 		exec_path = ft_del(exec_path);
-	return(res);
 }

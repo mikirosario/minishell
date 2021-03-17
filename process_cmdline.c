@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/17 00:10:20 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 05:29:51 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,6 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 		{
 			process_token(micli);
 			micli->token.var_lst = ft_lstfree(micli->token.var_lst);
-			//clear_token(micli);
 		}		
 		else
 			micli->tokdata.tok_end++;

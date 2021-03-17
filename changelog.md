@@ -1,3 +1,13 @@
+### Version 2.85
+
+- Big Norminette compliance update.
+
+### Version 2.84
+
+- Major clean-up in child_process.c. Cleaned up exit status reporting and collection and removed obsolete variables.
+
+- More Norminette. Miau.
+
 ### Version 2.83
 
 - Hanging redirect instructions now return a syntax error.

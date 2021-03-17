@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/07 19:56:39 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/17 05:12:19 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,6 @@
 ** name must also be false (if EITHER is true, the while loop continues).
 **
 ** Hope that is clear. It's really a compact little function, but does a lot. ;)
-**
-** NOTE: REVIEW PURPOSE OF $_ VARIABLE (NOT COMPLETED).
-**
-** NOTE: THE FT_PRINTF IS DEBUG CODE, REMOVE FROM FINAL VERSION.
 */
 
 char	*find_var(const char *name, size_t name_len, char **envp)
@@ -115,22 +111,20 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	char	*varp;
 	t_list	*new;		
 
-	//ft_printf("THIS IS ONLY A TEST OF FIND_VAR: %s\n", varp);
 	if (*var_name == '?')
 	{
 		if (micli->cmd_result_str)
-			micli->cmd_result_str = ft_del(micli->cmd_result_str); //libera esto en freeme tb
+			micli->cmd_result_str = ft_del(micli->cmd_result_str);
 		micli->cmd_result_str = ft_itoa(micli->cmd_result);
 		new = ft_lstnew(micli->cmd_result_str);
 	}
 	else if ((varp = find_var(var_name, var_name_strlen, micli->envp)))
 	{
-		varp = (ft_strchr(varp, '=') + 1); //Variable value starts at character after '='
-		//ft_printf("VAR NAME CONTENT: %s\n", varp);
+		varp = (ft_strchr(varp, '=') + 1);
 		new = ft_lstnew(varp);
 	}
 	else
-		new = ft_lstnew(NUL); //If no match is found for a variable name among envp, resolve to a '\0' character.
+		new = ft_lstnew(NUL);
 	if (!micli->token.var_lst)
 		micli->token.var_lst = new;
 	else
@@ -157,7 +151,7 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 **		A name beginning with $ is considered to refer to the PID of current
 **		shell instance. It is reserved here, but STILL UNIMPLEMENTED. This is
 **		not a subject requirement, so will implement this if we have time.
-** 2. The name begins with '!', '@' or a digit (0-9).
+** 3. The name begins with '!', '@' or a digit (0-9).
 **		Bash also seems to treat these characters as special, accepting them
 **		(for scripting, maybe?) and always ending the variable name immediately
 **		after they are found, regardless of what the next character is. Not sure
@@ -182,8 +176,6 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 ** If a variable name is found and resolved, this function returns the address
 ** of the first character after the last character in the variable name. If a
 ** valid variable name is not found, a NULL pointer is returned.
-**
-** NOTE: PRINTFS ARE DEBUG CODE; REMOVE FROM FINAL VERSION.
 */
 
 char	*var_alloc(char *var_name, t_micli *micli)
@@ -192,24 +184,17 @@ char	*var_alloc(char *var_name, t_micli *micli)
 	char	*varnamecpy;
 
 	i = 0;
-	if (var_name[i] == '?' || var_name[i] == '$' || var_name[i] == '!' || var_name[i] == '@' || ft_isdigit(var_name[i])) //If the initial varchar is special. If it is '?', it's special and it refers to micli->cmd_result. I still don't know what the others refer to in bash, but they also seem to be special as they are all accepted, and immediately terminate the variable name...
+	if (var_name[i] == '?' || var_name[i] == '$' || var_name[i] == '!' \
+	|| var_name[i] == '@' || ft_isdigit(var_name[i]))
 		i++;
-	else if (!isvarchar(var_name[i++])/* != 1*/) //If first character is not a varchar.
-	{
-		//ft_printf("INVALID VAR NAME: %.*s\n", i, var_name);
+	else if (!isvarchar(var_name[i++]))
 		return (NULL);
-	}
-	else //For all characters after the first, until a character is found that is not a varchar (may be null, as null is not a var char)
-		while (/*var_name[i] && */isvarchar(var_name[i])) //find end of varname. subsequent varchars may be alphanumeric or underscore.
+	else
+		while (isvarchar(var_name[i]))
 			i++;
-	//ft_printf("VAR NAME: %.*s\n", i, var_name); //var_name is var_name[0] --> var_name[i - 1];
 	varnamecpy = clean_calloc(i + 1, sizeof(char), micli);
-	//micli_cpy(varnamecpy, var_name, &var_name[i], micli);
-	strncpy(varnamecpy, var_name, (&var_name[i] - var_name)); //need to make a strncpy :p 
-	//ft_printf("COPIED VAR NAME: %s\n", varnamecpy);
-
+	strncpy(varnamecpy, var_name, (&var_name[i] - var_name)); //fork, aún necesitamos un ft_strncpy :p
 	var_buffer(varnamecpy, i, micli);
-
 	varnamecpy = ft_del(varnamecpy);
-	return(&var_name[i]); //Return the address of the end of the variable name.
+	return(&var_name[i]);
 }

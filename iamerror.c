@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 03:18:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 04:50:57 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 void	sys_error(t_micli *micli)
 {
 	if (micli->syserror)
-		ft_printf("\n%s\n", strerror(micli->syserror)); //make ft_realloc set errno, or use internal error handling :p
+		ft_printf("\n%s\n", strerror(micli->syserror));
 	else
 		ft_printf("\nUnknown error\n");
 }

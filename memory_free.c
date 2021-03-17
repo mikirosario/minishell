@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:36:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 05:36:10 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,30 +55,23 @@ char	**free_split(char **split)
 }
 
 /*
-** This function frees memory reserved to store dynamic token information.
+** This function frees memory reserved to store dynamic cmdline information.
 **
 ** Pointers used to check for reserved memory are set to NULL.
-**
-** PRINTFs are DEBUG CODE, REMOVE FROM FINAL VERSION.
 */
 
 void	clear_cmdline(t_micli *micli)
 {
-	//Check token struct for anything that needs to be freed and free as needed.
 	if (micli->cmdline.cmd)
 		micli->cmdline.cmd = ft_del(micli->cmdline.cmd);
 	if (micli->cmdline.micli_argv)
 		micli->cmdline.micli_argv = ft_del(micli->cmdline.micli_argv);
-	//	ft_lstiter(micli->cmdline.arguments, free); //My lstiter leads to unallocated pointers being freed... :p
 	if (micli->cmdline.arguments)
 		ft_lstclear(&micli->cmdline.arguments, free);
-	//if (micli->cmdline.redir_tokens)
-	//	ft_lstclear(&micli->cmdline.redir_tokens, free);
 	if (micli->token.var_lst)
 		micli->token.var_lst = ft_lstfree(micli->token.var_lst);
 	ft_bzero(&micli->cmdline, sizeof(t_cmdline));
 	micli->cmdline.arguments = NULL;
-	//micli->cmdline.redir_tokens = NULL;
 }
 
 /*
@@ -88,16 +81,6 @@ void	clear_cmdline(t_micli *micli)
 
 void	freeme(t_micli *micli)
 {
-	// This is debug code that prints all var_lst content at freeme time.
-	// t_list	*tmp;
-
-	// tmp = micli->token.var_lst;
-	// if (tmp)
-	// 	while (tmp)
-	// 	{
-	// 		//ft_printf("VAR LIST: %s\n", tmp->content);
-	// 		tmp = tmp->next;
-	// 	}
 	if (micli->cmd_result_str)
 		micli->cmd_result_str = ft_del(micli->cmd_result_str);
 	if (micli->buffer)
@@ -106,7 +89,7 @@ void	freeme(t_micli *micli)
 	if (micli->tokdata.path_array)
 		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
 	if (micli->pipes.array)
-		micli->pipes.array = ft_del(micli->pipes.array); //Free pipe array...
+		micli->pipes.array = ft_del(micli->pipes.array);
 	if (micli->envp)
 		micli->envp = free_split(micli->envp);
 }
