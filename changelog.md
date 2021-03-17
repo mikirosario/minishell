@@ -1,3 +1,7 @@
+### Version 2.83
+
+- Hanging redirect instructions now return a syntax error.
+
 ### Version 2.82
 
 - Fixed bug that prevented the exit status of attempts to execute non-existent files or commands from being saved to micli->cmd_result and thus the built-in variable $?. Thanks Mario. :)
@@ -12,7 +16,7 @@
 
 ### Version 2.81
 
-- I'm not proud of the workaround I came up with here for the MacOS error reporting issue for broken pipelines. Yes... it's a while that does nothing but kill cycles until so the child has a chance to exit_failure before checking its status. No, it's not my proudest moment. xD But deadlines are deadlines. :p
+- I'm not proud of the workaround I came up with here for the MacOS error reporting issue for broken pipelines. Yes... it's a while that does nothing but kill cycles until the child has a chance to exit_failure before checking its status. No, it's not my proudest moment. xD But deadlines are deadlines. :p
 
 - Bug that caused pipelines (|) and command line ends (;) not to be recognized after an escaped escape character fixed. echo \\| wc and echo \\; echo test now return the same result as bash. Thanks for spotting this one, Julen. :)
 

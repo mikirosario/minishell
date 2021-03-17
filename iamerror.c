@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 00:37:23 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 03:18:31 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,40 @@ void	sys_error(t_micli *micli)
 ** which case only the first character is printed.
 */
 
-int	print_error(char *error_message, char *error_location)
+int		print_error(char *error_message, char *error_location)
 {
 	if (error_location[1])
 		ft_printf("%s '%.2s'\n", error_message, error_location);
 	else
 		ft_printf("%s '%.1s'\n", error_message, error_location);
 	return (0);
+}
+
+/*
+** We have an invalid redirect if after finding a redirect command and skipping
+** any spaces we find another redirect (except in the case of '>>') or a command
+** line end ('|'), (';') or ('\0'). These are considered syntax errors in
+** minishell. Some of these, like <>, are actually valid in bash, but minishell
+** does not implement them per the subject.
+**
+** If the character is not an invalid redirect, 0 is returned. Otherwise, a
+** syntax error is printed and 1 is returned.
+*/
+
+int		invalid_redir(char *line, unsigned char quote_flag, \
+unsigned char esc_flag)
+{
+	if ((*line != '<' && *line != '>') || quote_flag || esc_flag)
+		return (0);
+	if (*line == '>' && *(line + 1) == '>')
+		line++;
+	line = ft_skipspaces(++line);
+	if (!*line || *line == '<' || *line == '>' || *line == '|' || *line == ';')
+	{
+		print_error(SYN_ERROR, line);
+		return (1);
+	}
+	return (0);	
 }
 
 /*
@@ -60,34 +87,37 @@ int	print_error(char *error_message, char *error_location)
 ** returned false, but the minishell subject does not require us to implement
 ** this feature, so I just treat it as a syntax error.
 **
+** NOTE: The same goes for '<>' and '<<<'. In real bash it is valid, but it's
+** not a feature in minishell.
+**
 ** Norminette made me do it.
 */
 
-int	syntax_check(char *line)
+int		syntax_check(char *line)
 {
 	unsigned char	quote_flag;
-	unsigned char	escape_flag;
+	unsigned char	esc_flag;
 
 	quote_flag = 0;
 	line = ft_skipspaces(line);
-	if (*line != ';' && *line != '|' && *line != '<' && *line != '>')
-		while (*line)
-		{
-			escape_flag = 0;
-			if (is_escape_char(*line, *(line + 1), escape_flag, quote_flag) \
-			&& line++)
-				escape_flag = 1;
-			if (is_quote_char(*line, escape_flag, quote_flag))
-				quote_flag = toggle_quote_flag(*line, quote_flag);
-			if ((*line == '|' || *line == ';') && !quote_flag && !escape_flag)
-			{
-				line = ft_skipspaces(++line);
-				if (*line == '|' || *line == ';')
-					return (print_error(SYN_ERROR, line));
-			}
-			line++;
-		}
-	else
+	if (*line == ';' || *line == '|' || *line == '<' || *line == '>')
 		return (print_error(SYN_ERROR, line));
+	while (*line)
+	{
+		esc_flag = 0;
+		if (is_escape_char(*line, *(line + 1), esc_flag, quote_flag) && line++)
+			esc_flag = 1;
+		if (is_quote_char(*line, esc_flag, quote_flag))
+			quote_flag = toggle_quote_flag(*line, quote_flag);
+		if ((*line == '|' || *line == ';') && !quote_flag && !esc_flag)
+		{
+			line = ft_skipspaces(++line);
+			if (*line == '|' || *line == ';')
+				return (print_error(SYN_ERROR, line));
+		}
+		if (invalid_redir(line, quote_flag, esc_flag))
+			return (0);
+		line++;
+	}
 	return (1);
 }
