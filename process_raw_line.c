@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_raw_line.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 20:45:42 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:53:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 ** Not a friendly function. I wouldn't recommend copying it. ;)
 */
 
-char 	*micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
+char	*micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 {
 	t_list		*var_lst;
 	char		*d;
@@ -140,7 +140,7 @@ char	*find_cmdline_end(char *lindex)
 ** of a char assignment and a check. :/ Don't judge me. :p
 **
 ** Test functionality with this sequence:
-** echo 2*2 | bc | cat; echo this \| "is |" 'a |' test; echo 2+3 | bc 
+** echo 2*2 | bc | cat; echo this \| "is |" 'a |' test; echo 2+3 | bc
 ** Should return:
 ** 4
 ** this | is | a | test

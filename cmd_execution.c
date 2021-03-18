@@ -3,140 +3,69 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 22:42:52 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:36:23 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** This function finds comma-separated builtins in the BUILTIN constant string
-** declared in the minishell.h header. If the argument passed as cmd matches a
-** comma-separated builtin within the BUILTIN constant string, 1 is returned.
-** Otherwise, 0 is returned. We need to compare against the string length of
-** cmd, so since the BUILTIN string indicators are comma as well as
-** null-terminated, we first check to make sure cmd is exactly the same length
-** as the proposed built-in match before bothering to compare it.
+** This function prints the error message for commands that are not found. For
+** commands provided as a path, it means they were not found in the specified
+** location, which is strerror(2). For commands passed by name, it means they
+** were not found among the built-ins (preferably) or among the binaries in
+** PATH directories, from left to right (secondarily).
 **
-** I'm assuming that after the pointer subtraction, size_t should be enough to
-** hold the result until we become transhuman and routinely input 64 bit command
-** names.
+** If exec_path is NULL, the missing executable was passed as a command,
+** otherwise it was passed as a path.
 */
 
-int		find_builtin(char *cmd)
+void	print_not_found(char *exec_path, char *cmd)
 {
-	char	*startl;
-	char	*endl;
+	if (!exec_path)
+		ft_printf("micli: %s: command not found\n", cmd);
+	else
+		ft_printf("micli: %s: %s\n", cmd, strerror(2));
+}
 
-	startl = BUILTINS;
-	endl = startl;
-	while (*startl)
-	{
-		while (*endl && *endl != ',')
-			endl++;
-		if (ft_strlen(cmd) == (size_t)(endl - startl) \
-		&& !(ft_strncmp(startl, cmd, endl - startl)))
-			return (1);
-		else if (*endl == ',')
-			endl++;
-		startl = endl;
-	}
+/*
+** This function determines whether a command should be executed in the parent
+** (true) or in a child (false). It's less intimidating than it might look.
+**
+** A command should be executed in the parent if:
+**
+** 1. It is a built-in, AND
+** 2. It is "export" with at least one argument, OR
+** 3. It is "exit", OR
+** 4. It is "cd", OR
+** 5. It is "unset"
+*/
+
+int		exec_local(char *exec_path, char *builtin, t_micli *micli)
+{
+	if (builtin != NULL && ((!ft_strcmp(exec_path, "export") \
+	&& micli->cmdline.micli_argv[1] != NULL) || !ft_strcmp(exec_path, "exit") \
+	|| !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
+		return (1);
 	return (0);
 }
 
 /*
-** This function generates the pathname of a binary after it is found within the
-** binary directories included in the PATH environmental variable, which can
-** then be passed to execve to execute the binary.
+** This function determines whether a command is or is not a path.
 **
-** The path to the directory is saved at the address pointed to by the path
-** pointer without a trailing /, so the trailing / must be added in manually.
-** That is why I created this function instead of just using str_join. :p
-**
-** The command name is saved at the address pointed to by the cmd pointer.
-**
-** First we determine the lengths of path and cmd. Then we reserve enough memory
-** to hold both path and cmd, plus 2 bytes, one for the trailing / we need to
-** put between path/cmd, and another for the terminating null.
-**
-** Then we copy path to the reserved memory block, add a '/' after path, and
-** concatenate it with cmd. We return the result, which will be the pathname.
+** A command is a path if it begins with '/', './', '../' or '~/'.
 */
 
-char	*generate_pathname(char *path, char *cmd, t_micli *micli)
+int		is_path(char *cmd)
 {
-	char	*ret;
-	size_t	pathlen;
-	size_t	cmdlen;
-
-	pathlen = ft_strlen(path);
-	cmdlen = ft_strlen(cmd);
-	ret = clean_calloc(pathlen + cmdlen + 2, sizeof(char), micli);
-	ft_memcpy(ret, path, pathlen);
-	ret[pathlen] = '/';
-	ft_strlcat(ret, cmd, pathlen + cmdlen + 2);
-	return(ret);
-}
-
-/*
-** This function finds the path where the binary specified by cmd exists from
-** among the directories specified within the PATH environmental variable. The
-** The PATH variable is passed as the const char pointer paths.
-**
-** The first five characters of the PATH variable are PATH=, so we start
-** searching from paths[5]:
-**
-**	0 1 2 3 4 5 start at pos 5
-**	P A T H = / ...
-**
-** Directories in the PATH variable are divided by ':', so we use ft_split to
-** isolate each directory in its own null-terminated string.
-**
-** First we compare cmd with a hardcoded constant string literal, BUILTINS,
-** defined (currently) in minishell.h (might put this in a config file later).
-**
-** If cmd is in the BUILTIN string, we return the same address as the one cmd
-** points to (micli->cmdline.cmd).
-**
-** If cmd is not found in BUILTIN we open all the directories in path_array one
-** by one and check every entry in each directory one by one. If any of these
-** entries matches cmd, we assemble a path name using the path where it was
-** found (generate_pathname does this) and return an address to the path name
-** thus generated.
-**
-** If no match is found either in BUILTINS or in the PATH directories, we return
-** NULL.
-*/
-
-char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
-{
-	DIR				*dir;
-	struct dirent	*dirent;
-	char			*ret;
-	size_t			y;
-
-	ret = NULL;
-	y = 0;
-	if (find_builtin(cmd))
-		return (cmd);
-	micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);
-	while (!ret && micli->tokdata.path_array[y])
-	{
-		dir = opendir(micli->tokdata.path_array[y]);
-		if (dir)
-			while((dirent = readdir(dir)))
-				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
-					ret = generate_pathname(micli->tokdata.path_array[y], \
-					cmd, micli);
-		if (dir)
-			closedir(dir);
-		y++;
-	}
-	micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
-	return (ret);
+	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') \
+	|| (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') \
+	|| (*cmd == '~' && *(cmd + 1) == '/'))
+		return (1);
+	return (0);
 }
 
 /*
@@ -154,8 +83,9 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 {
 	char	**argv;
-	size_t	i = 0;
+	size_t	i;
 
+	i = 0;
 	argv = clean_calloc(micli->tokdata.args + 2, sizeof(char *), micli);
 	while (i < micli->tokdata.args + 2)
 	{
@@ -250,6 +180,7 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** contains the number of file descriptors. The variable micli->pipes.count
 ** contains the number of pipes detected in the original line. The variable
 ** micli->pipes.cmd_index tracks the current command, starting with command 0.
+** The clear_pipes command resets the cmd_index counter as needed.
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
@@ -262,29 +193,18 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	path_var = find_var("PATH", 4, micli->envp);
-
-	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && \
-	*(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/'))
+	if (is_path(cmd))
 		exec_path = cmd;
-	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if cmd is builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL export without arguments should be launched as child...) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL, if export is executed without arguments do not run as builtin
+	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd)
 		builtin = cmd;
 	if (!exec_path)
 		micli->cmd_result = 127;
-	if (builtin != NULL && ((!ft_strcmp(exec_path, "export") && micli->cmdline.micli_argv[1] != NULL) \
-	|| !ft_strcmp(exec_path, "exit") || !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
+	if (exec_local(exec_path, builtin, micli))
 		micli->cmd_result = exec_builtin(builtin, micli);
-	else if (exec_path != NULL) //if cmd is a path or a builtin or has been found in PATH variable it is not null, otherwise it is NULL.
+	else if (exec_path != NULL)
 		exec_child_process(exec_path, builtin, cmd, micli);
-	//printf("DEBUG INFO\nCMD NO.: %zu\nLAST CMD RESULT: %d\nLAST PIPED CHILD RESULT: %i\nPIPE_FAIL ARRAY RESULT: %zu\n\n", micli->pipes.cmd_index, micli->cmd_result, child_res, micli->pipes.pipe_fail[micli->pipes.cmd_index]);
 	if (micli->cmd_result == 127)
-	{
-		if (!exec_path)
-			ft_printf("micli: %s: command not found\n", cmd);
-		else
-			ft_printf("micli: %s: %s\n", cmd, strerror(2));
-	}
+		print_not_found(exec_path, cmd);
 	if (micli->pipe_flag)
-		micli->pipes.cmd_index++; //increment cmd_index for child pipe_count comparison
-	// else if (micli->pipes.cmd_index) //clear_pipes debería encargarse de esto ahora
-	// 	micli->pipes.cmd_index = 0;
+		micli->pipes.cmd_index++;
 }

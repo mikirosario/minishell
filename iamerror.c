@@ -3,14 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 20:44:32 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 20:46:01 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** At the beginning and in the middle of a pipeline, this function checks for
+** any child processes that may have exited with failure status to save their
+** exit status.
+**
+** The loop of shame happens here. I know now I should be using
+** while((-1, &stat_loc, WUNTRACED) > 0) to check all the children one by one
+** and save each of their results to some failure array or something, and not
+** this shamefulness, but I *really* need to get this project in and
+** implementing and testing that would set me back. Sorry. :( Don't copy this
+** method, it's awful. xD
+*/
+
+int	broken_pipe_check(pid_t pid)
+{
+	int		stat_loc;
+	size_t	i;
+
+	i = 0;
+	while (i < 1000000)
+		i++;
+	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
+	return (get_child_exit_status(stat_loc));
+}
 
 /*
 ** In case of a system error, the error is printed. Otherwise, a generic unknown error is printed.

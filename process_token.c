@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/13 21:20:16 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 00:02:35 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:54:48 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ void	get_argument(t_micli *micli)
 {
 	char *dst;
 
-		micli->tokdata.args++;
-		dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
-		if (micli->tokdata.args == 1)
-			micli->cmdline.arguments = ft_lstnew(dst);
-		else
-			ft_lstadd_back(&micli->cmdline.arguments, ft_lstnew(dst));
-		micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
+	micli->tokdata.args++;
+	dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
+	if (micli->tokdata.args == 1)
+		micli->cmdline.arguments = ft_lstnew(dst);
+	else
+		ft_lstadd_back(&micli->cmdline.arguments, ft_lstnew(dst));
+	micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
 }
 
 /*
@@ -103,8 +103,10 @@ void	process_token(t_micli *micli)
 	if (!micli->tokdata.cmd_flag)
 	{
 		micli->tokdata.cmd_flag = 1;
-		micli->cmdline.cmd = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
-		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
+		micli->cmdline.cmd = clean_calloc(micli->tokdata.toksize, \
+		sizeof(char), micli);
+		micli_cpy(micli->cmdline.cmd, micli->tokdata.tok_start, \
+		micli->tokdata.tok_end, micli);
 	}
 	else if (micli->cmdline.redir_end && ((micli->tokdata.tok_end > micli->cmdline.redir_start && micli->tokdata.tok_end <= micli->cmdline.redir_end) || micli->tokdata.tok_start == micli->tokdata.tok_end))
 	{

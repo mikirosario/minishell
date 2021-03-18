@@ -1,4 +1,4 @@
-	/* ************************************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   flag_toggles.c                                     :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:30:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/04 12:34:06 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/18 21:40:00 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,5 +80,5 @@ unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag)
 		quote_flag = ft_togglebit(quote_flag, 0);
 	else if (quotes == '\'')
 		quote_flag = ft_togglebit(quote_flag, 1);
-	return(quote_flag);
+	return (quote_flag);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_cmdline.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/17 05:29:51 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:52:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,10 @@ int		is_token_end(char *endl, t_micli *micli)
 {
 	if (((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag) && \
 	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' \
-	|| *micli->tokdata.tok_end == '<'))	|| micli->tokdata.tok_end == endl)
+	|| *micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
 		return (1);
 	return (0);
 }
-
 
 /*
 ** These conditions define a character that pertains to a single, continuous
@@ -157,14 +156,15 @@ int		process_cmdline(char *startl, char *endl, t_micli *micli)
 		{
 			process_token(micli);
 			micli->token.var_lst = ft_lstfree(micli->token.var_lst);
-		}		
+		}
 		else
 			micli->tokdata.tok_end++;
 	}
-	micli->pipe_flag = toggle_pipe_flag(*micli->tokdata.tok_end, micli->pipe_flag);
+	micli->pipe_flag = \
+	toggle_pipe_flag(*micli->tokdata.tok_end, micli->pipe_flag);
 	micli->tokdata.quote_flag = 0;
 	micli->tokdata.escape_flag = 0;
 	exec_cmd(micli->cmdline.cmd, micli->cmdline.arguments, micli);
 	clear_cmdline(micli);
-	return (0);	
+	return (0);
 }

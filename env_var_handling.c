@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:12:19 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:38:22 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 */
 
 char	*find_var(const char *name, size_t name_len, char **envp)
-{	
+{
 	char	**ptr;
 
 	ptr = NULL;
@@ -52,7 +52,7 @@ char	*find_var(const char *name, size_t name_len, char **envp)
 		while (*ptr && (ft_strncmp(name, *ptr, name_len) \
 		|| (*(*ptr + name_len) != '=' && *(*ptr + name_len) != '\0')))
 			ptr++;
-	return(*ptr);
+	return (*ptr);
 }
 
 /*
@@ -76,7 +76,7 @@ size_t	get_var_lengths(t_list *var_lst)
 ** valid within a variable name as long as it is not the first character in the
 ** name. If 0 is returned, the character is not a valid variable name.
 **
-** https://www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
+** www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
 */
 
 int		isvarchar(char chr)
@@ -109,7 +109,7 @@ int		isvarchar(char chr)
 void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 {
 	char	*varp;
-	t_list	*new;		
+	t_list	*new;
 
 	if (*var_name == '?')
 	{
@@ -128,7 +128,7 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	if (!micli->token.var_lst)
 		micli->token.var_lst = new;
 	else
-		ft_lstadd_back(&micli->token.var_lst, new);	
+		ft_lstadd_back(&micli->token.var_lst, new);
 }
 
 /*

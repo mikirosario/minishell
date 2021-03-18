@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 20:44:45 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:49:28 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ typedef struct	s_micli
 
 /* Command Execution */
 
+char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
+int		get_child_exit_status(int stat_loc);
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 void	exec_child_process(char *exec_path, char *builtin, char *cmd, \
 t_micli *micli);
@@ -122,6 +124,11 @@ int		is_variable_start(char chr, t_tokendata *tokdata);
 int		is_variable_end(char *chr, char *end_var_addr);
 int		is_redirect_start(char chr, unsigned char escape_flag, \
 unsigned char quote_flag, char *redir_end);
+void	escape_operations(char *chr, t_micli *micli);
+void	quote_operations(char *chr, t_micli *micli);
+void	redir_start_operations(char *chr, t_micli *micli);
+void	redir_end_operations(t_micli *micli);
+void	variable_start_operations(char *chr, t_micli *micli);
 int		isvarchar(char chr);
 char	*find_var(const char *name, size_t name_len, char **envp);
 size_t	get_var_lengths(t_list *var_lst);
@@ -156,6 +163,7 @@ void	exit_failure(t_micli *micli);
 int		syntax_check(char *line, t_micli *micli);
 int		print_error(char *error, char *error_location, t_micli *micli);
 void	sys_error(t_micli *micli);
+int		broken_pipe_check(pid_t pid);
 
 /* Memory Freeing */
 

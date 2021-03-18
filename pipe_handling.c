@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:28:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:43:01 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int		close_pipes(size_t fd_num, int *pipes_array, t_micli *micli)
 	size_t	i;
 
 	i = 0;
-	while (i < fd_num) // Try to close any open fds in pipeline.
+	while (i < fd_num)
 	{
 		if (close(pipes_array[i]) == -1)
 		{
@@ -43,10 +43,10 @@ int		close_pipes(size_t fd_num, int *pipes_array, t_micli *micli)
 
 void	clear_pipes(t_pipes *pipes, t_micli *micli)
 {
-	if (pipes->array) //Free pipe array if already reserved
+	if (pipes->array)
 	{
 		close_pipes(pipes->array_size, pipes->array, micli);
-		pipes->array = ft_del(pipes->array); //Free pipe array...
+		pipes->array = ft_del(pipes->array);
 		ft_bzero(pipes, sizeof(t_pipes));
 	}
 }
@@ -190,7 +190,7 @@ size_t	pipe_count(const char *line)
 	unsigned char	quote_flag;
 	unsigned char	escape_flag;
 	size_t			pipe_count;
-	
+
 	quote_flag = 0;
 	pipe_count = 0;
 	line = ft_skipspaces(line);
@@ -198,8 +198,8 @@ size_t	pipe_count(const char *line)
 	{
 		escape_flag = 0;
 		if (is_escape_char(*line, *(line + 1), escape_flag, quote_flag))
-		{																			
-			escape_flag = 1;													
+		{
+			escape_flag = 1;
 			line++;
 		}
 		if (is_quote_char(*line, escape_flag, quote_flag))

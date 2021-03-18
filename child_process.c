@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 21:28:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 20:45:57 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,8 @@
 **
 ** If we are in child2:
 ** 	The cmd_index will be 2. Thus the writefd_pos will be 2 * 2 + 1 = 5, and
-** 	the read_fd pos will be 5 - 3 = 2. Thus, we will read from pipe1 and write to
-** 	pipe2.
+** 	the read_fd pos will be 5 - 3 = 2. Thus, we will read from pipe1 and write
+** 	to pipe2.
 **
 ** If we are in child3:
 ** 	The cmd_index will be 3. Thus, the writefd_pos will be 3 * 2 + 1 = 7, and
@@ -137,7 +137,7 @@ void	get_new_stdin_stdout(int *in, int *out, t_micli *micli)
 	if (micli->cmdline.fd_redir_out)
 		*out = micli->cmdline.fd_redir_out;
 	else if (ft_isbitset(micli->pipe_flag, 0))
-		*out = micli->pipes.array[writefd_pos]; 
+		*out = micli->pipes.array[writefd_pos];
 	if (micli->cmdline.fd_redir_in)
 		*in = micli->cmdline.fd_redir_in;
 	else if (ft_isbitset(micli->pipe_flag, 1))
@@ -161,7 +161,7 @@ void	get_new_stdin_stdout(int *in, int *out, t_micli *micli)
 void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 {
 	int	res;
-	
+
 	if (builtin == NULL)
 	{
 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
@@ -169,19 +169,18 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 	}
 	else
 	{
-		res = exec_builtin(exec_path, micli); //function must return exit status of executed builtin
+		res = exec_builtin(exec_path, micli);
 		if (!res)
 		{
 			freeme(micli);
-			exit (EXIT_SUCCESS); //no quiero liberar mi memoria por cerrar el hijo
-		}	
+			exit(EXIT_SUCCESS);
+		}
 		else
 		{
 			freeme(micli);
-			exit (EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 	}
-
 }
 
 /*
@@ -199,7 +198,7 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 ** All of the pipes.array file descriptors IN THE CHILD are then closed to
 ** eliminate their references as counted in the associated file structs. More on
 ** this below.
-*
+**
 ** Once we've determined whether input or output will be diverted from
 ** stdin/stdout to another file (pipes are actually just files), if we need to
 ** divert either output or input, we use dup2 to close stdout/stdin and
@@ -269,8 +268,8 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 ** ↓					   ▼
 ** ↓↓◄◄◄child_in  	== 3►►►►inode_ptr►►►filedata_ptr►►►►myfile
 ** ↓↓					   ▲refs == 3	refs == 1
-** ↓↓↓◄◄child_stdin	== 0►►►▲	   
-** ↓↓↳--------------->|			   
+** ↓↓↓◄◄child_stdin	== 0►►►▲
+** ↓↓↳--------------->|
 ** ↓↳---------------->|<----WAITING_4_U♥
 ** ↳----------------->|			↑
 ** 						read(STDIN_FILENO, buf, size)
@@ -284,8 +283,8 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 **
 **  x◄◄◄child_in  	== 3►x	inode_ptr►x	filedata_ptr►x	myfile
 **   						refs == 0	refs == 0
-**   x◄◄child_stdin	== 0►x	   
-**					  |			   
+**   x◄◄child_stdin	== 0►x
+**					  |
 **					  |<----4EVER_ALONE❧
 **					  |			↑
 ** 						read(STDIN_FILENO, buf, size)
@@ -302,11 +301,11 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 **
 ** 	  fd tables				fd struct	inode struct	file data
 ** x◄◄◄◄close(parent_in)►x
-**					  
+**
 **  x◄◄◄close(child_in►►►x ►inode_ptr►►►filedata_ptr►►►►myfile
 **   					   ▲refs == 1	refs == 1
-**   ↓◄◄child_stdin	== 0►►►▲	   
-**   ↳--------------->|			   
+**   ↓◄◄child_stdin	== 0►►►▲
+**   ↳--------------->|
 **					  |<----WAITING_4_U♥
 **					  |			↑
 ** 						read(STDIN_FILENO, buf, size)
@@ -323,11 +322,13 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 
 void	child_process(char *exec_path, char *builtin, t_micli *micli)
 {
-	int 	in = 0;
-	int 	out = 0;
+	int		in;
+	int		out;
 	size_t	i;
 
 	i = 0;
+	in = 0;
+	out = 0;
 	get_new_stdin_stdout(&in, &out, micli);
 	if (out)
 		dup2(out, STDOUT_FILENO);
@@ -366,31 +367,6 @@ int		get_child_exit_status(int stat_loc)
 	else if (WIFSTOPPED(stat_loc))
 		exit_status = WSTOPSIG(stat_loc);
 	return (exit_status);
-}
-
-/*
-** At the beginning and in the middle of a pipeline, this function checks for
-** any child processes that may have exited with failure status to save their
-** exit status.
-**
-** The loop of shame happens here. I know now I should be using
-** while((-1, &stat_loc, WUNTRACED) > 0) to check all the children one by one
-** and save each of their results to some failure array or something, and not
-** this shamefulness, but I *really* need to get this project in and
-** implementing and testing that would set me back. Sorry. :( Don't copy this
-** method, it's awful. xD
-*/
-
-int	broken_pipe_check(pid_t pid)
-{
-	int		stat_loc;
-	size_t i;
-
-	i = 0;
-	while (i < 1000000)
-		i++;
-	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-	return (get_child_exit_status(stat_loc));
 }
 
 /*
@@ -439,7 +415,7 @@ int	broken_pipe_check(pid_t pid)
 ** However, in a pipeline we only want to wait for our *last* child to finish,
 ** while we will not wait for any older children, because each child will wait
 ** for its own older sibling.
-** 
+**
 ** If the pipe_flag is not set, this is an only child. If the pipe flag is set,
 ** then we are at the last child in the pipeline when the total number of pipes
 ** pipes minus the cmd_index equals 0. For example: echo test | cat | more has 2
@@ -483,7 +459,7 @@ t_micli *micli)
 	if (micli->cmdline.fd_redir_in)
 		close(micli->cmdline.fd_redir_in);
 	if (!micli->pipe_flag || (micli->pipes.count - micli->pipes.cmd_index == 0))
-	{	
+	{
 		clear_pipes(&micli->pipes, micli);
 		signal(SIGINT, waiting);
 		waitpid(pid, &stat_loc, WUNTRACED);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 04:51:41 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:41:10 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 char	*clean_ft_strdup(char const *str, t_micli *micli)
 {
 	char	*ptr;
+
 	if (!(ptr = ft_strdup(str)))
 	{
 		micli->syserror = 28;
@@ -38,6 +39,7 @@ char	*clean_ft_strdup(char const *str, t_micli *micli)
 char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli)
 {
 	char	*ptr;
+
 	if (!(ptr = ft_strjoin(s1, s2)))
 	{
 		micli->syserror = 28;
@@ -67,7 +69,7 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 /*
 ** This function reallocates the memory of the array pointed to by ptr to a
 ** new memory block of the size defined by size, freeing the old memory block.
-** 
+**
 ** If a null pointer is passed, a null pointer will be returned and nothing
 ** will be freed. Freeing a null pointer results in no operation being
 ** performed, so it's fine.
@@ -106,6 +108,7 @@ void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
 void	*clean_calloc(size_t count, size_t size, t_micli *micli)
 {
 	void	*ptr;
+
 	if (!(ptr = ft_calloc(count, size)))
 	{
 		micli->syserror = errno;

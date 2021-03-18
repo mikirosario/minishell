@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_char.c                                       :+:      :+:    :+:   */
+/*   char_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 18:01:19 by miki              #+#    #+#             */
-/*   Updated: 2021/03/14 18:58:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 21:45:47 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,12 +141,10 @@ unsigned char quote_flag)
 
 int		is_variable_start(char chr, t_tokendata *tokdata)
 {
-	//if (!tokdata->escape_flag && tokdata->quote_flag != 2 && chr == '$' && var_alloc(var_name, micli)) //if unescacped, single quotes are not open and the '$' character is found
 	if (chr != '$' || tokdata->var_flag || tokdata->escape_flag \
 	|| tokdata->quote_flag == 2)
 		return (0);
 	return (1);
-//	return (var_alloc(var_name, micli)); //Try to find and save the address of the variable value
 }
 
 /*
@@ -173,8 +171,8 @@ int		is_variable_start(char chr, t_tokendata *tokdata)
 int		is_variable_end(char *chr, char *end_var_addr)
 {
 	if (end_var_addr == NULL || chr < end_var_addr)
-		return(0);
-	return(1);
+		return (0);
+	return (1);
 }
 
 /*
@@ -184,7 +182,7 @@ int		is_variable_end(char *chr, char *end_var_addr)
 ** A character will be considered the first character of a new set of redirect
 ** instructions if it is either a '<' or a '>' and no redirect_end address has
 ** yet been specified (redirect_end == NULL) and it is unescaped and unquoted.
-** Fairly straightforward. 
+** Fairly straightforward.
 */
 
 int		is_redirect_start(char chr, unsigned char escape_flag, \

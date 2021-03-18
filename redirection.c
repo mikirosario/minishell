@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 20:47:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:33:34 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/18 20:25:30 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,14 @@ void	open_redir_file(t_micli *micli)
 
 void	interpret_redir_instruction(const char *redir, t_micli *micli)
 {
-	if (*redir == '>' && *(redir + 1) == '>') //for '>>' copy 2 chars '>>'
-		micli->cmdline.redir_out_flag = 2; //write append mode
+	if (*redir == '>' && *(redir + 1) == '>')
+		micli->cmdline.redir_out_flag = 2;
 	else
 	{
 		if (*redir == '>')
 			micli->cmdline.redir_out_flag = 1;
 		else
-			micli->cmdline.redir_in_flag = 1; //read mode
+			micli->cmdline.redir_in_flag = 1;
 	}
 }
 
@@ -109,38 +109,42 @@ void	interpret_redir_instruction(const char *redir, t_micli *micli)
 **			start		  stop
 **			redir		  redir
 **			sequester	  sequester
+**
+** Thus the conditions under which we will consider that a redirect end has been
+** found are:
+**
+** 1. A null character is found, OR
+** 2. The escape flag is NOT set, AND
+**		a. A '>', '<', ' ', ';' or '|' is found.
+**
+** The inverse of this logic are the conditions for considering that a redirect
+** end has NOT been found, that is, that the while within which we are searching
+** for the redirect end character should CONTINUE. The inverse logic is:
+**
+** 1. The character is non-null, AND
+** 2. The escape flag IS set, OR,
+**		a. Neither '>' nor '<' nor ' ' nor ';' nor '|' is found.
+**
+** NOTE: Syntax errors, like '>>>' or '>> ;' are checked before this in the
+** syntax_check function, so we should only reach this function with strings
+** that are syntax-perfect.
 */
 
-char *find_redir_end(char *redir_str)
+char	*find_redir_end(char *redir_str)
 {
 	unsigned char	escape_flag;
 
-	escape_flag = 0; //this is a subparser, so it has its own escape flag
-	//Condiciones de salida: estas condiciones determinan FIN DEL INFIERNO; DIGO FIN DE INSTRUCCIONES DE REDIRECCIÓN
-	// NULL		 	O 	NO ESCAPADO			';',			'|',					' ',				
-	//(!*redir_str || !escape_flag && (*redir_str == ';' || *redir_str == '|' || *redir_str == ' ')
-	
-	//set instruction, get file name
-	//this needs to determine where INSTRUCTION SET ENDS... IT MUST IT MUST
-	//echo "2*3" >> mult \; yoquese <
-	//echo "2*3" >> mult ; yoquese
-	//WHERE DOES THE DAMN INSTRUCTION SET END??? IT ENDS IF WE CAN'T FIND MORE INSTRUCTIONS AFTER THE LAST FILE_NAME
-	while (*redir_str == '>' || *redir_str == '<') //So long as we keep finding new instructions...
+	escape_flag = 0;
+	while (*redir_str == '>' || *redir_str == '<')
 	{
-		//found instruction, now skip instruction
-		if (*redir_str == '>' && *(redir_str + 1) == '>') //if it's a double thingy
-			redir_str += 2; //increment pointer past the ">>"
+		if (*redir_str == '>' && *(redir_str + 1) == '>')
+			redir_str += 2;
 		else
-			redir_str += 1; //otherwise increment pointer past the '>' or '<'
-		redir_str = ft_skipspaces(redir_str); //now skip any spaces, spaces are legit in redirect instruction world as long as there are more redirect instructions to find...
-		if (!*redir_str || *redir_str == '>' || *redir_str == '<' || *redir_str == ';' || *redir_str == '|') //if we find a null, another '<' or '>', ';', '|'
-			return (redir_str); //this would be a syntax error so it should end the redirect instructions... maybe return NULL and skip it all?
-			//Querido miki, lo de arriba creo que ya lo hace syntax_check... aunque comprueba. -Un beso, -miki
-		//found file name, now find end of file name
-		//Condiciones de salida
-		//!*redir_str || !escape_flag && (*redir_str == '>' || *redir_str == '<' || *redir_str == ' ' || *redir_str == ';' || *redir_str == '|')
-		//Condiciones de seguir (lógica inversa)
-		while (*redir_str && (escape_flag || (*redir_str != '>' && *redir_str != '<' && *redir_str != ' ' && *redir_str != ';' && *redir_str != '|')))
+			redir_str += 1;
+		redir_str = ft_skipspaces(redir_str);
+		while (*redir_str && (escape_flag || (*redir_str != '>' \
+		&& *redir_str != '<' && *redir_str != ' ' && *redir_str != ';' \
+		&& *redir_str != '|')))
 		{
 			if (!escape_flag && *redir_str == '\\')
 				escape_flag = 1;
@@ -148,9 +152,7 @@ char *find_redir_end(char *redir_str)
 				escape_flag = 0;
 			redir_str++;
 		}
-		//find next instruction, or die trying
-		redir_str = ft_skipspaces(redir_str); //skip any spaces... we should find either another instruction, or something else
-		//if we find another instruction, rinse and repeat, if not, it's all over, we found the end!
+		redir_str = ft_skipspaces(redir_str);
 	}
-	return (redir_str); //return end of detected instruction set	
+	return (redir_str);
 }

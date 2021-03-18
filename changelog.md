@@ -1,3 +1,7 @@
+### Version 2.87
+
+- Almost totally normed.
+
 ### Version 2.86
 
 - Syntax errors will now set cmd_result to 2, imitating bash functionality.
