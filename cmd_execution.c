@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:39:22 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 22:42:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ char	*generate_pathname(char *path, char *cmd, t_micli *micli)
 	return(ret);
 }
 
-
 /*
 ** This function finds the path where the binary specified by cmd exists from
 ** among the directories specified within the PATH environmental variable. The
@@ -122,26 +121,21 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	ret = NULL;
 	y = 0;
 	if (find_builtin(cmd))
-		ret = cmd;
-	else
+		return (cmd);
+	micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);
+	while (!ret && micli->tokdata.path_array[y])
 	{
-		micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);	//	0 1 2 3 4 5
-																			//	P A T H = / ... start at pos 5
-		while (!ret && micli->tokdata.path_array[y]) //for every dir in PATH
-		{
-			dir = opendir(micli->tokdata.path_array[y]); //open dir
-			//ft_printf("%s\n", path_array[y]);
-			if (dir)
-				while((dirent = readdir(dir)))  //go through every dir entry
-					if (!(ft_strcmp(dirent->d_name, cmd))) //stop if entry coincides with cmd
-						ret = generate_pathname(micli->tokdata.path_array[y], cmd, micli); //concatenate dir path with command name
-					//ft_printf("%s\n", dirent->d_name);
-			if (dir)
-				closedir(dir);
-			y++;
-		}
-		micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
+		dir = opendir(micli->tokdata.path_array[y]);
+		if (dir)
+			while((dirent = readdir(dir)))
+				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
+					ret = generate_pathname(micli->tokdata.path_array[y], \
+					cmd, micli);
+		if (dir)
+			closedir(dir);
+		y++;
 	}
+	micli->tokdata.path_array = free_split(micli->tokdata.path_array);	
 	return (ret);
 }
 
@@ -195,24 +189,60 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** we locate it, we send its address and the address of the command name to
 ** the function find_cmd_path.
 **
-** The function find_cmd_path will return the path to the binary whose name
-** matches the command name among the directories listed in PATH. If the command
-** is among the shell built-ins, the address pointed to by cmd will be returned
-** instead. If no match is found either among the built-ins or the PATH
-** directories, a NULL pointer is returned.
+** We need to find the exec_path - that is, the location of the binary we are
+** going to use to execute the command. If the command is a built-in, this will
+** be a function within minishell instead, as we haven't separated the built-ins
+** into their own binaries, sadly.
 **
-** Depending on the value returned, if we have a built-in we go to the
-** exec_builtin function to execute it, if we have a binary we fork the program
-** and call execve in the child function, sending it the pathname that we
-** assembled with find_cmd_path, and if we haven't found anything we leave the
-** function without doing anything.
+** We analyse the first characters of the command name to determine whether it
+** is itself an absolute or relative path. If so, the exec_path will be the same
+** as the command.
 **
-** If a command is executed in a child process we use waitpid to stop the parent
-** from executing until the child function has terminated. We store the child
-** process termination status in the variable micli->cmd_result. This can be
-** displayed by the user with the $? variable.
+** If the command is not a path, the function find_cmd_path will be used. If the
+** command is among the shell built-ins, the address pointed to by cmd will be
+** returned. If it is not, a binary matching the command name will be searched
+** among the PATH directories and, if one is found, the path to it will be
+** stored in a string and the address of that string will be returned. Note in
+** this case exec_path will have to be freed later. If neither a built-in nor a
+** PATH binary matches the command name, a NULL pointer is returned.
 **
-** --- PIPES ---
+** Thus, if there is a directory path to the executable, it will be in exec_path
+** If the command is among the builtins, exec_path will just point back to cmd,
+** and the builtin pointer is also set, so that we can tell that we have a
+** builtin later on.
+**
+** As in bash, 127 is returned as the command result if the command could not be
+** resolved at all.
+**
+** Depending on the built-in that is called, we may have to execute it within
+** parent process, rather than within a child. This is the case for cd, unset,
+** exit and export when called with arguments (that is, when it sets variables),
+** not when it prints them. So there is a chonky conditional expression to
+** determine whether any of this is true. If it is, we use exec_builtin, which
+** is the same function we use to launch built-ins in children, we just launch
+** it directly in the parent.
+**
+** If the preceding conditional expression is NOT true, then we will want to
+** launch in a child process, and we use exec_child_process for that, unless
+** exec_path is NULL, which would mean we could not resolve the command.
+**
+** In any case, we store the process termination status in the variable
+** micli->cmd_result. The function exec_child_process handles this internally.
+** The cmd_result can then be displayed by the user with the $? variable.
+**
+** If 127 is returned it signifies that the command could not be found or the
+** path to the binary did not work. Thus, if the command cannot be resolved, we
+** set this directly, and if the execve fails in the child, we exit(127) to have
+** it set by the calling function (which is exec_child_process).
+**
+** In either case, if cmd_result is detected as 127, then if exec_path is NULL
+** we return a command not found error, and otherwise we return strerror(2) for
+** the path error.
+**
+** If we are inside a pipeline, for every command we try to execute, we need to
+** increment the pipes.cmd_index counter, crucial to controlling the little
+** beasties. The clear_pipes function, triggered on pipe termination, now resets
+** the counter along with the rest of the pipes struct.
 **
 ** If a pipeline has been requested by the user, then the command will be
 ** launched in special pipeline mode and the parent will NOT wait for any child
@@ -220,78 +250,6 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** contains the number of file descriptors. The variable micli->pipes.count
 ** contains the number of pipes detected in the original line. The variable
 ** micli->pipes.cmd_index tracks the current command, starting with command 0.
-**
-** When pipes.count - pipes.cmd_index == 0, we have reached the last piped
-** command. This can be graphically represented as follows:
-**
-** 					 -------->pipes.count == 3<--------
-**					 ^				  ^				  ^
-**					 ^  	pipe0	  ^		pipe1	  ^		pipe2
-**					 |	[write][read] |	[write][read] | [write][read]
-**			   stdin	1			0	3			2	5			4	stdout
-**					↓	↑	   		↓	↑	  		↓	↑			↓	↑
-**				  	cmd0			cmd1			cmd2			cmd3
-**					child0			child1			child2			child3
-**	cmd_index	==	0	----------> 1	---------->	2	---------->	3
-**	pipes.count	==  3											  - 3
-**																	↓
-**																	0 == end cmd
-**
-** If we have reached the last command, all of the pipe file descriptors in the
-** parent's process are closed and the parent waits for the last child to
-** terminate. Unlike bash, only the last child's exit status is saved, but this
-** technically isn't *pipe* functionality, but *exit status* functionality. :p
-** If you REALLY want me to malloc an exit status array I'll do it, but I think
-** it would kind of be wasting time. ;p
-**
-** If find_cmd_path had to reserve memory to store an assembled pathname, the
-** memory is freed.
-**
-** --- REDIRECTS ---
-**
-** If the user has sent redirect instructions, the instructions are sequestered
-** from the argument list by micli and interpreted before being discarded. The
-** interpretation mimics bash functionality for the instructions '>' '>>' and
-** '<', and so:
-**
-** The filename specified after an instruction will be opened according to the
-** instruction. So >foo will open a file named foo in write-only and truncate
-** mode, >>foo will open a file named foo in write-only and append mode, and
-** <foo will open a file named foo in read-only mode.
-**
-** Files that do not exist will be created.
-**
-** The file descriptor for the file will be saved to micli->fd_redir_in for read
-** instructions and micli->fd_redir_out for write instructions.
-**
-** While a single command can have 1 input and 1 output file, each file can be
-** only read-only or write-only. Therefore, it is not possible for a command to
-** read from a file and write to the same file. This is as in bash.
-**
-** If more than one input file or more than one output file is provided, all the
-** provided files will be opened according to the provided instructions, but
-** only the last provided files will be read from and/or written to by the
-** command.
-**
-** If a pipe comes after a redirect, the redirect has preference over the file
-** used for stdout, and so the subsequent piped command will take stdin. This is
-** as in bash (but not as in zsh).
-**
-** All files are created with 644 permissions.
-**
-** The fd_redir_in and fd_redir_out variables are used as flags. This assumes
-** they will never be 0 unless unset, so if the parent process closes stdout and
-** 0 is assigned to a created file, this will not work properly. Micli does not
-** do this, however.
-**
-** If a file redirect is detected because the redir_in or redir_out variables
-** are set, then stdin and/or stdout, respectively, are closed and a duplicate
-** file of redir_in/redir_out is created with the fd formerly associated with
-** stdin/stdout. File redirects have precedence over pipes.
-**
-** Once the redirect is done, the original file descriptor is closed. The parent
-** process closes any opened file descriptors after the child process is
-** spawned.
 */
 
 void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
@@ -305,19 +263,13 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	path_var = find_var("PATH", 4, micli->envp);
 
-	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/')) //if ispath
-		exec_path = cmd; //exec path is cmd if cmd is path
+	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') || (*cmd == '.' && \
+	*(cmd + 1) == '.' && *(cmd + 2) == '/') || (*cmd == '~' && *(cmd + 1) == '/'))
+		exec_path = cmd;
 	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //if cmd is not path look in builtins (if cmd is builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL export without arguments should be launched as child...) //if cmd is not path look in builtins (if builtin, return cmd), if cmd is not builtin look in PATH (return path), otherwise return NULL, if export is executed without arguments do not run as builtin
 		builtin = cmd;
 	if (!exec_path)
 		micli->cmd_result = 127;
-	//Local execution conditions
-	//builtin != NULL
-	//command is "export" and has at least one argument
-	//command is "exit"
-	//command is "cd"
-	//command is "unset"
-
 	if (builtin != NULL && ((!ft_strcmp(exec_path, "export") && micli->cmdline.micli_argv[1] != NULL) \
 	|| !ft_strcmp(exec_path, "exit") || !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
 		micli->cmd_result = exec_builtin(builtin, micli);
@@ -333,6 +285,6 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	}
 	if (micli->pipe_flag)
 		micli->pipes.cmd_index++; //increment cmd_index for child pipe_count comparison
-	else if (micli->pipes.cmd_index)
-		micli->pipes.cmd_index = 0;
+	// else if (micli->pipes.cmd_index) //clear_pipes debería encargarse de esto ahora
+	// 	micli->pipes.cmd_index = 0;
 }

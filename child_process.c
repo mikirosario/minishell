@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 04:37:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 21:28:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,6 +396,36 @@ int	broken_pipe_check(pid_t pid)
 /*
 ** This function creates a child process, and then does a lot of cleaning up
 ** after it, so the function might more aptly be named child_process_aftermath.
+**
+** If a pipeline has been requested by the user, then the command will be
+** launched in special pipeline mode and the parent will NOT wait for any child
+** except the last child in the pipeline. The variable micli->pipes.array_size
+** contains the number of file descriptors. The variable micli->pipes.count
+** contains the number of pipes detected in the original line. The variable
+** micli->pipes.cmd_index tracks the current command, starting with command 0.
+**
+** When pipes.count - pipes.cmd_index == 0, we have reached the last piped
+** command. This can be graphically represented as follows:
+**
+** 					 -------->pipes.count == 3<--------
+**					 ^				  ^				  ^
+**					 ^  	pipe0	  ^		pipe1	  ^		pipe2
+**					 |	[write][read] |	[write][read] | [write][read]
+**			   stdin	1			0	3			2	5			4	stdout
+**					↓	↑	   		↓	↑	  		↓	↑			↓	↑
+**				  	cmd0			cmd1			cmd2			cmd3
+**					child0			child1			child2			child3
+**	cmd_index	==	0	----------> 1	---------->	2	---------->	3
+**	pipes.count	==  3											  - 3
+**																	↓
+**																	0 == end cmd
+**
+** If we have reached the last command, all of the pipe file descriptors in the
+** parent's process are closed and the parent waits for the last child to
+** terminate. Unlike bash, only the last child's exit status is saved, but this
+** technically isn't *pipe* functionality, but *exit status* functionality. :p
+** If you REALLY want me to malloc an exit status array I'll do it, but I think
+** it would kind of be wasting time. We know about it. ;p
 **
 ** First, if the pipe_flag is in mode 1 or 3 (beginning or middle of a pipeline)
 ** we need to check for a pipeline that may have been broken by process

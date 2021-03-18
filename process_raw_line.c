@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:15:12 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 20:45:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ void	process_raw_line(char *line, t_micli *micli)
 	char			*lindex;
 	char			cmdline_end;
 
-	if (!syntax_check(line))
+	if (!syntax_check(line, micli))
 		return ;
 	lindex = line;
 	cmdline_end = ';';

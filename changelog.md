@@ -1,3 +1,9 @@
+### Version 2.86
+
+- Syntax errors will now set cmd_result to 2, imitating bash functionality.
+
+- The find_cmd_path function will now check the null terminator of the command name string against the binary name as well.
+
 ### Version 2.85
 
 - Big Norminette compliance update.

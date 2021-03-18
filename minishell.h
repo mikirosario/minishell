@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:53:22 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 20:44:45 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,8 @@ void	exit_failure(t_micli *micli);
 
 /* Error Handling */
 
-int		syntax_check(char *line);
-int		print_error(char *error, char *error_location);
+int		syntax_check(char *line, t_micli *micli);
+int		print_error(char *error, char *error_location, t_micli *micli);
 void	sys_error(t_micli *micli);
 
 /* Memory Freeing */

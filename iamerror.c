@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 04:50:57 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/17 20:44:32 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,17 @@ void	sys_error(t_micli *micli)
 /*
 ** Prints the string passed as error_message and the first two characters of the
 ** string passed as error_location, unless the second character is '\0', in
-** which case only the first character is printed.
+** which case only the first character is printed. In the event of a syntax
+** error, command result is set to 2, which appears to be bash behaviour.
 */
 
-int		print_error(char *error_message, char *error_location)
+int		print_error(char *error_message, char *error_location, t_micli *micli)
 {
 	if (error_location[1])
 		ft_printf("%s '%.2s'\n", error_message, error_location);
 	else
 		ft_printf("%s '%.1s'\n", error_message, error_location);
+	micli->cmd_result = 2;
 	return (0);
 }
 
@@ -51,7 +53,7 @@ int		print_error(char *error_message, char *error_location)
 */
 
 int		invalid_redir(char *line, unsigned char quote_flag, \
-unsigned char esc_flag)
+unsigned char esc_flag, t_micli *micli)
 {
 	if ((*line != '<' && *line != '>') || quote_flag || esc_flag)
 		return (0);
@@ -60,7 +62,7 @@ unsigned char esc_flag)
 	line = ft_skipspaces(++line);
 	if (!*line || *line == '<' || *line == '>' || *line == '|' || *line == ';')
 	{
-		print_error(SYN_ERROR, line);
+		print_error(SYN_ERROR, line, micli);
 		return (1);
 	}
 	return (0);	
@@ -93,7 +95,7 @@ unsigned char esc_flag)
 ** Norminette made me do it.
 */
 
-int		syntax_check(char *line)
+int		syntax_check(char *line, t_micli *micli)
 {
 	unsigned char	quote_flag;
 	unsigned char	esc_flag;
@@ -101,7 +103,7 @@ int		syntax_check(char *line)
 	quote_flag = 0;
 	line = ft_skipspaces(line);
 	if (*line == ';' || *line == '|' || *line == '<' || *line == '>')
-		return (print_error(SYN_ERROR, line));
+		return (print_error(SYN_ERROR, line, micli));
 	while (*line)
 	{
 		esc_flag = 0;
@@ -113,9 +115,9 @@ int		syntax_check(char *line)
 		{
 			line = ft_skipspaces(++line);
 			if (*line == '|' || *line == ';')
-				return (print_error(SYN_ERROR, line));
+				return (print_error(SYN_ERROR, line, micli));
 		}
-		if (invalid_redir(line, quote_flag, esc_flag))
+		if (invalid_redir(line, quote_flag, esc_flag, micli))
 			return (0);
 		line++;
 	}
