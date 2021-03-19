@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:21:35 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 03:52:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,13 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
-# include <unistd.h>
 # include <fcntl.h>
 # include <errno.h>
 # include <string.h>
 # include <dirent.h>
 # include <sys/wait.h>
-# include "libft.h"
 # include <signal.h>
+# include "libft.h"
 
 # define READLINE_BUFSIZE 1024
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
@@ -223,13 +222,31 @@ void			sigrun(int sig);
 */
 
 int				exec_builtin(char *cmd, t_micli *micli);
+
+/*
+** cd
+*/
+
 int				ft_cd(const char **argv, t_micli *micli);
-int				ft_pwd(const char **argv);
+int				cd_helper(const char **argv, t_micli *micli);
 void			oldpwd(t_micli *micli);
 void			update_pwd(t_micli *micli);
 void			delete_oldpwd(t_micli *micli);
+int				ft_pwd(const char **argv);
+
+/*
+** echo
+*/
+
 int				ft_echo(const char **argv, t_micli *micli);
+void			echo_helper(int i, const char **argv, t_micli *micli);
+
+/*
+** unset
+*/
+
 int				ft_unset(char **argv, t_micli *micli);
+void			unset_helper(char *store, t_micli *micli);
 int				ft_env(char **envp, const char **argv);
 
 /*
@@ -240,10 +257,11 @@ int				ft_export(const char **argv, t_micli *micli);
 char			find_pos(const char *name, size_t name_len, char **envp);
 size_t			ft_name_len(const char *str);
 size_t			ft_countarr(char **envp);
-int				export_print(t_micli *micli);
+void			export_print(t_micli *micli);
 size_t			*export_order(t_micli *micli);
-void			new_var(const char **argv, size_t str_len, \
-				t_micli *micli, int z);
+void			exp_order_h(size_t countarr, size_t *mask, t_micli *micli);
+void			new_var(const char **argv, size_t str_len, t_micli *micli, \
+				int z);
 void			upd(const char **argv, size_t name_len, t_micli *micli, int z);
 int				var_check(const char *str);
 

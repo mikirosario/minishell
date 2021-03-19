@@ -6,12 +6,11 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:07:04 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 04:00:39 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 /*
 ** This function is the poster child of things that only exist because of the
@@ -117,6 +116,10 @@ int		main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+	ft_printf("\033[0;32m		               __       42Madrid\n");
+	ft_printf("\033[0;32m		  __ _  (_)___/ (_) 	Mar 2021\n");
+	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
+	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 	ft_bzero(&micli, sizeof(t_micli));
 	norminette_made_me_do_it(&micli);
 	micli.envp = ft_envdup(envp, &micli);

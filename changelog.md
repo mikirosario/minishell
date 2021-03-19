@@ -1,3 +1,7 @@
+## Version 2.9
+
+- Merged and fully normed version.
+
 ### Version 2.88
 
 - Normed version, pre-merge.

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 18:17:48 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 03:59:34 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	ft_export(const char **argv, t_micli *micli)
+int		ft_export(const char **argv, t_micli *micli)
 {
 	size_t	name_len;
 	size_t	str_len;
@@ -36,7 +36,7 @@ int	ft_export(const char **argv, t_micli *micli)
 	return (0);
 }
 
-int	var_check(const char *str)
+int		var_check(const char *str)
 {
 	int		len;
 	int		i;
@@ -49,15 +49,17 @@ int	var_check(const char *str)
 		{
 			if (!(isvarchar(str[i])))
 			{
-				ft_printf("🚀 export: '%s': not a valid identifier\n", str);
+				ft_printf("💥\033[0;31m export: '%s': not a \
+				valid identifier\n\033[0m", str);
 				return (0);
 			}
-			i++;	
+			i++;
 		}
 		return (1);
 	}
 	if (!(ft_isalpha(str[0] || str[0] != '_')))
-		ft_printf("🚀 export: '%s': not a valid identifier\n", str);
+		ft_printf("💥\033[0;31m export: '%s': not a \
+		valid identifier\n\033[0m", str);
 	return (0);
 }
 
@@ -101,17 +103,16 @@ void	new_var(const char **argv, size_t str_len, t_micli *micli, int z)
 ** a list of numbers corresponding to envp in alphabetical order. -Miki
 */
 
-int	export_print(t_micli *micli)
+void	export_print(t_micli *micli)
 {
-	size_t *mask;
+	size_t	*mask;
 	size_t	i;
 	size_t	name_len;
 	size_t	str_len;
-	size_t countarr;
+	size_t	countarr;
 
 	mask = export_order(micli);
 	countarr = ft_countarr(micli->envp);
-
 	i = 0;
 	while (i < countarr)
 	{
@@ -129,5 +130,4 @@ int	export_print(t_micli *micli)
 		i++;
 	}
 	mask = ft_del(mask);
-	return (0);
 }

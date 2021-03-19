@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/11 21:48:09 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 04:01:01 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void 	waiting(int signum)
+void	waiting(int signum)
 {
 	(void)signum;
 	signal(SIGINT, waiting);

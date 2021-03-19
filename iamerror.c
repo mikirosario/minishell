@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 01:17:10 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 03:42:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,9 @@ void	sys_error(t_micli *micli)
 int		print_error(char *error_message, char *error_location, t_micli *micli)
 {
 	if (error_location[1])
-		ft_printf("%s '%.2s'\n", error_message, error_location);
+		ft_printf("💥 %s '%.2s'\n", error_message, error_location);
 	else
-		ft_printf("%s '%.1s'\n", error_message, error_location);
+		ft_printf("💥 %s '%.1s'\n", error_message, error_location);
 	micli->cmd_result = 2;
 	return (0);
 }
