@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/19 03:59:34 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 16:17:39 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,12 @@ int		ft_export(const char **argv, t_micli *micli)
 		name_len = ft_name_len(argv[z]);
 		str_len = ft_strlen(argv[z]);
 		find = find_var(argv[z], name_len, micli->envp);
-		if (find != 0 && var_check(argv[z]) == 1)
-			upd(argv, name_len, micli, z);
-		if (find == 0 && var_check(argv[z]) == 1)
+		if (find != NULL)
+		{
+			if (ft_strchr(argv[z], '=') != NULL)
+				upd(argv, name_len, micli, z);
+		}
+		else if (var_check(argv[z]) == 1)
 			new_var(argv, str_len, micli, z);
 		z++;
 	}
@@ -49,8 +52,7 @@ int		var_check(const char *str)
 		{
 			if (!(isvarchar(str[i])))
 			{
-				ft_printf("💥\033[0;31m export: '%s': not a \
-				valid identifier\n\033[0m", str);
+				ft_printf("💥 export: '%s': not a valid identifier\n", str);
 				return (0);
 			}
 			i++;
@@ -58,8 +60,7 @@ int		var_check(const char *str)
 		return (1);
 	}
 	if (!(ft_isalpha(str[0] || str[0] != '_')))
-		ft_printf("💥\033[0;31m export: '%s': not a \
-		valid identifier\n\033[0m", str);
+		ft_printf("💥 export: '%s': not a valid identifier\n", str);
 	return (0);
 }
 
@@ -69,13 +70,10 @@ void	upd(const char **argv, size_t name_len, t_micli *micli, int z)
 	size_t	str_len;
 
 	str_len = ft_strlen(argv[z]);
-	findpos = find_pos(argv[1], name_len, micli->envp);
-	if (name_len != str_len)
-	{
-		free(micli->envp[findpos]);
-		micli->envp[findpos] = clean_calloc(str_len + 1, sizeof(char), micli);
-		ft_memcpy(micli->envp[findpos], argv[z], str_len + 1);
-	}
+	findpos = find_pos(argv[z], name_len, micli->envp);
+	free(micli->envp[findpos]);
+	micli->envp[findpos] = clean_calloc(str_len + 1, sizeof(char), micli);
+	ft_memcpy(micli->envp[findpos], argv[z], str_len + 1);
 }
 
 void	new_var(const char **argv, size_t str_len, t_micli *micli, int z)

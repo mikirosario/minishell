@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:17:37 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:51:30 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 16:23:35 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ char	find_pos(const char *name, size_t name_len, char **envp)
 	int	i;
 
 	i = 0;
-	while (envp[i] != NULL && ft_strncmp(name, envp[i], name_len))
+	while (envp[i] != NULL && (ft_strncmp(name, envp[i], name_len) \
+	|| (envp[i][name_len] != '=' && envp[i][name_len] != '\0')))
 		i++;
 	return (i);
 }
@@ -69,7 +70,6 @@ size_t	*export_order(t_micli *micli)
 
 	countarr = ft_countarr(micli->envp);
 	mask = clean_calloc(countarr, sizeof(size_t), micli);
-	printf("%zu\n", countarr);
 	i = 0;
 	while (i < countarr)
 	{
