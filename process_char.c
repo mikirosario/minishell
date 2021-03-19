@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_char.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/18 21:47:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 20:01:15 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@
 ** bash: \lol -> lol
 */
 
-char			process_char(char *chr, t_micli *micli)
+char	process_char(char *chr, t_micli *micli)
 {
 	if (is_variable_end(chr, micli->tokdata.var_flag))
 		micli->tokdata.var_flag = NULL;
@@ -136,7 +136,7 @@ char			process_char(char *chr, t_micli *micli)
 	micli->tokdata.quote_flag))
 		quote_operations(chr, micli);
 	else if (is_variable_start(*chr, &micli->tokdata) \
-	&& (micli->tokdata.var_flag = var_alloc(chr + 1, micli)))
+	 && (micli->tokdata.var_flag = var_alloc(chr + 1, micli))) //Assignment in control structure
 		variable_start_operations(chr, micli);
 	else if (micli->tokdata.var_flag)
 		*chr = DEL;

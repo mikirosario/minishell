@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:59 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:15:06 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 20:22:51 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	print_env(char *str)
 	write(1, "\n", 1);
 }
 
-int		ft_env(char **envp, const char **argv)
+int	ft_env(char **envp, const char **argv)
 {
 	int		i;
 	char	*store;

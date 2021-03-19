@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:30:35 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 20:22:50 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@ void	print_not_found(char *exec_path, char *cmd)
 ** 5. It is "unset"
 */
 
-int		exec_local(char *exec_path, char *builtin, t_micli *micli)
+int	exec_local(char *exec_path, char *builtin, t_micli *micli)
 {
 	if (builtin != NULL && ((!ft_strcmp(exec_path, "export") \
-	&& micli->cmdline.micli_argv[1] != NULL) || !ft_strcmp(exec_path, "exit") \
-	|| !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
+	 && micli->cmdline.micli_argv[1] != NULL) || !ft_strcmp(exec_path, "exit") \
+	 || !ft_strcmp(exec_path, "cd") || !ft_strcmp(exec_path, "unset")))
 		return (1);
 	return (0);
 }
@@ -59,11 +59,11 @@ int		exec_local(char *exec_path, char *builtin, t_micli *micli)
 ** A command is a path if it begins with '/', './', '../' or '~/'.
 */
 
-int		is_path(char *cmd)
+int	is_path(char *cmd)
 {
 	if (*cmd == '/' || (*cmd == '.' && *(cmd + 1) == '/') \
-	|| (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') \
-	|| (*cmd == '~' && *(cmd + 1) == '/'))
+	 || (*cmd == '.' && *(cmd + 1) == '.' && *(cmd + 2) == '/') \
+	 || (*cmd == '~' && *(cmd + 1) == '/'))
 		return (1);
 	return (0);
 }
@@ -195,7 +195,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd)
+	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //Assigment in control structure
 		builtin = cmd;
 	if (!exec_path)
 		micli->cmd_result = 127;

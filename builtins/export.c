@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/19 19:30:02 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:42:48 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_export(const char **argv, t_micli *micli)
+int	ft_export(const char **argv, t_micli *micli)
 {
 	size_t	name_len;
 	size_t	str_len;
@@ -42,7 +42,7 @@ int		ft_export(const char **argv, t_micli *micli)
 	return (0);
 }
 
-int		var_check(const char *str)
+int	var_check(const char *str)
 {
 	int		len;
 	int		i;

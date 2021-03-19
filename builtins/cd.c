@@ -6,19 +6,19 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:07:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:41:00 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_cd(const char **argv, t_micli *micli)
+int	ft_cd(const char **argv, t_micli *micli)
 {
 	char	*home;
 
 	oldpwd(micli);
-	if (argv[1] == NULL || (*argv[1] == '~' && (argv[1][1] == '/'
-										|| argv[1][1] == '\0')))
+	if (argv[1] == NULL || (*argv[1] == '~' && (argv[1][1] == '/' \
+	 || argv[1][1] == '\0')))
 	{
 		home = find_var("HOME", 4, micli->envp);
 		if (argv[1] && ft_strlen(argv[1]) > 2)
@@ -37,7 +37,7 @@ int		ft_cd(const char **argv, t_micli *micli)
 	return (0);
 }
 
-int		cd_helper(const char **argv, t_micli *micli)
+int	cd_helper(const char **argv, t_micli *micli)
 {
 	if (chdir(argv[1]) == -1)
 	{

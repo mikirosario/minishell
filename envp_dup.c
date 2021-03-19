@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   envp_dup.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/19 03:55:41 by miki              #+#    #+#             */
-/*   Updated: 2021/03/19 03:56:07 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 19:51:54 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 ** This function counts the pointers in a NULL-terminated pointer array.
 */
 
-size_t		ft_countarr(char **envp)
+size_t	ft_countarr(char **envp)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (envp[i])
@@ -33,7 +33,7 @@ size_t		ft_countarr(char **envp)
 ** The function assumes that the array and content are null-terminated.
 */
 
-char		**ft_envdup(char **envp, t_micli *micli)
+char	**ft_envdup(char **envp, t_micli *micli)
 {
 	size_t	envp_size;
 	size_t	i;

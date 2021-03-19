@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:18:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:53:20 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	et_go_home(t_micli *micli)
 ** names.
 */
 
-int		find_builtin(char *cmd)
+int	find_builtin(char *cmd)
 {
 	char	*startl;
 	char	*endl;
@@ -44,7 +44,7 @@ int		find_builtin(char *cmd)
 		while (*endl && *endl != ',')
 			endl++;
 		if (ft_strlen(cmd) == (size_t)(endl - startl) \
-		&& !(ft_strncmp(startl, cmd, endl - startl)))
+		 && !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
 			endl++;
@@ -135,7 +135,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	{
 		dir = opendir(micli->tokdata.path_array[y]);
 		if (dir)
-			while ((dirent = readdir(dir)))
+			while ((dirent = readdir(dir))) //Assignment in control strcuture
 				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
 					ret = generate_pathname(micli->tokdata.path_array[y], \
 					cmd, micli);

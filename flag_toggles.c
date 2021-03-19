@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   flag_toggles.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:30:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 21:40:00 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:53:54 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ unsigned char	ft_togglebit(unsigned char byte, unsigned char bit)
 {
 	unsigned char	mask;
 
-	mask = (unsigned char)1 << bit;
+	mask = (unsigned char) 1 << bit;
 	return (mask ^ byte);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 20:45:57 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:47:38 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,9 +351,9 @@ void	child_process(char *exec_path, char *builtin, t_micli *micli)
 ** WIFSTOPPED returns true if the process was stopped.
 */
 
-int		get_child_exit_status(int stat_loc)
+int	get_child_exit_status(int stat_loc)
 {
-	int exit_status;
+	int	exit_status;
 
 	exit_status = 0;
 	if (WIFEXITED(stat_loc))
@@ -450,7 +450,7 @@ t_micli *micli)
 	int		stat_loc;
 	pid_t	pid;
 
-	if (!(pid = fork()))
+	if (!(pid = fork())) //Assignment in control structure
 		child_process(exec_path, builtin, micli);
 	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
 		micli->cmd_result = broken_pipe_check(pid);

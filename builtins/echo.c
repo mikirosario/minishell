@@ -6,13 +6,13 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:14:38 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:42:14 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_echo(const char **argv, t_micli *micli)
+int	ft_echo(const char **argv, t_micli *micli)
 {
 	int		i;
 	char	*n;

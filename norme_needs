@@ -1,0 +1,9 @@
+child_process.c
+cmd_execution.c
+env_var_handling.c
+find_cmd_path.c
+main.c
+memory_reservation.c
+minishell.h
+process_char.c
+process_raw_line.c

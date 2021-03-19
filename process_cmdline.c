@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_cmdline.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/18 21:52:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 20:22:40 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@
 ** End of line is checked last as it's the least likely to be found.
 */
 
-int		is_token_end(char *endl, t_micli *micli)
+int	is_token_end(char *endl, t_micli *micli)
 {
 	if (((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag) && \
 	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' \
-	|| *micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
+	 || *micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
 		return (1);
 	return (0);
 }
@@ -72,7 +72,7 @@ int		is_token_end(char *endl, t_micli *micli)
 ** 2. The character is either ';' or '|'.
 */
 
-int		is_cmdline(char chr, unsigned char escape_flag, \
+int	is_cmdline(char chr, unsigned char escape_flag, \
 unsigned char quote_flag)
 {
 	if (chr && ((quote_flag || escape_flag) || (chr != ';' && chr != '|')))
@@ -143,7 +143,7 @@ unsigned char quote_flag)
 ** toggle_pipe_flag function handles this.
 */
 
-int		process_cmdline(char *startl, char *endl, t_micli *micli)
+int	process_cmdline(char *startl, char *endl, t_micli *micli)
 {
 	ft_bzero(&micli->token, sizeof(t_token));
 	ft_bzero(&micli->tokdata, sizeof(t_tokendata));

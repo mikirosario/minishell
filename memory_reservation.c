@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:17:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:57:10 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char	*clean_ft_strdup(char const *str, t_micli *micli)
 {
 	char	*ptr;
 
-	if (!(ptr = ft_strdup(str)))
+	if (!(ptr = ft_strdup(str))) //Assignment in control structure
 	{
 		micli->syserror = 28;
 		exit_failure(micli);
@@ -40,7 +40,7 @@ char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli)
 {
 	char	*ptr;
 
-	if (!(ptr = ft_strjoin(s1, s2)))
+	if (!(ptr = ft_strjoin(s1, s2))) //Assignment in control structure
 	{
 		micli->syserror = 28;
 		exit_failure(micli);
@@ -56,11 +56,11 @@ char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli)
 
 char	**clean_ft_split(const char *s, char c, t_micli *micli)
 {
-	char **ptr;
+	char	**ptr;
 
 	if (!s)
-		return(NULL);
-	if (!(ptr = ft_split(s, c)))
+		return (NULL);
+	if (!(ptr = ft_split(s, c))) //Assignment in control structure
 	{
 		micli->syserror = 28;
 		exit_failure(micli);
@@ -91,10 +91,10 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 
 void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
 {
-	void *tmp;
+	void	*tmp;
 
 	tmp = ptr;
-	if (!ptr || !(ptr = malloc(size)))
+	if (!ptr || !(ptr = malloc(size))) //Assignment in control structure
 		micli->syserror = errno;
 	else
 		ft_memcpy(ptr, tmp, size);
@@ -111,7 +111,7 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli)
 {
 	void	*ptr;
 
-	if (!(ptr = ft_calloc(count, size)))
+	if (!(ptr = ft_calloc(count, size))) //Assignment in control structure
 	{
 		micli->syserror = errno;
 		exit_failure(micli);

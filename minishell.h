@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:02:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 20:22:55 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
 
-typedef struct	s_tokendata
+typedef struct s_tokendata
 {
 	size_t			toksize;
 	size_t			args;
@@ -40,18 +40,18 @@ typedef struct	s_tokendata
 	char			*tok_start;
 	char			*tok_end;
 	char			*var_flag;
-	unsigned char	quote_flag:2;
-	unsigned char	redirect_flag:2;
-	unsigned char	escape_flag:1;
-	unsigned char	cmd_flag:1;
+	unsigned char	quote_flag : 2;
+	unsigned char	redirect_flag : 2;
+	unsigned char	escape_flag : 1;
+	unsigned char	cmd_flag : 1;
 }				t_tokendata;
 
-typedef struct	s_token
+typedef struct s_token
 {
 	t_list	*var_lst;
 }				t_token;
 
-typedef struct	s_cmdline
+typedef struct s_cmdline
 {
 	char			*cmd;
 	t_list			*arguments;
@@ -62,16 +62,16 @@ typedef struct	s_cmdline
 	char			**micli_argv;
 	int				fd_redir_in;
 	int				fd_redir_out;
-	unsigned char	redir_in_flag:1;
-	unsigned char	redir_out_flag:2;
+	unsigned char	redir_in_flag : 1;
+	unsigned char	redir_out_flag : 2;
 }				t_cmdline;
 
-typedef struct	s_builtins
+typedef struct s_builtins
 {
 	int	argflag;
 }				t_builtins;
 
-typedef struct	s_pipes
+typedef struct s_pipes
 {
 	int				*array;
 	size_t			array_size;
@@ -79,7 +79,7 @@ typedef struct	s_pipes
 	size_t			cmd_index;
 }				t_pipes;
 
-typedef struct	s_normis_fault
+typedef struct s_normis_fault
 {
 	size_t	pipe_max;
 	mode_t	perms;
@@ -88,7 +88,7 @@ typedef struct	s_normis_fault
 	int		f_re;
 }				t_normis_fault;
 
-typedef struct	s_micli
+typedef struct s_micli
 {
 	char			(*micli_loop)(struct s_micli*);
 	t_tokendata		tokdata;
@@ -102,8 +102,8 @@ typedef struct	s_micli
 	char			*cmd_result_str;
 	char			**envp;
 	char			*buffer;
-	unsigned char	quote_flag:1;
-	unsigned char	pipe_flag:2;
+	unsigned char	quote_flag : 1;
+	unsigned char	pipe_flag : 2;
 }				t_micli;
 
 /*
