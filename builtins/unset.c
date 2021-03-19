@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:30 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 20:57:15 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 19:32:15 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int		ft_unset(char **argv, t_micli *micli)
 	{
 		name_len = ft_strlen(argv[z]);
 		store = find_var(argv[z], name_len, micli->envp);
-		if (store != NULL)
+		if (store != NULL && (ft_strncmp(argv[z], "_=", 2) \
+		&& ft_strncmp(argv[z], "_\0", 2)))
 			unset_helper(store, micli);
 		z++;
 	}

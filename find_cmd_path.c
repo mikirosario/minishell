@@ -3,14 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:24:51 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 19:18:27 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	et_go_home(t_micli *micli)
+{	
+	ft_printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
+	micli->micli_loop(micli);
+}
 
 /*
 ** This function finds comma-separated builtins in the BUILTIN constant string
@@ -122,7 +128,9 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	y = 0;
 	if (find_builtin(cmd))
 		return (cmd);
-	micli->tokdata.path_array = clean_ft_split(&paths[5], ':', micli);
+	micli->tokdata.path_array = clean_ft_split(paths, ':', micli);
+	if (!micli->tokdata.path_array)
+		et_go_home(micli);
 	while (!ret && micli->tokdata.path_array[y])
 	{
 		dir = opendir(micli->tokdata.path_array[y]);

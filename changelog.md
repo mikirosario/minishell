@@ -1,3 +1,9 @@
+## Version 3.0
+
+- The most infamous bug in all of human history, which caused a segmentation fault when PATH was unset and a command was executed, has been fixed. It now behaves as in bash.
+
+- The ability to export or unset variables named '_' has been removed.
+
 ## Version 2.9
 
 - Merged and fully normed version.
