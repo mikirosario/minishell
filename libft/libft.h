@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 00:30:21 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/08 00:38:09 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 03:23:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ char			*ft_strtolower(char *str);
 char			*ft_strchr(char const *s, int c);
 char			*ft_strrchr(char const *s, int c);
 int				ft_strncmp(char const *s1, char const *s2, size_t n);
+char			*ft_strncpy(char *dst, const char *src, size_t n);
 size_t			ft_strlcpy(char *dst, char const *src, size_t dstsize);
 size_t			ft_strlcat(char *dst, char const *src, size_t dstsize);
 char			*ft_strnstr(char const *hay, char const *needle, size_t len);
@@ -56,6 +57,7 @@ char			*ft_substr(char const *s, unsigned int start, size_t len);
 char			*ft_strjoin(char const *s1, char const *s2);
 char			*ft_strtrim(char const *s1, char const *set);
 char			**ft_split(char const *s, char c);
+char			**ft_free_split(char **split);
 char			*ft_itoa(int n);
 char			*ft_itoa_base(long long int num, int base);
 char			*ft_llitoa(long long int n);

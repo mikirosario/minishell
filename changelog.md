@@ -1,3 +1,11 @@
+### Version 2.88
+
+- Normed version, pre-merge.
+
+- Added ft_strncpy to libft.
+
+- Added ft_free_split to libft.
+
 ### Version 2.87
 
 - Almost totally normed.

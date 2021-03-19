@@ -6,11 +6,35 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/15 22:16:12 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 03:07:04 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+/*
+** This function is the poster child of things that only exist because of the
+** school norm. In this case, the school norm prohibits using operations to
+** define constants in the header like normal human beings. Actually, it doesn't
+** even recognize constants as constants if you do.
+**
+** So I have no choice but to define all my constants that are a result of maths
+** or bitwise operations here, at run time. All variable, structure and function
+** names are in honour of Norminette, French feline and royal pain in the arse.
+**
+** *le eyeroll*
+*/
+
+void	norminette_made_me_do_it(t_micli *micli)
+{
+	ft_bzero(&micli->tonti, sizeof(t_normis_fault));
+	micli->tonti.pipe_max = __SIZE_MAX__ / 2;
+	micli->tonti.perms = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	micli->tonti.f_tr = O_WRONLY | O_CREAT | O_TRUNC;
+	micli->tonti.f_ap = O_WRONLY | O_CREAT | O_APPEND;
+	micli->tonti.f_re = O_RDONLY | O_CREAT;
+}
 
 /*
 ** This function defines a buffer for reading from STDIN in steps determined by
@@ -94,6 +118,7 @@ int		main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	ft_bzero(&micli, sizeof(t_micli));
+	norminette_made_me_do_it(&micli);
 	micli.envp = ft_envdup(envp, &micli);
 	delete_oldpwd(&micli);
 	micli_loop(&micli);

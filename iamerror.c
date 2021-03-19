@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 20:46:01 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 01:17:10 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 ** method, it's awful. xD
 */
 
-int	broken_pipe_check(pid_t pid)
+int		broken_pipe_check(pid_t pid)
 {
 	int		stat_loc;
 	size_t	i;
@@ -38,7 +38,8 @@ int	broken_pipe_check(pid_t pid)
 }
 
 /*
-** In case of a system error, the error is printed. Otherwise, a generic unknown error is printed.
+** In case of a system error, the error is printed. Otherwise, a generic unknown
+** error is printed.
 */
 
 void	sys_error(t_micli *micli)
@@ -90,7 +91,7 @@ unsigned char esc_flag, t_micli *micli)
 		print_error(SYN_ERROR, line, micli);
 		return (1);
 	}
-	return (0);	
+	return (0);
 }
 
 /*

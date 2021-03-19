@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 20:47:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 20:25:30 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 03:07:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 ** FILE_READ defines.
 */
 
-void	open_redir_file(t_micli *micli)
+void	open_redir_file(t_normis_fault *tonti, t_micli *micli)
 {
 	char *dst;
 
@@ -44,15 +44,15 @@ void	open_redir_file(t_micli *micli)
 		if (micli->cmdline.fd_redir_out)
 			close(micli->cmdline.fd_redir_out);
 		if (micli->cmdline.redir_out_flag == 1)
-			micli->cmdline.fd_redir_out = open(dst, FILE_WRITE_TR, P_644);
+			micli->cmdline.fd_redir_out = open(dst, tonti->f_tr, tonti->perms);
 		else
-			micli->cmdline.fd_redir_out = open(dst, FILE_WRITE_AP, P_644);
+			micli->cmdline.fd_redir_out = open(dst, tonti->f_ap, tonti->perms);
 	}
 	else if (micli->cmdline.redir_in_flag)
 	{
 		if (micli->cmdline.redir_in)
 			close(micli->cmdline.fd_redir_in);
-		micli->cmdline.fd_redir_in = open(dst, FILE_READ, P_644);
+		micli->cmdline.fd_redir_in = open(dst, tonti->f_re, tonti->perms);
 	}
 	dst = ft_del(dst);
 	micli->cmdline.redir_out_flag = 0;
@@ -74,7 +74,7 @@ void	open_redir_file(t_micli *micli)
 ** at 0 for no instructions.
 */
 
-void	interpret_redir_instruction(const char *redir, t_micli *micli)
+void	interpret_redir_operator(const char *redir, t_micli *micli)
 {
 	if (*redir == '>' && *(redir + 1) == '>')
 		micli->cmdline.redir_out_flag = 2;

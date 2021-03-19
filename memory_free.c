@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 05:36:10 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/19 03:24:51 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,26 +31,6 @@ t_list	*ft_lstfree(t_list *lst)
 			free(lst);
 		}
 	}
-	return (NULL);
-}
-
-/*
-** Frees all memory reserved for a character pointer array with ft_split, first
-** freeing the lines pointed to by each pointer, then freeing the pointer array
-** itself.
-*/
-
-char	**free_split(char **split)
-{
-	int	i;
-
-	i = 0;
-	while (split[i])
-	{
-		split[i] = ft_del(split[i]);
-		i++;
-	}
-	free(split);
 	return (NULL);
 }
 
@@ -87,9 +67,9 @@ void	freeme(t_micli *micli)
 		micli->buffer = ft_del(micli->buffer);
 	clear_cmdline(micli);
 	if (micli->tokdata.path_array)
-		micli->tokdata.path_array = free_split(micli->tokdata.path_array);
+		micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
 	if (micli->pipes.array)
 		micli->pipes.array = ft_del(micli->pipes.array);
 	if (micli->envp)
-		micli->envp = free_split(micli->envp);
+		micli->envp = ft_free_split(micli->envp);
 }

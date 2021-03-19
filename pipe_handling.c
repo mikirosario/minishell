@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 21:43:01 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 01:34:39 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ int		pipe_reset(t_pipes *pipes, t_micli *micli)
 	size_t	i;
 
 	i = 0;
-	if (pipes->count > PIPE_MAX)
+	if (pipes->count > micli->tonti.pipe_max)
 		exit_failure(micli);
 	pipes->array_size = (pipes->count) * 2;
 	pipes->array = clean_calloc(pipes->array_size, sizeof(int), micli);

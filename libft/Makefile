@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
+#    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/09 00:04:22 by mrosario          #+#    #+#              #
-#    Updated: 2021/01/28 19:41:24 by mrosario         ###   ########.fr        #
+#    Updated: 2021/03/19 03:21:28 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,8 @@ SRC = ft_atoi.c ft_bzero.c ft_isalnum.c ft_isalpha.c ft_isascii.c \
 	  ft_llitoa_base.c ft_strtolower.c ft_thousep.c ft_lluitoa.c \
 	  ft_lluitoa_base.c ft_itoa_base.c ft_wputstr.c ft_wstrlen.c \
 	  ft_chrcmp.c ft_get_next_line.c ft_skipspaces.c ft_skipdigits.c \
-	  ft_setbit.c ft_isbitset.c ft_del.c ft_getnextnum.c ft_strcmp.c
+	  ft_setbit.c ft_isbitset.c ft_del.c ft_getnextnum.c ft_strcmp.c \
+	  ft_strncpy.c ft_free_split.c
 
 BSRC = ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
 	   ft_lstlast_bonus.c ft_lstadd_back_bonus.c ft_lstdelone_bonus.c \

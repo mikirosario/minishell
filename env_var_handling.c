@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 21:38:22 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 00:29:08 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,8 +193,8 @@ char	*var_alloc(char *var_name, t_micli *micli)
 		while (isvarchar(var_name[i]))
 			i++;
 	varnamecpy = clean_calloc(i + 1, sizeof(char), micli);
-	strncpy(varnamecpy, var_name, (&var_name[i] - var_name)); //fork, aún necesitamos un ft_strncpy :p
+	ft_strncpy(varnamecpy, var_name, (&var_name[i] - var_name));
 	var_buffer(varnamecpy, i, micli);
 	varnamecpy = ft_del(varnamecpy);
-	return(&var_name[i]);
+	return (&var_name[i]);
 }

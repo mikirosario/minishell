@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 20:52:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 03:24:51 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,6 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 			closedir(dir);
 		y++;
 	}
-	micli->tokdata.path_array = free_split(micli->tokdata.path_array);
+	micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
 	return (ret);
 }

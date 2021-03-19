@@ -3,40 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 21:49:28 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/19 03:21:35 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef _MINISHELL_
-# define _MINISHELL_
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <dirent.h>
-#include <sys/wait.h>
-#include "libft.h"
-#include <signal.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <string.h>
+# include <dirent.h>
+# include <sys/wait.h>
+# include "libft.h"
+# include <signal.h>
 
-#define READLINE_BUFSIZE 1024
-#define BUILTINS "exit,pwd,export,env,echo,cd,unset"
-#define DQUOTE_ESC_CHARS "\"$\\"
-#define PIPE_MAX __SIZE_MAX__ / 2
-#define DEL 127
-#define SUB 26
-#define NUL ""
-#define SYN_ERROR "micli: syntax error near unexpected token"
-#define P_644 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
-#define FILE_WRITE_TR O_CREAT | O_TRUNC | O_WRONLY
-#define FILE_WRITE_AP O_CREAT | O_APPEND | O_WRONLY
-#define FILE_READ O_CREAT | O_RDONLY
+# define READLINE_BUFSIZE 1024
+# define BUILTINS "exit,pwd,export,env,echo,cd,unset"
+# define DQUOTE_ESC_CHARS "\"$\\"
+# define DEL 127
+# define SUB 26
+# define NUL ""
+# define SYN_ERROR "micli: syntax error near unexpected token"
 
 typedef struct	s_tokendata
 {
@@ -74,7 +69,7 @@ typedef struct	s_cmdline
 
 typedef struct	s_builtins
 {
-	int 		argflag;
+	int	argflag;
 }				t_builtins;
 
 typedef struct	s_pipes
@@ -85,6 +80,15 @@ typedef struct	s_pipes
 	size_t			cmd_index;
 }				t_pipes;
 
+typedef struct	s_normis_fault
+{
+	size_t	pipe_max;
+	mode_t	perms;
+	int		f_tr;
+	int		f_ap;
+	int		f_re;
+}				t_normis_fault;
+
 typedef struct	s_micli
 {
 	t_tokendata		tokdata;
@@ -92,6 +96,7 @@ typedef struct	s_micli
 	t_token			token;
 	t_builtins		builtins;
 	t_pipes			pipes;
+	t_normis_fault	tonti;
 	int				syserror;
 	int				cmd_result;
 	char			*cmd_result_str;
@@ -101,115 +106,145 @@ typedef struct	s_micli
 	unsigned char	pipe_flag:2;
 }				t_micli;
 
-/* Command Execution */
+/*
+** Command Execution
+*/
 
-char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
-int		get_child_exit_status(int stat_loc);
-void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
-void	exec_child_process(char *exec_path, char *builtin, char *cmd, \
-t_micli *micli);
+char			*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
+int				get_child_exit_status(int stat_loc);
+void			exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
+void			exec_child_process(char *exec_path, char *builtin, char *cmd, \
+				t_micli *micli);
 
-/* Flag Handling */
+/*
+** Flag Handling
+*/
+
 unsigned char	toggle_quote_flag(char quotes, unsigned char quote_flag);
 unsigned char	toggle_pipe_flag(char pipe, unsigned char pipe_flag);
 
-/* String Parsing */
-int		is_escape_char(char chr, char next_chr, unsigned char escape_flag, \
-unsigned char quote_flag);
-int		is_quote_char(char chr, unsigned char escape_flag, \
-unsigned char quote_flag);
-int		is_cmdline(char chr, unsigned char escape_flag, \
-unsigned char quote_flag);
-int		is_variable_start(char chr, t_tokendata *tokdata);
-int		is_variable_end(char *chr, char *end_var_addr);
-int		is_redirect_start(char chr, unsigned char escape_flag, \
-unsigned char quote_flag, char *redir_end);
-void	escape_operations(char *chr, t_micli *micli);
-void	quote_operations(char *chr, t_micli *micli);
-void	redir_start_operations(char *chr, t_micli *micli);
-void	redir_end_operations(t_micli *micli);
-void	variable_start_operations(char *chr, t_micli *micli);
-int		isvarchar(char chr);
-char	*find_var(const char *name, size_t name_len, char **envp);
-size_t	get_var_lengths(t_list *var_lst);
-void	process_raw_line(char *line, t_micli *micli);
-int		process_cmdline(char *startl, char *endl, t_micli *micli);
-void	process_token(t_micli *micli);
-char	process_char(char *chr, t_micli *micli);
+/*
+** String Parsing
+*/
 
-/* Copying */
+int				is_escape_char(char chr, char next_chr, \
+				unsigned char escape_flag, unsigned char quote_flag);
+int				is_quote_char(char chr, unsigned char escape_flag, \
+				unsigned char quote_flag);
+int				is_cmdline(char chr, unsigned char escape_flag, \
+				unsigned char quote_flag);
+int				is_variable_start(char chr, t_tokendata *tokdata);
+int				is_variable_end(char *chr, char *end_var_addr);
+int				is_redirect_start(char chr, unsigned char escape_flag, \
+				unsigned char quote_flag, char *redir_end);
+void			escape_operations(char *chr, t_micli *micli);
+void			quote_operations(char *chr, t_micli *micli);
+void			redir_start_operations(char *chr, t_micli *micli);
+void			redir_end_operations(t_micli *micli);
+void			variable_start_operations(char *chr, t_micli *micli);
+int				isvarchar(char chr);
+char			*find_var(const char *name, size_t name_len, char **envp);
+size_t			get_var_lengths(t_list *var_lst);
+void			process_raw_line(char *line, t_micli *micli);
+int				process_cmdline(char *startl, char *endl, t_micli *micli);
+void			process_token(t_micli *micli);
+char			process_char(char *chr, t_micli *micli);
 
-char *micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli);
+/*
+** Copying
+*/
 
-/* Pipe Handling */
+char			*micli_cpy(char *dst, const char *src, char *src_end, \
+				t_micli *micli);
 
-size_t	pipe_count(const char *line);
-void	clear_pipes(t_pipes *pipes, t_micli *micli);
-int		pipe_reset(t_pipes *pipes, t_micli *micli);
+/*
+** Pipe Handling
+*/
 
-/* Redirections */
+size_t			pipe_count(const char *line);
+void			clear_pipes(t_pipes *pipes, t_micli *micli);
+int				pipe_reset(t_pipes *pipes, t_micli *micli);
 
-void	interpret_redir_instruction(const char *redir, t_micli *micli);
-void	open_redir_file(t_micli *micli);
-char	*find_redir_end(char *redir_str);
+/*
+** Redirections
+*/
 
-/* Exit Handling */
+void			interpret_redir_operator(const char *redir, t_micli *micli);
+void			open_redir_file(t_normis_fault *tonti, t_micli *micli);
+char			*find_redir_end(char *redir_str);
 
-void	exit_success(t_micli *micli);
-void	exit_failure(t_micli *micli);
+/*
+** Exit Handling
+*/
 
-/* Error Handling */
+void			exit_success(t_micli *micli);
+void			exit_failure(t_micli *micli);
 
-int		syntax_check(char *line, t_micli *micli);
-int		print_error(char *error, char *error_location, t_micli *micli);
-void	sys_error(t_micli *micli);
-int		broken_pipe_check(pid_t pid);
+/*
+** Error Handling
+*/
 
-/* Memory Freeing */
+int				syntax_check(char *line, t_micli *micli);
+int				print_error(char *error, char *error_location, t_micli *micli);
+void			sys_error(t_micli *micli);
+int				broken_pipe_check(pid_t pid);
 
-t_list	*ft_lstfree(t_list *lst);
-void	freeme(t_micli *micli);
-void	clear_cmdline(t_micli *micli);
-char	**free_split(char **split); //Move to libft
+/*
+** Memory Freeing
+*/
 
-/* Memory Reservation */
+t_list			*ft_lstfree(t_list *lst);
+void			freeme(t_micli *micli);
+void			clear_cmdline(t_micli *micli);
 
-char	**ft_envdup(char **envp, t_micli *micli);
-char	*var_alloc(char *var_name, t_micli *micli);
-char	*clean_ft_strdup(char const *str, t_micli *micli);
-char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli);
-char	**clean_ft_split(const char *s, char c, t_micli *micli);
-void	*ft_realloc(void *ptr, size_t size, t_micli *micli);
-void	*clean_calloc(size_t count, size_t size, t_micli *micli);
+/*
+** Memory Reservation
+*/
 
-/* Signal Call */
+char			**ft_envdup(char **envp, t_micli *micli);
+char			*var_alloc(char *var_name, t_micli *micli);
+char			*clean_ft_strdup(char const *str, t_micli *micli);
+char			*clean_ft_strjoin(char const *s1, char const *s2, \
+				t_micli *micli);
+char			**clean_ft_split(const char *s, char c, t_micli *micli);
+void			*ft_realloc(void *ptr, size_t size, t_micli *micli);
+void			*clean_calloc(size_t count, size_t size, t_micli *micli);
 
-void	catch_signal(int signum);
-void 	waiting(int signum);
-void	sigrun(int sig);
+/*
+** Signal Call
+*/
 
-/* Builtins */
+void			catch_signal(int signum);
+void			waiting(int signum);
+void			sigrun(int sig);
 
-int		exec_builtin(char *cmd, t_micli *micli);
-int     ft_cd(const char **argv, t_micli *micli);
-int    	ft_pwd(const char **argv);
-void	oldpwd(t_micli *micli);
-void	update_pwd(t_micli *micli);
-void	delete_oldpwd(t_micli *micli);
-int	    ft_echo(const char **argv, t_micli *micli);
-int	    ft_unset(char **argv, t_micli *micli);
-int		ft_env(char **envp, const char **argv);
+/*
+** Builtins
+*/
 
-/* Export */
+int				exec_builtin(char *cmd, t_micli *micli);
+int				ft_cd(const char **argv, t_micli *micli);
+int				ft_pwd(const char **argv);
+void			oldpwd(t_micli *micli);
+void			update_pwd(t_micli *micli);
+void			delete_oldpwd(t_micli *micli);
+int				ft_echo(const char **argv, t_micli *micli);
+int				ft_unset(char **argv, t_micli *micli);
+int				ft_env(char **envp, const char **argv);
 
-int		ft_export(const char **argv, t_micli *micli);
-char	find_pos(const char *name, size_t name_len, char **envp);
-size_t	ft_name_len(const char *str);
-size_t	ft_countarr(char **envp);
-int		export_print(t_micli *micli);
-size_t	*export_order(t_micli *micli);
-void	new_var(const char **argv, size_t str_len, t_micli *micli, int z);
-void	upd(const char **argv, size_t name_len, t_micli *micli, int z);
-int		var_check(const char *str);
+/*
+** Export
+*/
+
+int				ft_export(const char **argv, t_micli *micli);
+char			find_pos(const char *name, size_t name_len, char **envp);
+size_t			ft_name_len(const char *str);
+size_t			ft_countarr(char **envp);
+int				export_print(t_micli *micli);
+size_t			*export_order(t_micli *micli);
+void			new_var(const char **argv, size_t str_len, \
+				t_micli *micli, int z);
+void			upd(const char **argv, size_t name_len, t_micli *micli, int z);
+int				var_check(const char *str);
 
 #endif
