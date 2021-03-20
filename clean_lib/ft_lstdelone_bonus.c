@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_toupper.c                                       :+:      :+:    :+:   */
+/*   ft_lstdelone_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/06 20:54:28 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/09 12:01:34 by mrosario         ###   ########.fr       */
+/*   Created: 2019/11/16 14:35:33 by mrosario          #+#    #+#             */
+/*   Updated: 2021/03/20 21:04:55 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-int	ft_toupper(int c)
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-	if (c >= 'a' && c <= 'z')
-		c += ('A' - 'a');
-	return (c);
+	if (del)
+	{
+		del(lst->content);
+		free(lst);
+	}
 }

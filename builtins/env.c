@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:59 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/19 20:22:51 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/19 20:44:11 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	ft_env(char **envp, const char **argv)
 	i = 0;
 	if (argv[1])
 	{
-		ft_printf("env: %s: No such file or directory\n", argv[1]);
+		printf("env: %s: No such file or directory\n", argv[1]);
 		return (127);
 	}
 	while (store && envp != NULL)

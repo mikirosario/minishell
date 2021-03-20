@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_skipdigits.c                                    :+:      :+:    :+:   */
+/*   ft_lstlast_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/07/21 20:13:11 by mrosario          #+#    #+#             */
-/*   Updated: 2020/07/21 20:29:32 by mrosario         ###   ########.fr       */
+/*   Created: 2019/11/15 21:52:03 by mrosario          #+#    #+#             */
+/*   Updated: 2021/03/20 21:03:07 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-char	*ft_skipdigits(const char *line)
+t_list	*ft_lstlast(t_list *lst)
 {
-	if (line)
-		while (*line && ft_isdigit(*line))
-			line++;
-	return ((char *)line);
+	t_list	*tmp;
+
+	tmp = lst;
+	if (!lst)
+		return (0);
+	while (tmp->next)
+		tmp = tmp->next;
+	return (tmp);
 }

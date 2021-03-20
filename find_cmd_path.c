@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:53:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:16:43 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	et_go_home(t_micli *micli)
 {	
-	ft_printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
+	printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
 	micli->micli_loop(micli);
 }
 
@@ -135,7 +135,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	{
 		dir = opendir(micli->tokdata.path_array[y]);
 		if (dir)
-			while ((dirent = readdir(dir))) //Assignment in control strcuture
+			while ((dirent = readdir(dir)))
 				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
 					ret = generate_pathname(micli->tokdata.path_array[y], \
 					cmd, micli);

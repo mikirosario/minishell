@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:51:02 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:16:33 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ char	*find_var(const char *name, size_t name_len, char **envp)
 	char	**ptr;
 
 	ptr = NULL;
-	if (envp && (ptr = envp)) //Assignment in control structure
+	if (envp && (ptr = envp))
 		while (*ptr && (ft_strncmp(name, *ptr, name_len) \
 		 || (*(*ptr + name_len) != '=' && *(*ptr + name_len) != '\0')))
 			ptr++;

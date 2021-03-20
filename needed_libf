@@ -1,0 +1,28 @@
+ft_memchr
+ft_del
+ft_strcmp //ternario
+ft_strlen
+ft_isalpha //Ternario
+ft_isdigit //Ternario
+ft_itoa  //ternarios y Assignment
+ft_lstnew ******name is different in libft
+ft_strchr
+ft_lstadd_back *****name is different in libft
+ft_strncpy
+ft_strncmp //ternarios
+ft_memcpy
+ft_strlcat
+ft_skipspaces
+ft_bzero
+ft_strdup //Assignment
+ft_strjoin //Assigment
+ft_split //Assignment
+ft_calloc  //Assignment in control structure
+ft_isspace //Ternario
+ft_putchar
+ft_lstrclear
+ft_isbitset
+ft_lstlast
+ft_strtrim
+ft_strlcpy
+ft_lstdelone

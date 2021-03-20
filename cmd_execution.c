@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 20:22:50 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:16:22 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@
 void	print_not_found(char *exec_path, char *cmd)
 {
 	if (!exec_path)
-		ft_printf("micli: %s: command not found\n", cmd);
+		printf("micli: %s: command not found\n", cmd);
 	else
-		ft_printf("micli: %s: %s\n", cmd, strerror(2));
+		printf("micli: %s: %s\n", cmd, strerror(2));
 }
 
 /*
@@ -195,7 +195,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd) //Assigment in control structure
+	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd)
 		builtin = cmd;
 	if (!exec_path)
 		micli->cmd_result = 127;

@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:47:38 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:16:07 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,7 +362,7 @@ int	get_child_exit_status(int stat_loc)
 	{
 		exit_status = WTERMSIG(stat_loc);
 		if (WCOREDUMP(stat_loc))
-			ft_printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
+			printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
 	}
 	else if (WIFSTOPPED(stat_loc))
 		exit_status = WSTOPSIG(stat_loc);
@@ -450,7 +450,7 @@ t_micli *micli)
 	int		stat_loc;
 	pid_t	pid;
 
-	if (!(pid = fork())) //Assignment in control structure
+	if (!(pid = fork()))
 		child_process(exec_path, builtin, micli);
 	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
 		micli->cmd_result = broken_pipe_check(pid);

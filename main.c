@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:55:05 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:17:02 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ char	*micli_readline(t_micli *micli)
 			return (micli->buffer);
 		}
 		bufsize += READLINE_BUFSIZE;
-		if (!(micli->buffer = ft_realloc(micli->buffer, bufsize, micli))) //Assignment in control structure
+		if (!(micli->buffer = ft_realloc(micli->buffer, bufsize, micli)))
 			exit_failure(micli);
 	}
 }
@@ -116,11 +116,11 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	ft_printf("\033[0;32m		               __       42Madrid\n");
-	ft_printf("\033[0;32m		  __ _  (_)___/ (_) 	Mar 2021\n");
-	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
-	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
-	ft_bzero(&micli, sizeof(t_micli));
+	printf("\033[0;32m		               __       42Madrid\n\033[0m");
+	printf("\033[0;32m		  __ _  (_)___/ (_) 	Mar 2021\n\033[0m");
+	printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n\033[0m");
+	printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
+	bzero(&micli, sizeof(t_micli));
 	micli.micli_loop = micli_loop;
 	norminette_made_me_do_it(&micli);
 	micli.envp = ft_envdup(envp, &micli);

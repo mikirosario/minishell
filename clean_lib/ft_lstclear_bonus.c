@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
+/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/15 22:32:32 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/11 22:29:15 by miki             ###   ########.fr       */
+/*   Created: 2019/11/16 15:24:57 by mrosario          #+#    #+#             */
+/*   Updated: 2021/03/20 21:03:03 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-void	ft_lstadd_back(t_list **alst, t_list *new)
+void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
-	if (!new)
-		return ;
-	if (alst && *alst)
+	t_list	*tmp;
+	t_list	*next;
+
+	tmp = *lst;
+	if (del && lst && *lst)
 	{
-		new->next = (ft_lstlast(*alst))->next;
-		(ft_lstlast(*alst))->next = new;
+		while (tmp)
+		{
+			next = tmp->next;
+			ft_lstdelone(tmp, del);
+			tmp = next;
+		}
 	}
-	else
-	{
-		*alst = new;
-		new->next = NULL;
-	}
+	*lst = NULL;
 }

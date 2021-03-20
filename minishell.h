@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 20:22:55 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:10:52 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@
 # include <dirent.h>
 # include <sys/wait.h>
 # include <signal.h>
-# include "libft.h"
+# include <stdarg.h>
+# include <wchar.h>
+# include <limits.h>
 
 # define READLINE_BUFSIZE 1024
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
@@ -31,6 +33,12 @@
 # define SUB 26
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
+
+typedef struct s_list
+{
+	void			*content;
+	struct s_list	*next;
+}				t_list;
 
 typedef struct s_tokendata
 {
@@ -265,5 +273,40 @@ void			new_var(const char **argv, size_t str_len, t_micli *micli, \
 				int z);
 void			upd(const char **argv, size_t name_len, t_micli *micli, int z);
 int				var_check(const char *str);
+
+/*
+** Clean Lib
+*/
+
+void			*ft_bzero(void *s, size_t n);
+void			*ft_calloc(size_t count, size_t size);
+void			*ft_del(void *freethis);
+char			**ft_free_split(char **split);
+int				ft_isalpha(int c);
+int				ft_isdigit(int c);
+int				ft_isspace(int c);
+char			*ft_itoa(int n);
+void			ft_lstadd_back(t_list **alst, t_list *new);
+t_list			*ft_lstnew(void const *content);
+void			*ft_memchr(void const *s, int c, size_t n);
+int				ft_memcmp(void const *s1, void const *s2, size_t n);
+void			*ft_memcpy(void *dst, void const *src, size_t n);
+void			ft_putchar(char const c);
+char			*ft_skipspaces(const char *line);
+char			**ft_split(char const *s, char c);
+char			*ft_strchr(char const *s, int c);
+int				ft_strcmp(const char *s1, const char *s2);
+char			*ft_strdup(char const *s1);
+char			*ft_strjoin(char const *s1, char const *s2);
+size_t			ft_strlcat(char *dst, char const *src, size_t dstsize);
+size_t			ft_strlen(char const *s);
+int				ft_strncmp(char const *s1, char const *s2, size_t n);
+char			*ft_strncpy(char *dst, const char *src, size_t n);
+void			ft_lstclear(t_list **lst, void (*del)(void *));
+unsigned char	ft_isbitset(unsigned char byte, unsigned char bit);
+t_list			*ft_lstlast(t_list *lst);
+char			*ft_strtrim(char const *s1, char const *set);
+size_t			ft_strlcpy(char *dst, char const *src, size_t dstsize);
+void			ft_lstdelone(t_list *lst, void (*del)(void *));
 
 #endif

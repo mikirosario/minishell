@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/11 03:22:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 21:10:25 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:08:07 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ char	**ft_split(char const *s, char c)
 	size_t	array_len;
 
 	strim = NULL;
-	if (!s || !(strim = ft_strtrim(s, (char[2]) {c, '\0'})) || !*strim)
+	if (!s || !(strim = ft_strtrim (s, (char[2]) {c, '\0'})) || !*strim)
 		return (free_split(NULL, 0, strim));
 	array_len = ptr_array_len(s, c);
 	if (!(split = ft_calloc(array_len + 1, sizeof(char *))))

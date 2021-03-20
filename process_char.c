@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/19 20:01:15 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:18:33 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ char	process_char(char *chr, t_micli *micli)
 	micli->tokdata.quote_flag))
 		quote_operations(chr, micli);
 	else if (is_variable_start(*chr, &micli->tokdata) \
-	 && (micli->tokdata.var_flag = var_alloc(chr + 1, micli))) //Assignment in control structure
+	 && (micli->tokdata.var_flag = var_alloc(chr + 1, micli)))
 		variable_start_operations(chr, micli);
 	else if (micli->tokdata.var_flag)
 		*chr = DEL;

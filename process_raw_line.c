@@ -6,7 +6,7 @@
 /*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 20:22:44 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:18:51 by mvillaes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,11 +167,11 @@ void	process_raw_line(char *line, t_micli *micli)
 	while (*lindex)
 	{
 		lstart = lindex;
-		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart))) //Assignment in control structure
+		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart)))
 			pipe_reset(&micli->pipes, micli);
 		lindex = find_cmdline_end(lindex);
 		process_cmdline(lstart, lindex, micli);
-		if ((cmdline_end = *lindex)) //Assignment in control structure
+		if ((cmdline_end = *lindex))
 			lindex++;
 		lindex = ft_skipspaces(lindex);
 	}
