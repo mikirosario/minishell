@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:18:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/20 14:39:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	et_go_home(t_micli *micli)
 {	
 	ft_printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
-	micli->micli_loop(micli);
+	micli_loop(micli);
 }
 
 /*

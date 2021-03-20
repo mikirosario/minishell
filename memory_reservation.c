@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:17:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/20 19:05:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,9 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 }
 
 /*
-** This function reallocates the memory of the array pointed to by ptr to a
-** new memory block of the size defined by size, freeing the old memory block.
+** This function reallocates old_size bytes of the memory pointed to by ptr to a
+** new memory block of the size defined by new_size, freeing the old memory
+** block.
 **
 ** If a null pointer is passed, a null pointer will be returned and nothing
 ** will be freed. Freeing a null pointer results in no operation being
@@ -89,15 +90,18 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 ** it. An array of four integers is 4 * sizeof(int) = 16 bytes.
 */
 
-void	*ft_realloc(void *ptr, size_t size, t_micli *micli)
+void	*ft_realloc(void *ptr, size_t new_size, size_t old_size, t_micli *micli)
 {
 	void *tmp;
 
 	tmp = ptr;
-	if (!ptr || !(ptr = malloc(size)))
+	if (!ptr)
+		return (NULL);
+	ptr = clean_calloc(new_size, 1, micli);
+	if (!ptr)
 		micli->syserror = errno;
 	else
-		ft_memcpy(ptr, tmp, size);
+		ft_memcpy(ptr, tmp, old_size);
 	tmp = ft_del(tmp);
 	return (ptr);
 }

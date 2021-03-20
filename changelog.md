@@ -1,3 +1,11 @@
+### Version 3.1
+
+- Raw lines are now saved in a buffered array of strings at micli->cmdhist.hist as they are sent in from terminal.
+
+- The function ft_realloc has been modified. It must now be passed both the size of new memory block and the size of the old memory block.
+
+- Canonical mode partially disabled. ECHO disabled, so I am now handling echoing directly. Canonical CRNL and POST and signal handling still active.
+
 ## Version 3.0
 
 - The most infamous bug in all of human history, which caused a segmentation fault when PATH was unset and a command was executed, has been fixed. It now behaves as in bash.

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 18:56:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/20 21:18:08 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,8 @@ char	*micli_readline(t_micli *micli)
 	while (1)
 	{
 		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
+		if (ft_isprint(micli->buffer[size - 1]))
+			write(STDIN_FILENO, &micli->buffer[size - 1], 1);
 		if (!size)
 		{
 			write(1, "exit\n", 5);
@@ -90,8 +92,18 @@ char	*micli_readline(t_micli *micli)
 			micli->buffer[size - 1] = '\0';
 			return (micli->buffer);
 		}
+		// if (micli->buffer[size - 1] == 'A' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
+		// 	printf("\nFISTRO!! PECADOR DE LA PRADERA!!!!\n");
+		// else if (micli->buffer[size - 1] == 'B' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
+		// 	printf("\nPOR LA GLORIA DE MI MADRE!!!!\n");
+		// else if (micli->buffer[size - 1] == 'C' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
+		// 	printf("\nHASTA LUEGO LUCAS!!!!\n");
+		// else if (micli->buffer[size - 1] == 'D' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
+		// 	printf("\nAL ATAQUERRRL!!!!\n");
+		//printf("BYTES READ: %zu\n", size);
 		bufsize += READLINE_BUFSIZE;
-		if (!(micli->buffer = ft_realloc(micli->buffer, bufsize, micli)))
+		micli->buffer = ft_realloc(micli->buffer, bufsize, bufsize - READLINE_BUFSIZE, micli);
+		if (!micli->buffer)
 			exit_failure(micli);
 	}
 }
@@ -100,9 +112,12 @@ char	micli_loop(t_micli *micli)
 {
 	while (1)
 	{
+		enable_raw_mode(&micli->raw_term, &micli->orig_term);
 		signal(SIGINT, sigrun);
+		//printf("🚀 ");
 		write(STDOUT_FILENO, "🚀 ", 5);
 		micli->buffer = micli_readline(micli);
+		cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
@@ -110,9 +125,9 @@ char	micli_loop(t_micli *micli)
 	return (0);
 }
 
-int		main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_micli micli;
+	t_micli	micli;
 
 	(void)argc;
 	(void)argv;
@@ -121,9 +136,9 @@ int		main(int argc, char **argv, char **envp)
 	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
 	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 	ft_bzero(&micli, sizeof(t_micli));
-	micli.micli_loop = micli_loop;
-	norminette_made_me_do_it(&micli);
 	micli.envp = ft_envdup(envp, &micli);
+	tcgetattr(STDIN_FILENO, &micli.orig_term);
+	norminette_made_me_do_it(&micli);
 	delete_oldpwd(&micli);
 	micli_loop(&micli);
 	return (0);
