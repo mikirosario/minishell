@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 16:42:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 21:50:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,44 @@ void	cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist)
 	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf)
 	{
 		cmdhist->cmdhist_buf += CMDHIST_BUF;
-		if (!cmdhist->hist) //ALLOC
-			cmdhist->hist = clean_calloc(cmdhist->cmdhist_buf + 1, \
-			sizeof(char *), micli);
-		else //REALLOC
-			cmdhist->hist = ft_realloc(cmdhist->hist, \
-			(cmdhist->cmdhist_buf + 1) * sizeof(char *), (cmdhist->cmdhist_buf - CMDHIST_BUF + 1) * sizeof(char *), micli);
+		//REALLOC
+		cmdhist->hist_stack = ft_realloc(cmdhist->hist_stack, \
+		(cmdhist->cmdhist_buf + 1) * sizeof(char *), \
+		(cmdhist->cmdhist_buf - CMDHIST_BUF) * sizeof(char *), micli);
 	}
-	cmdhist->hist[cmdhist->ptrs_in_hist - 1] = clean_ft_strdup(micli->buffer, \
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist] = clean_ft_strdup(micli->buffer, \
 	micli);
 
 	//DEBUG CODE
-	// size_t i = 0;
-	// while (i < cmdhist->ptrs_in_hist)
-	// {
-	// 	printf("CMDHIST %zu: %s\n", i, cmdhist->hist[i]);
-	// 	i++;
-	// }
+	size_t i = cmdhist->ptrs_in_hist;
+	while (i)
+	{
+		printf("CMDHIST %zu: %s\n", i, cmdhist->hist_stack[i]);
+		i--;
+	}
 }
+
+// void	cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist)
+// {
+// 	cmdhist->ptrs_in_hist++;
+// 	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf)
+// 	{
+// 		cmdhist->cmdhist_buf += CMDHIST_BUF;
+// 		if (!cmdhist->hist) //ALLOC
+// 			cmdhist->hist = clean_calloc(cmdhist->cmdhist_buf + 1, \
+// 			sizeof(char *), micli);
+// 		else //REALLOC
+// 			cmdhist->hist = ft_realloc(cmdhist->hist, \
+// 			(cmdhist->cmdhist_buf + 1) * sizeof(char *), (cmdhist->cmdhist_buf - CMDHIST_BUF + 1) * sizeof(char *), micli);
+// 	}
+// 	cmdhist->hist[cmdhist->ptrs_in_hist - 1] = clean_ft_strdup(micli->buffer, \
+// 	micli);
+
+// 	//DEBUG CODE
+// 	// size_t i = 0;
+// 	// while (i < cmdhist->ptrs_in_hist)
+// 	// {
+// 	// 	printf("CMDHIST %zu: %s\n", i, cmdhist->hist[i]);
+// 	// 	i++;
+// 	// }
+// }

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 15:17:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 20:48:06 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ typedef struct s_cmdline
 typedef struct s_cmdhist
 {
 	char			**hist;
+	char			**hist_stack;
 	size_t			cmdhist_buf;
 	size_t			ptrs_in_hist;
 	size_t			index;
@@ -132,7 +133,6 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
-//char			handle_esc_seq(char *main_buf, size_t *size);
 char			is_esc_seq(char *buf, size_t *size);
 
 /*

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 15:40:06 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 20:47:54 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,10 @@ char	is_esc_seq(char *buf, size_t *size)
 		if (arrow_addr)
 		{
 			if (arrow_addr < (arrows + 2))
-				printf("BAILA MALDITO (CMD HIST)\n");
+			{
+				//printf("BAILA MALDITO (CMD HIST)");
+				write(STDOUT_FILENO, "\x1b[2K", 4);
+			}
 			else
 				printf("NO PASHA NA TRONQUI (DESPLAZ FLECHA)\n");
 			// buf[*size - 1] = '\0'; //delete chars from buf
@@ -107,43 +110,4 @@ char	is_esc_seq(char *buf, size_t *size)
 		return (1);
 	}
 	return (0);
-}
-
-
-char	handle_esc_seq(char *main_buf, size_t *size)
-{
-	static char		sub_buf[2] = {0,0}; //resetea al quitar esc
-	char			*arrows;
-	char			*arrow_addr;
-	static char		esc_bytes_checked = 0;
-
-	arrows = "ABCD";
-	if (!esc_bytes_checked)
-	{
-		sub_buf[0] = main_buf[*size - 1];
-		esc_bytes_checked++;
-	}
-	else if (esc_bytes_checked == 1)
-	{
-		sub_buf[1] = main_buf[*size - 1];
-		if (sub_buf[0] == '[')
-		{
-			arrow_addr = ft_strchr(arrows, sub_buf[1]);
-			if (arrow_addr)
-			{
-				if (arrow_addr < (arrows + 2))
-					printf("BAILA MALDITO (CMD HIST)\n");
-				else
-					printf("NO PASHA NA TRONQUI (DESPLAZ FLECHA)\n");
-				main_buf[*size - 1] = '\0'; //delete chars from buf
-				main_buf[*size - 2] = '\0';
-				*size -= 2; //decrement size counter
-			}
-			else
-				write(STDIN_FILENO, sub_buf, 2);
-			esc_bytes_checked = 0;
-			return (0);
-		}
-	}
-	return (1);
 }

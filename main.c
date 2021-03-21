@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 16:24:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 21:50:13 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,17 @@ char	*micli_readline(t_micli *micli)
 {
 	size_t	size;
 	size_t	bufsize;
+	size_t	index;
 
 	size = 0;
 	bufsize = READLINE_BUFSIZE;
-	micli->buffer = clean_calloc(bufsize + 1, sizeof(char), micli);
+	//micli->buffer = clean_calloc(bufsize + 1, sizeof(char), micli);
+	index = 0;
+	micli->cmdhist.hist_stack[index] = clean_calloc(bufsize + 1, sizeof(char), micli);
 	while (1)
 	{
-		size += read(STDIN_FILENO, &micli->buffer[size], 1); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
+		//size = ft_strlen(micli->buffer);
+		size += read(STDIN_FILENO, &micli->cmdhist.hist_stack[index][size], 1); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
 		// if (micli->buffer[size - 1] == '\x1b') //if escape char
 		// {
 		// 	escape = 1;
@@ -93,22 +97,22 @@ char	*micli_readline(t_micli *micli)
 		}
 		// else if (escape)//if chars are escaped, analyse in sub-buffer to determine if the sequence is an arrow key, if so, do arrow stuff and eliminate from main buffer, if not write them and continue as normal
 		// 	escape = handle_esc_seq(micli->buffer, &size);
-		else if (!is_esc_seq(micli->buffer, &size))
+		else if (!is_esc_seq(micli->cmdhist.hist_stack[index], &size))
 		{
-			write(STDIN_FILENO, &micli->buffer[size - 1], 1);
-			if (micli->buffer[size - 1] == '\n')
+			write(STDIN_FILENO, &micli->cmdhist.hist_stack[index][size - 1], 1);
+			if (micli->cmdhist.hist_stack[index][size - 1] == '\n')
 			{
 				//write(STDIN_FILENO, &micli->buffer[size - 1], 1);
-				micli->buffer[size - 1] = '\0';
-				return (micli->buffer);
+				micli->cmdhist.hist_stack[index][size - 1] = '\0';
+				return (micli->cmdhist.hist_stack[index]);
 			}
 		}
 		if (size == bufsize)
 		{
 			bufsize += READLINE_BUFSIZE;
-			micli->buffer = ft_realloc(micli->buffer, bufsize + 1, bufsize - READLINE_BUFSIZE, micli);
+			micli->cmdhist.hist_stack[index] = ft_realloc(micli->cmdhist.hist_stack[index], bufsize + 1, bufsize - READLINE_BUFSIZE, micli);
 		}
-		if (!micli->buffer)
+		if (!micli->cmdhist.hist_stack[index])
 			exit_failure(micli);
 		
 		// if (micli->buffer[size - 1] == 'A' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
@@ -132,8 +136,11 @@ char	micli_loop(t_micli *micli)
 		signal(SIGINT, sigrun);
 		//printf("🚀 ");
 		write(STDOUT_FILENO, "🚀 ", 6);
-		micli->buffer = micli_readline(micli);
+		if (micli->buffer)
+			micli->buffer = ft_del(micli->buffer);
+		micli->buffer = clean_ft_strdup(micli_readline(micli), micli);
 		cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
+		
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
@@ -152,6 +159,7 @@ int	main(int argc, char **argv, char **envp)
 	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
 	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 	ft_bzero(&micli, sizeof(t_micli));
+	micli.cmdhist.hist_stack = clean_calloc(1, sizeof(char*), &micli);
 	micli.envp = ft_envdup(envp, &micli);
 	tcgetattr(STDIN_FILENO, &micli.orig_term);
 	norminette_made_me_do_it(&micli);
