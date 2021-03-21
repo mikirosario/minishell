@@ -1,3 +1,9 @@
+### Version 3.2
+
+- Arrow key escape sequences are now intercepted and amusingly but non-usefully interpreted. Code looks like Lovecraftian horror for the moment.
+
+- Escaped characters will no longer be echoed. Escaped escapes will not escape.
+
 ### Version 3.1
 
 - Raw lines are now saved in a buffered array of strings at micli->cmdhist.hist as they are sent in from terminal.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/20 19:08:10 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 11:11:01 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <termios.h>
+# include <sys/ioctl.h>
 # include "libft.h"
 
 # define READLINE_BUFSIZE 1
@@ -130,6 +131,8 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
+//char			handle_esc_seq(char *main_buf, size_t *size);
+char			is_esc_seq(char *buf, size_t *size);
 
 /*
 ** Command History

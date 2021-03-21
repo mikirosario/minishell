@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/20 21:18:08 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/21 11:26:46 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,19 +79,38 @@ char	*micli_readline(t_micli *micli)
 	micli->buffer = clean_calloc(bufsize, sizeof(char), micli);
 	while (1)
 	{
-		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
-		if (ft_isprint(micli->buffer[size - 1]))
-			write(STDIN_FILENO, &micli->buffer[size - 1], 1);
-		if (!size)
+		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
+		// if (micli->buffer[size - 1] == '\x1b') //if escape char
+		// {
+		// 	escape = 1;
+		// 	micli->buffer[--size] = '\0'; 
+		// }
+		//que pasa con write EOF se me ha olvidao????? no se escribe nada????
+		if (!size) //si se vuelve size 0 por un ESC no cuenta como EOF :P
 		{
 			write(1, "exit\n", 5);
 			exit_success(micli);
 		}
-		else if (micli->buffer[size - 1] == '\n')
+		// else if (escape)//if chars are escaped, analyse in sub-buffer to determine if the sequence is an arrow key, if so, do arrow stuff and eliminate from main buffer, if not write them and continue as normal
+		// 	escape = handle_esc_seq(micli->buffer, &size);
+		else if (!is_esc_seq(micli->buffer, &size))
 		{
-			micli->buffer[size - 1] = '\0';
-			return (micli->buffer);
+			write(STDIN_FILENO, &micli->buffer[size - 1], 1);
+			if (micli->buffer[size - 1] == '\n')
+			{
+				//write(STDIN_FILENO, &micli->buffer[size - 1], 1);
+				micli->buffer[size - 1] = '\0';
+				return (micli->buffer);
+			}
 		}
+		if (size == READLINE_BUFSIZE)
+		{
+			bufsize += READLINE_BUFSIZE;
+			micli->buffer = ft_realloc(micli->buffer, bufsize, bufsize - READLINE_BUFSIZE, micli);
+		}
+		if (!micli->buffer)
+			exit_failure(micli);
+		
 		// if (micli->buffer[size - 1] == 'A' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
 		// 	printf("\nFISTRO!! PECADOR DE LA PRADERA!!!!\n");
 		// else if (micli->buffer[size - 1] == 'B' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
@@ -101,10 +120,7 @@ char	*micli_readline(t_micli *micli)
 		// else if (micli->buffer[size - 1] == 'D' && micli->buffer[size - 2] == '[' && micli->buffer[size - 3] == 27)
 		// 	printf("\nAL ATAQUERRRL!!!!\n");
 		//printf("BYTES READ: %zu\n", size);
-		bufsize += READLINE_BUFSIZE;
-		micli->buffer = ft_realloc(micli->buffer, bufsize, bufsize - READLINE_BUFSIZE, micli);
-		if (!micli->buffer)
-			exit_failure(micli);
+
 	}
 }
 
@@ -115,7 +131,7 @@ char	micli_loop(t_micli *micli)
 		enable_raw_mode(&micli->raw_term, &micli->orig_term);
 		signal(SIGINT, sigrun);
 		//printf("🚀 ");
-		write(STDOUT_FILENO, "🚀 ", 5);
+		write(STDOUT_FILENO, "🚀 ", 6);
 		micli->buffer = micli_readline(micli);
 		cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
 		process_raw_line(micli->buffer, micli);
