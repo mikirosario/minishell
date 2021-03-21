@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
+#    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/21 10:02:12 by miki             ###   ########.fr        #
+#    Updated: 2021/03/21 16:35:09 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ $(LIBFT):
 all: $(NAME)
 
 debug: $(LIBFT)
-	gcc $(CFLAG) $(SRC) -g -o $(NAME) $(LIBS)
+	gcc $(CFLAG) $(SRC) -glldb -fsanitize=address -o $(NAME) $(LIBS)
 
 clean:
 	rm -f *.o

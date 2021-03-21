@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 11:26:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/21 16:24:21 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,10 @@ char	*micli_readline(t_micli *micli)
 
 	size = 0;
 	bufsize = READLINE_BUFSIZE;
-	micli->buffer = clean_calloc(bufsize, sizeof(char), micli);
+	micli->buffer = clean_calloc(bufsize + 1, sizeof(char), micli);
 	while (1)
 	{
-		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
+		size += read(STDIN_FILENO, &micli->buffer[size], 1); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
 		// if (micli->buffer[size - 1] == '\x1b') //if escape char
 		// {
 		// 	escape = 1;
@@ -103,10 +103,10 @@ char	*micli_readline(t_micli *micli)
 				return (micli->buffer);
 			}
 		}
-		if (size == READLINE_BUFSIZE)
+		if (size == bufsize)
 		{
 			bufsize += READLINE_BUFSIZE;
-			micli->buffer = ft_realloc(micli->buffer, bufsize, bufsize - READLINE_BUFSIZE, micli);
+			micli->buffer = ft_realloc(micli->buffer, bufsize + 1, bufsize - READLINE_BUFSIZE, micli);
 		}
 		if (!micli->buffer)
 			exit_failure(micli);

@@ -1,3 +1,7 @@
+### Version 3.3
+
+- Fixed bad buffer realloc code.
+
 ### Version 3.2
 
 - Arrow key escape sequences are now intercepted and amusingly but non-usefully interpreted. Code looks like Lovecraftian horror for the moment.
