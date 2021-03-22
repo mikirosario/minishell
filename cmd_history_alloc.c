@@ -3,14 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_history_alloc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 21:50:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 02:16:01 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+/*
+**  0►►\n  \n  \n 0 == oldest
+**		0►►\n  \n 1 == newest
+**			0►►\n 2 == scratch
+*/
+
+void	pop_to_hist_stack(t_micli *micli, char *active_line, t_cmdhist *cmdhist)
+{
+	//scratch_buf = 
+	cmdhist->ptrs_in_hist++;
+	//scratch_buf_cpy = clean_ft_strdup(scratch_buf, micli);
+	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf) //1 scratch pointer, rest hist pointers
+	{
+		cmdhist->cmdhist_buf += CMDHIST_BUF;
+		//REALLOC
+		cmdhist->hist_stack = ft_realloc(cmdhist->hist_stack, \
+		(cmdhist->cmdhist_buf + 1) * sizeof(char *), \
+		(cmdhist->ptrs_in_hist - 1) * sizeof(char *), micli);
+	}
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_strdup(active_line, micli);
+	//DEBUG CODE
+	size_t i = cmdhist->ptrs_in_hist + 1;
+	while (i--)
+		printf("CMDHIST %zu: %s\n", i, cmdhist->hist_stack[i]);
+}
 
 /*
 ** This function adds every line from terminal (ended in '\n') to an array of
@@ -58,13 +85,13 @@ void	cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist)
 // 	{
 // 		cmdhist->cmdhist_buf += CMDHIST_BUF;
 // 		if (!cmdhist->hist) //ALLOC
-// 			cmdhist->hist = clean_calloc(cmdhist->cmdhist_buf + 1, \
+// 			cmdhist->hist = clean_calloc(cmdhist->cmdhist_buf + 1,
 // 			sizeof(char *), micli);
 // 		else //REALLOC
-// 			cmdhist->hist = ft_realloc(cmdhist->hist, \
+// 			cmdhist->hist = ft_realloc(cmdhist->hist,
 // 			(cmdhist->cmdhist_buf + 1) * sizeof(char *), (cmdhist->cmdhist_buf - CMDHIST_BUF + 1) * sizeof(char *), micli);
 // 	}
-// 	cmdhist->hist[cmdhist->ptrs_in_hist - 1] = clean_ft_strdup(micli->buffer, \
+// 	cmdhist->hist[cmdhist->ptrs_in_hist - 1] = clean_ft_strdup(micli->buffer,
 // 	micli);
 
 // 	//DEBUG CODE

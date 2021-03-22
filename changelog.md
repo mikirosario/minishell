@@ -1,3 +1,15 @@
+### Version 3.4
+
+- Overhauled read buffer. Read buffer now defaults to the penultimate member of a dynamic pointer array called cmdline->hist_stack. The array is a stack of strings. Every time a string is processed with the enter key, it is popped onto the stack. Both the individual strings and the stack itself are reallocated as more space becomes necessary. The buffer size for both is currently set at just 1 member for stress testing purposes.
+
+- Using the up and down arrow keys will now move through the command history of the active session.
+
+- The left and right arrow keys have been effectively disabled. Delete is still not implemented.
+
+- Mysterious occasional double free problem with micli->buffer and occasional heap-use-after-free with ft_split. Problem seems to be ft_split-independent.
+
+- Empty lines are still passed to history stack. This will need to be corrected.
+
 ### Version 3.3
 
 - Fixed bad buffer realloc code.

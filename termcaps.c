@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   termcaps.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 20:47:54 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 02:25:05 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ size_t	del_from_buf(char *chr, size_t num_bytes)
 ** YA QUE ESTAMOS VOY A PROHIBIR LAS TABULACIONES
 */
 
-char	is_esc_seq(char *buf, size_t *size)
+char	is_esc_seq(char *buf, size_t *size, char *move_flag)
 {
 	char			*arrows;
 	char			*arrow_addr;
@@ -94,16 +94,14 @@ char	is_esc_seq(char *buf, size_t *size)
 		arrow_addr = ft_strchr(arrows, buf[*size - 1]);
 		if (arrow_addr)
 		{
-			if (arrow_addr < (arrows + 2))
+			if (arrow_addr < (arrows + 2)) //si arrow_addr > arrows + 2 son flechas derecha e izquierda... no  hacemos nada con ellas en esta versión
 			{
 				//printf("BAILA MALDITO (CMD HIST)");
-				write(STDOUT_FILENO, "\x1b[2K", 4);
+				if (*arrow_addr == 'A')
+					*move_flag = 1;
+				else
+					*move_flag = -1;
 			}
-			else
-				printf("NO PASHA NA TRONQUI (DESPLAZ FLECHA)\n");
-			// buf[*size - 1] = '\0'; //delete chars from buf
-			// buf[*size - 2] = '\0';
-			// *size -= 2; //decrement size counter
 		}
 		*size -= del_from_buf(&buf[*size - 1], 1);
 		esc_seq = 0;

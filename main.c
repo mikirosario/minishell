@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 21:50:13 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 02:55:36 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,20 +69,45 @@ void	norminette_made_me_do_it(t_micli *micli)
 ** parsing.
 */
 
+size_t propioptostrlen(char *str)
+{
+	size_t i = 0;
+
+	while (str[i])
+		i++;
+	return (i);
+}
+
 char	*micli_readline(t_micli *micli)
 {
 	size_t	size;
 	size_t	bufsize;
 	size_t	index;
+	char	move_flag; //0 ==no move, 1== move up, -1 == move down
 
 	size = 0;
 	bufsize = READLINE_BUFSIZE;
+	move_flag = 0;
 	//micli->buffer = clean_calloc(bufsize + 1, sizeof(char), micli);
-	index = 0;
+	index = micli->cmdhist.ptrs_in_hist - 1; //size->position
 	micli->cmdhist.hist_stack[index] = clean_calloc(bufsize + 1, sizeof(char), micli);
 	while (1)
 	{
-		//size = ft_strlen(micli->buffer);
+		if (move_flag)
+		{
+			write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			write(STDOUT_FILENO, "🚀 ", 5);
+			if (move_flag == 1 && index > 0)
+				index--;
+			if (move_flag == -1 && index < micli->cmdhist.ptrs_in_hist - 1)
+				index++;
+			move_flag = 0;
+			if (*micli->cmdhist.hist_stack[index] == '\0')
+				size = 0;
+			else
+				size = ft_strlen(micli->cmdhist.hist_stack[index]);
+			write(STDOUT_FILENO, micli->cmdhist.hist_stack[index], size);
+		}
 		size += read(STDIN_FILENO, &micli->cmdhist.hist_stack[index][size], 1); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
 		// if (micli->buffer[size - 1] == '\x1b') //if escape char
 		// {
@@ -97,7 +122,7 @@ char	*micli_readline(t_micli *micli)
 		}
 		// else if (escape)//if chars are escaped, analyse in sub-buffer to determine if the sequence is an arrow key, if so, do arrow stuff and eliminate from main buffer, if not write them and continue as normal
 		// 	escape = handle_esc_seq(micli->buffer, &size);
-		else if (!is_esc_seq(micli->cmdhist.hist_stack[index], &size))
+		else if (!is_esc_seq(micli->cmdhist.hist_stack[index], &size, &move_flag))
 		{
 			write(STDIN_FILENO, &micli->cmdhist.hist_stack[index][size - 1], 1);
 			if (micli->cmdhist.hist_stack[index][size - 1] == '\n')
@@ -135,14 +160,13 @@ char	micli_loop(t_micli *micli)
 		enable_raw_mode(&micli->raw_term, &micli->orig_term);
 		signal(SIGINT, sigrun);
 		//printf("🚀 ");
-		write(STDOUT_FILENO, "🚀 ", 6);
+		write(STDOUT_FILENO, "🚀 ", 5);
 		if (micli->buffer)
 			micli->buffer = ft_del(micli->buffer);
-		micli->buffer = clean_ft_strdup(micli_readline(micli), micli);
-		cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
-		
+		micli->buffer = micli_readline(micli);
+		pop_to_hist_stack(micli, micli->buffer, &micli->cmdhist);
+		//cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
 		process_raw_line(micli->buffer, micli);
-		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
 	}
 	return (0);
@@ -159,7 +183,9 @@ int	main(int argc, char **argv, char **envp)
 	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
 	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 	ft_bzero(&micli, sizeof(t_micli));
-	micli.cmdhist.hist_stack = clean_calloc(1, sizeof(char*), &micli);
+	micli.cmdhist.hist_stack = clean_calloc(2, sizeof(char*), &micli);
+	micli.cmdhist.ptrs_in_hist = 1;
+	micli.cmdhist.cmdhist_buf = 1;
 	micli.envp = ft_envdup(envp, &micli);
 	tcgetattr(STDIN_FILENO, &micli.orig_term);
 	norminette_made_me_do_it(&micli);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 20:48:06 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 02:00:09 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,13 +133,14 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
-char			is_esc_seq(char *buf, size_t *size);
+char			is_esc_seq(char *buf, size_t *size, char *move_flag);
 
 /*
 ** Command History
 */
 
 void			cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist);
+void			pop_to_hist_stack(t_micli *micli, char *active_line, t_cmdhist *cmdhist);
 
 /*
 ** Command Execution
