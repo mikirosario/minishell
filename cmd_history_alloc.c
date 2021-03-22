@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 02:16:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/22 11:12:31 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,10 @@
 
 void	pop_to_hist_stack(t_micli *micli, char *active_line, t_cmdhist *cmdhist)
 {
-	//scratch_buf = 
+	//char *scratch_buf;
+
 	cmdhist->ptrs_in_hist++;
+	//scratch_buf = cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2];
 	//scratch_buf_cpy = clean_ft_strdup(scratch_buf, micli);
 	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf) //1 scratch pointer, rest hist pointers
 	{
@@ -32,6 +34,7 @@ void	pop_to_hist_stack(t_micli *micli, char *active_line, t_cmdhist *cmdhist)
 		(cmdhist->cmdhist_buf + 1) * sizeof(char *), \
 		(cmdhist->ptrs_in_hist - 1) * sizeof(char *), micli);
 	}
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
 	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_strdup(active_line, micli);
 	//DEBUG CODE
 	size_t i = cmdhist->ptrs_in_hist + 1;

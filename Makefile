@@ -6,7 +6,7 @@
 #    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/22 03:06:04 by miki             ###   ########.fr        #
+#    Updated: 2021/03/22 12:16:35 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,8 +45,8 @@ $(LIBFT):
 all: $(NAME)
 
 debug: $(LIBFT)
-	gcc $(CFLAG) $(SRC) -g -fsanitize=address -o $(NAME) $(LIBS)
-	#gcc $(CFLAG) $(SRC) -g -o $(NAME) $(LIBS)
+	#gcc $(CFLAG) $(SRC) -g3 -fsanitize=address -o $(NAME) $(LIBS)
+	gcc $(CFLAG) $(SRC) -g -o $(NAME) $(LIBS)
 
 clean:
 	rm -f *.o

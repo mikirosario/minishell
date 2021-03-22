@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/20 14:39:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 12:04:55 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	et_go_home(t_micli *micli)
+void	et_phone_home(t_micli *micli)
 {	
 	ft_printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
 	micli_loop(micli);
@@ -36,14 +36,16 @@ int		find_builtin(char *cmd)
 {
 	char	*startl;
 	char	*endl;
+	size_t	cmd_strlen;
 
 	startl = BUILTINS;
 	endl = startl;
+	cmd_strlen = ft_strlen(cmd);
 	while (*startl)
 	{
 		while (*endl && *endl != ',')
 			endl++;
-		if (ft_strlen(cmd) == (size_t)(endl - startl) \
+		if (cmd_strlen == (size_t)(endl - startl) \
 		&& !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
@@ -130,7 +132,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 		return (cmd);
 	micli->tokdata.path_array = clean_ft_split(paths, ':', micli);
 	if (!micli->tokdata.path_array)
-		et_go_home(micli);
+		et_phone_home(micli);
 	while (!ret && micli->tokdata.path_array[y])
 	{
 		dir = opendir(micli->tokdata.path_array[y]);
@@ -143,6 +145,7 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 			closedir(dir);
 		y++;
 	}
-	micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
+	if (micli->tokdata.path_array)
+		micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
 	return (ret);
 }

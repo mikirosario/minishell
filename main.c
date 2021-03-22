@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 02:55:36 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/22 12:13:22 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,12 +161,12 @@ char	micli_loop(t_micli *micli)
 		signal(SIGINT, sigrun);
 		//printf("🚀 ");
 		write(STDOUT_FILENO, "🚀 ", 5);
-		if (micli->buffer)
-			micli->buffer = ft_del(micli->buffer);
 		micli->buffer = micli_readline(micli);
+		micli->buffer = clean_ft_strdup(micli->buffer, micli);
 		pop_to_hist_stack(micli, micli->buffer, &micli->cmdhist);
 		//cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
 		process_raw_line(micli->buffer, micli);
+		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
 	}
 	return (0);

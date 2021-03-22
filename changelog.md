@@ -1,3 +1,15 @@
+### Version 3.41
+
+- Fixed crash that occurred in process_char in the is_escape_char check because since being externalized to its own function is_escape_char takes *(chr + 1) as a parameter without being protected by a null check for *chr first, so chr + 1 is out of bounds when analysing a null char. This has been corrected.
+
+- When cmdline.hist_stack is reallocated, the scratch log of the preceding cmdline.hist_stack is now always freed and replaced with a copy of the active_line. The next null entry in hist_stack will then become the new scratch log.
+
+- The active_line (still named as micli->buffer, after the original buffer) is duplicated immediately after its address is returned by micli_readline and before the duplicate is sent into parsing engine for processing. In pop_to_hist_stack the duplicate of the active line is reduplicated as the last saved (non-scratch) line in cmdline.hist_stack.
+
+- The active_line (micli->buffer) duplicate is freed and nulled after the parsing engine is complete.
+
+- Using the left and right arrows causes memory problems for reasons I don't understand yet. Everything else stable.
+
 ### Version 3.4
 
 - Overhauled read buffer. Read buffer now defaults to the penultimate member of a dynamic pointer array called cmdline->hist_stack. The array is a stack of strings. Every time a string is processed with the enter key, it is popped onto the stack. Both the individual strings and the stack itself are reallocated as more space becomes necessary. The buffer size for both is currently set at just 1 member for stress testing purposes.

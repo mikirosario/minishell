@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 02:00:09 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/22 11:56:55 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ typedef struct s_micli
 
 size_t			del_from_buf(char *chr, size_t num_bytes);
 char			micli_loop(t_micli *micli);
+size_t			propioptostrlen(char *str);
 
 /*
 ** Termcaps
