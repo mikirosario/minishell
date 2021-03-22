@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 11:12:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/22 13:28:16 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,56 @@
 
 
 /*
-**  0►►\n  \n  \n 0 == oldest
-**		0►►\n  \n 1 == newest
-**			0►►\n 2 == scratch
+** This is one funky function. This function manages the history stack for
+** micli. The history stack is a null-terminated character pointer array.
+**
+** The lowest memory address in the array corresponds to the oldest entry. The
+** penultimate address in the array is used as a scratch log for editing a new
+** terminal line, and is dynamically allocated and reallocated in the
+** micli->readline function. All addresses before the scratch log address are
+** historical entries, which can at any time be made active and re-edited.
+**
+** The variable cmdhist->ptrs_in_hist, when used as a position in the array,
+** points to the terminating NULL. Thus, cmdhist->ptrs_in_hist - 1 always points
+** to the scratch log.
+**
+** The active_line is a duplicate of the \n-terminated line that was sent out
+** from micli_readline. This may be the scratch log or it may be a history
+** entry. It will now be added to the history, so ptrs_in_hist is incremented.
+**
+** The old scratch log (cmdhist_stack[ptrs_in_hist - 2]) is freed and replaced
+** with a copy of the active_line as the newest history entry. The following
+** pointer in the array will be used by micli->readline to address the new
+** scratch log.
+**
+** If insufficient pointers are available in the buffer to accept a new entry,
+** the array buffer will be expanded and the pointer array will be reallocated.
+** We reallocate with calloc, so we don't bother to copy the NULL termination.
+** NOTE: It is the only pointers that are being reallocated to a larger array
+** here, and the pointer addresses that are being copied over to the new array,
+** NOT the memory addressed by the pointers, which is reallocated as needed by
+** micli->readline.
+**
+** Here is a schema of what is going on, where 0 is the scratch array, \0 is
+** the NULL and \n is some \n-terminated string:
+**
+** active_line
+**	    v  v
+**  0  \n \n -> 0 == oldest
+**	\0►►0 \n -> 1 == newest
+**	   \0►►0 -> 2 == scratch
+**		  \0 -> 3 == NULL
+**
+** We start with scratch and NULL. When the first line is sent, the previous
+** scratch log becomes the newest entry, the previous NULL termination becomes
+** the new scratch log, and the NULL termination after that becomes the new
+** NULL terminator. When the second line is sent the previous scratch log
+** becomes the newest entry, the preceding entry remains as an older entry, the
+** previous NULL termination becomes the new scratch log, and the NULL
+** termination after *that* becomes the new NULL terminator. Etc, as much as
+** your memory will allow. ;)
+**
+** The function ft_free_split can be (and is) used to free this array.
 */
 
 void	pop_to_hist_stack(t_micli *micli, char *active_line, t_cmdhist *cmdhist)
