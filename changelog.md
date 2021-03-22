@@ -1,3 +1,9 @@
+### Verson 3.42
+
+- Fixed awful bug that caused ';' and '|' to be mistaken for command line ends inside quotes.
+
+- Ambiguous redirect message for echo > test $NADA (undefined variable as file name) not implemented.
+
 ### Version 3.41
 
 - Fixed crash that occurred in process_char in the is_escape_char check because since being externalized to its own function is_escape_char takes *(chr + 1) as a parameter without being protected by a null check for *chr first, so chr + 1 is out of bounds when analysing a null char. This has been corrected.
