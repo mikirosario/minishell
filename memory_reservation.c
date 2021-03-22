@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:17:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 18:49:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 	char **ptr;
 
 	if (!s)
-		return(NULL);
+		return (NULL);
 	if (!(ptr = ft_split(s, c)))
 	{
 		micli->syserror = 28;

@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/18 21:47:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 18:45:27 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ char			process_char(char *chr, t_micli *micli)
 		redir_start_operations(chr, micli);
 	else if (micli->cmdline.redir_end && micli->cmdline.redir_end < chr)
 		redir_end_operations(micli);
-	if (is_escape_char(*chr, *(chr + 1), micli->tokdata.escape_flag, \
+	if (*chr && is_escape_char(*chr, *(chr + 1), micli->tokdata.escape_flag, \
 	micli->tokdata.quote_flag))
 		escape_operations(chr, micli);
 	else if (is_quote_char(*chr, micli->tokdata.escape_flag, \

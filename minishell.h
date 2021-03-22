@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 19:02:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 19:14:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,7 @@ int				ft_env(char **envp, const char **argv);
 */
 
 int				ft_export(const char **argv, t_micli *micli);
+int				var_op(const char **argv, t_micli *micli, int z);
 char			find_pos(const char *name, size_t name_len, char **envp);
 size_t			ft_name_len(const char *str);
 size_t			ft_countarr(char **envp);

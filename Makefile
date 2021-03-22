@@ -6,7 +6,7 @@
 #    By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/18 21:49:44 by mrosario         ###   ########.fr        #
+#    Updated: 2021/03/22 19:02:52 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ $(BUILTINS)/echo.c \
 $(BUILTINS)/env.c \
 $(BUILTINS)/unset.c \
 $(BUILTINS)/pwd.c \
+$(BUILTINS)/var_op.c \
 
 LIBFT = ./libft/libft.a
 
