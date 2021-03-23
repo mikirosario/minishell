@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 05:35:15 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 22:28:18 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ typedef struct s_cmdline
 typedef struct s_cmdhist
 {
 	char			**hist;
-	unsigned int	**hist_stack;
+	short			**hist_stack;
 	size_t			active_line_size;
 	size_t			cmdhist_buf;
 	size_t			ptrs_in_hist;
@@ -117,7 +117,7 @@ typedef struct s_micli
 	char			*cmd_result_str;
 	char			**envp;
 	char			*buffer;
-	unsigned int	*active_line;
+	short			*active_line;
 	unsigned char	quote_flag : 1;
 	unsigned char	pipe_flag : 2;
 }				t_micli;
@@ -126,13 +126,13 @@ typedef struct s_micli
 ** Utils
 */
 
-size_t			ft_strlen32(unsigned int *str);
+size_t			ft_strlen16(short *str);
 
 /*
 ** Main Loop
 */
 
-size_t			del_from_buf(unsigned int *chr, size_t num_chars);
+size_t			del_from_buf(short *chr, size_t num_chars);
 char			micli_loop(t_micli *micli);
 
 /*
@@ -141,14 +141,15 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
-char			is_esc_seq(unsigned int *buf, size_t *size, char *move_flag);
+char			is_esc_seq(short *buf, size_t *size, char *move_flag);
 
 /*
 ** Command History
 */
 
 void			cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist);
-void			pop_to_hist_stack(t_micli *micli, unsigned int *active_line, t_cmdhist *cmdhist);
+void			push_to_hist_stack(t_micli *micli, short *active_line, \
+				t_cmdhist *cmdhist);
 
 /*
 ** Command Execution

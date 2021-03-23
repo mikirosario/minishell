@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 05:46:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 22:30:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@
 ** The function ft_free_split can be (and is) used to free this array.
 */
 
-void	pop_to_hist_stack(t_micli *micli, unsigned int *active_line, \
+void	push_to_hist_stack(t_micli *micli, short *active_line, \
 t_cmdhist *cmdhist)
 {
 	//char *scratch_buf;
@@ -79,25 +79,33 @@ t_cmdhist *cmdhist)
 		cmdhist->cmdhist_buf += CMDHIST_BUF;
 		//REALLOC
 		cmdhist->hist_stack = ft_realloc(cmdhist->hist_stack, \
-		(cmdhist->cmdhist_buf + 1) * sizeof(unsigned int *), \
-		(cmdhist->ptrs_in_hist - 1) * sizeof(unsigned int *), micli);
+		(cmdhist->cmdhist_buf + 1) * sizeof(short *), \
+		(cmdhist->ptrs_in_hist - 1) * sizeof(short *), micli);
 	}
 	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, cmdhist->active_line_size * sizeof(unsigned int), micli);
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, cmdhist->active_line_size * sizeof(short), micli);
 	//DEBUG CODE
 	size_t i = cmdhist->ptrs_in_hist + 1;
 	size_t strlen;
 	while (i--)
 	{
-		printf("\nCMDHIST %zu: ", i);
+		printf("CMDHIST %zu: ", i); fflush(stdout);
 		if (cmdhist->hist_stack[i])
-			strlen = ft_strlen32(cmdhist->hist_stack[i]);
+			strlen = ft_strlen16(cmdhist->hist_stack[i]);
 		else
 			strlen = 0;
-		write(STDOUT_FILENO, cmdhist->hist_stack[i], strlen * sizeof(unsigned int));
-		write(STDOUT_FILENO, "\n", 1);
-	}
+		size_t j = 0;
+		while (j < strlen)
+		{
+			write(1, &cmdhist->hist_stack[i][j], 2);
+			j++;
+		}
 
+		// write(STDOUT_FILENO, "CMDHIST ", 7);
+		// printf("%zu: ", i);
+	 	// write(STDOUT_FILENO, cmdhist->hist_stack[i], strlen * sizeof(short));
+	 	printf("\n");
+	}
 }
 
 /*

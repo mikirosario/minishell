@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 18:05:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/21 08:17:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 18:35:22 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	enable_raw_mode(struct termios *raw_term, struct termios *orig_term)
 {
 	ft_bzero(raw_term, sizeof(struct termios));
 	*raw_term = *orig_term;
+	raw_term->c_iflag |= (IUTF8);
 	raw_term->c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON);
 	raw_term->c_cflag |= (CS8);
 	raw_term->c_lflag &= ~(ECHO | ICANON);

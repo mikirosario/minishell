@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 05:36:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 21:43:20 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 ** size
 */
 
-size_t	del_from_buf(unsigned int *chr, size_t num_chars)
+size_t	del_from_buf(short *chr, size_t num_chars)
 {
 	size_t deleted_chars;
 
@@ -63,61 +63,91 @@ size_t	del_from_buf(unsigned int *chr, size_t num_chars)
 ** YA QUE ESTAMOS VOY A PROHIBIR LAS TABULACIONES
 */
 
-char	is_esc_seq(unsigned int *buf, size_t *size, char *move_flag)
+char	is_esc_seq(short *buf, size_t *char_total, char *move_flag)
 {
-	char			*arrows;
-	char			*arrow_addr;
 	static char		esc_seq = 0;
+	short			start_seq;
 
-	arrows = "ABCD";
-	if (!esc_seq && buf[*size - 1] == '\x1b')
+	//'\x1b['
+	start_seq = 23323;
+	if (!esc_seq && buf[*char_total - 1] == DEL)
+	{
+		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		if (*char_total)
+		{
+			write(STDOUT_FILENO, "\x1b[D \x1b[D", 7);
+			*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		}
+		return (1);
+	}
+	else if (!esc_seq && buf[*char_total - 1] == start_seq)
 	{
 		esc_seq++;
-		// buf[*size - 1] = '\0';
-		// *size -= 1;
-		*size -= del_from_buf(&buf[*size - 1], 1);
+		// buf[*char_total - 1] = '\0';
+		// *char_total -= 1;
+		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		return (1);
 	}
+	// else if (esc_seq == 1)
+	// {
+	// 	if (buf[*char_total - 1] == '[')
+	// 		esc_seq++;
+	// 	else
+	// 		esc_seq = 0;
+	// 	// buf[*char_total - 1] = '\0';
+	// 	// *char_total -= 1;
+	// 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+	// 	return (1);
+	// }
 	else if (esc_seq == 1)
 	{
-		if (buf[*size - 1] == '[')
-			esc_seq++;
-		else
-			esc_seq = 0;
-		// buf[*size - 1] = '\0';
-		// *size -= 1;
-		*size -= del_from_buf(&buf[*size - 1], 1);
-		return (1);
-	}
-	else if (esc_seq == 2)
-	{
-		arrow_addr = ft_strchr(arrows, buf[*size - 1]);
-		if (arrow_addr)
+		//arrow_addr = ft_strchr(arrows, (char)buf[*char_total - 1]);
+		if (buf[*char_total - 1] >= 'A' && buf[*char_total - 1] <= 'D')
 		{
-			if (arrow_addr < (arrows + 2)) //si arrow_addr > arrows + 2 son flechas derecha e izquierda... no  hacemos nada con ellas en esta versión
 			{
-				//printf("BAILA MALDITO (CMD HIST)");
-				if (*arrow_addr == 'A')
+				if (buf[*char_total - 1] == 'A')
 					*move_flag = 1;
-				else
+				else if (buf[*char_total - 1 == 'B'])
 					*move_flag = -1;
 			}
-			//esc_seq = 0;
 		}
-		// else if (buf[*size - 1] == '3')
-		// 	esc_seq++;
-		//else
+		
+		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		esc_seq = 0;
-		*size -= del_from_buf(&buf[*size - 1], 1);
 		return (1);
 	}
-	// else if (esc_seq == 3)
-	// {
-	// 	if (buf[*size - 1] == '~')
-	// 	{
-	// 		write(STDOUT_FILENO, "\x1b[D \x1b[D", 3);
-	// 	}
-	// 	*size -= del_from_buf(&buf[*size - 1], 1);
-	// }
 	return (0);
 }
+
+
+	// else if (esc_seq == 2)
+	// {
+	// 	arrow_addr = ft_strchr(arrows, buf[*char_total - 1]);
+	// 	if (arrow_addr)
+	// 	{
+	// 		if (arrow_addr < (arrows + 2)) //si arrow_addr > arrows + 2 son flechas derecha e izquierda... no  hacemos nada con ellas en esta versión
+	// 		{
+	// 			//printf("BAILA MALDITO (CMD HIST)");
+	// 			if (*arrow_addr == 'A')
+	// 				*move_flag = 1;
+	// 			else
+	// 				*move_flag = -1;
+	// 		}
+	// 		//esc_seq = 0;
+	// 	}
+	// 	// else if (buf[*char_total - 1] == '3')
+	// 	// 	esc_seq++;
+	// 	//else
+	// 	esc_seq = 0;
+	// 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+	// 	return (1);
+	// }
+	// // else if (esc_seq == 3)
+	// // {
+	// // 	if (buf[*char_total - 1] == '~')
+	// // 	{
+	// // 		write(STDOUT_FILENO, "\x1b[D \x1b[D", 3);
+	// // 	}
+	// // 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+	// // }
+	// return (0);

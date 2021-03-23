@@ -6,7 +6,7 @@
 #    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/09 00:04:22 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/23 04:58:52 by miki             ###   ########.fr        #
+#    Updated: 2021/03/23 21:50:29 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,7 @@ BOBJ = $(BSRC:.c=.o)
 
 PFOBJ = $(PFSRC:.c=.o)
 
-CFLAG = -Wall -Werror -Wextra -g -I
+CFLAG = -Wall -Werror -Wextra -I
 
 all: $(NAME)
 

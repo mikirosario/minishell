@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 04:50:25 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 22:31:37 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 ** null-terminated?
 */
 
-unsigned int	**ft_free_uint_split(unsigned int **split)
+short	**ft_free_short_split(short **split)
 {
 	size_t	i;
 
@@ -87,10 +87,12 @@ void	freeme(t_micli *micli)
 		micli->cmd_result_str = ft_del(micli->cmd_result_str);
 	if (micli->buffer)
 		micli->buffer = ft_del(micli->buffer);
+	if (micli->active_line)
+		micli->active_line = ft_del(micli->active_line);
 	if (micli->cmdhist.hist)
 		ft_free_split(micli->cmdhist.hist);
 	if (micli->cmdhist.hist_stack)
-		ft_free_uint_split(micli->cmdhist.hist_stack);
+		ft_free_short_split(micli->cmdhist.hist_stack);
 	clear_cmdline(micli);
 	if (micli->tokdata.path_array)
 		micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);

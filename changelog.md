@@ -1,3 +1,24 @@
+## Version 4.0
+
+- Changed character buffer to shorts as I've found that termios settings only go as far as enabling UTF-8. With UTF-8 enabled and all characters in editable lines now stored in shorts, both one- and two-byte characters can be deleted.
+
+- The character buffer is still converted to a standard char string before being passed on to the parser, so no functions downstream of the termcaps editing layer are affected by this overhaul.
+
+- Increased the maximum number of bytes read at a time by the read function to 2 to fill up the shorts.
+
+- New functions to handle the short strings, including:
+	- ft_strlen16, which returns the length of null-terminated 16-bit strings.
+	- ft_short_to_strdup, which converts 16-bit (short) strings back to 8-bit (char) strings.
+	- is_esc_seq, which detects the escape sequence for arrows enabling scrolling through the command history.
+	- push_hist_to_stack, which pushes the line being edited to the cmdhist.hist_stack every new line.
+	- del_from_buf, which deletes a character from a cmdhist.hist_stack line.
+	- ft_memdup, which functions similarly to ft_strdup, except for arrays of any type and it must be passed the size of the array to be duplicated.
+	- ft_free_short_split, to free the cmdhist.hist_stack array.
+
+- The backspace key has been enabled and will now have the effect of removing the character behind the cursor from the screen and from the buffer.
+
+- This version will need extensive bug testing.
+
 ### Version 3.5
 
 - Changed character buffer to unsigned ints to enable a grand new invention - character deletion. :p
