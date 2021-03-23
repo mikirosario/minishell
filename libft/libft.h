@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 00:30:21 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:23:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 01:07:30 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ char			*ft_strnstr(char const *hay, char const *needle, size_t len);
 int				ft_atoi(char const *str);
 void			*ft_calloc(size_t count, size_t size);
 char			*ft_strdup(char const *s1);
+void			*ft_memdup(void const *mem, size_t memsize);
 char			*ft_substr(char const *s, unsigned int start, size_t len);
 char			*ft_strjoin(char const *s1, char const *s2);
 char			*ft_strtrim(char const *s1, char const *set);

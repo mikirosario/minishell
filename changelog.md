@@ -1,4 +1,10 @@
-### Verson 3.42
+### Version 3.5
+
+- Changed character buffer to unsigned ints to enable a grand new invention - character deletion. :p
+
+- Wrote ft_memdup to replace ft_strdup for more general memory duplication use.
+
+### Version 3.42
 
 - Fixed awful bug that caused ';' and '|' to be mistaken for command line ends inside quotes.
 

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 02:25:05 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/23 05:36:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@
 ** size
 */
 
-size_t	del_from_buf(char *chr, size_t num_bytes)
+size_t	del_from_buf(unsigned int *chr, size_t num_chars)
 {
-	size_t deleted_bytes;
+	size_t deleted_chars;
 
-	deleted_bytes = num_bytes;
-	while (num_bytes--)
-		*chr-- = '\0';
+	deleted_chars = num_chars;
+	while (num_chars--)
+		*chr-- = 0;
 
-	return (deleted_bytes);
+	return (deleted_chars);
 }
 
 /*
@@ -63,7 +63,7 @@ size_t	del_from_buf(char *chr, size_t num_bytes)
 ** YA QUE ESTAMOS VOY A PROHIBIR LAS TABULACIONES
 */
 
-char	is_esc_seq(char *buf, size_t *size, char *move_flag)
+char	is_esc_seq(unsigned int *buf, size_t *size, char *move_flag)
 {
 	char			*arrows;
 	char			*arrow_addr;
@@ -102,10 +102,22 @@ char	is_esc_seq(char *buf, size_t *size, char *move_flag)
 				else
 					*move_flag = -1;
 			}
+			//esc_seq = 0;
 		}
-		*size -= del_from_buf(&buf[*size - 1], 1);
+		// else if (buf[*size - 1] == '3')
+		// 	esc_seq++;
+		//else
 		esc_seq = 0;
+		*size -= del_from_buf(&buf[*size - 1], 1);
 		return (1);
 	}
+	// else if (esc_seq == 3)
+	// {
+	// 	if (buf[*size - 1] == '~')
+	// 	{
+	// 		write(STDOUT_FILENO, "\x1b[D \x1b[D", 3);
+	// 	}
+	// 	*size -= del_from_buf(&buf[*size - 1], 1);
+	// }
 	return (0);
 }

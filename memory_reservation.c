@@ -3,14 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/20 19:05:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/23 04:56:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** This function is a wrapper around ft_memdup that sets the proper error flag
+** and aborts the program in case of lack of memory. Errno 28 is for lack of
+** memory. I hardcode it as ft_split does not set it.
+*/
+
+void	*clean_ft_memdup(void const *mem, size_t memsize, t_micli *micli)
+{
+	void	*ptr;
+
+	ptr = ft_memdup(mem, memsize);
+	if (!ptr)
+	{
+		micli->syserror = 28;
+		exit_failure(micli);
+	}
+	return (ptr);
+}
+
+
 
 /*
 ** This function is a wrapper around ft_strdup that sets the proper error flag
