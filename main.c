@@ -3,14 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 18:56:18 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/24 20:59:45 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+
+/*
+** This function is like strlen, but for null-terminated 16 bit strings.
+*/
+
+size_t ft_strlen16(short *str)
+{
+	size_t i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
 
 /*
 ** This function is the poster child of things that only exist because of the
@@ -69,30 +84,83 @@ void	norminette_made_me_do_it(t_micli *micli)
 ** parsing.
 */
 
-char	*micli_readline(t_micli *micli)
+short	*micli_readline(t_micli *micli)
 {
+	size_t	char_total;
 	size_t	size;
 	size_t	bufsize;
+	size_t	index;
+	char	move_flag; //0 ==no move, 1== move up, -1 == move down
 
+	char_total = 0;
 	size = 0;
+	micli->cmdhist.active_line_size = 0;
 	bufsize = READLINE_BUFSIZE;
-	micli->buffer = clean_calloc(bufsize, sizeof(char), micli);
+	move_flag = 0;
+	//micli->buffer = clean_calloc(bufsize + 1, sizeof(char), micli);
+	index = micli->cmdhist.ptrs_in_hist - 1; //char_total->position
+	micli->cmdhist.hist_stack[index] = clean_calloc(bufsize + 1, sizeof(short), micli);
 	while (1)
 	{
-		size += read(STDIN_FILENO, &micli->buffer[size], READLINE_BUFSIZE);
-		if (!size)
+		if (move_flag)
+		{
+			write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			write(STDOUT_FILENO, "🚀 ", 5);
+			if (move_flag == 1 && index > 0)
+				index--;
+			if (move_flag == -1 && index < micli->cmdhist.ptrs_in_hist - 1)
+				index++;
+			move_flag = 0;
+			if (*micli->cmdhist.hist_stack[index] == '\0')
+				char_total = 0;
+			else
+				char_total = ft_strlen16(micli->cmdhist.hist_stack[index]);
+			write(STDOUT_FILENO, micli->cmdhist.hist_stack[index], char_total * sizeof(short));
+		}
+		size += read(STDIN_FILENO, &micli->cmdhist.hist_stack[index][char_total], 2); //ESTO YA NO VALE, SE LEE CHAR POR CHAR, NO BUFSIZE POR BUFSIZE, HAY QUE MOVER EL REALLOC PARA VOLVER A PONER BUFSIZE > 1
+		char_total++;
+		// if (micli->buffer[char_total - 1] == '\x1b') //if escape char
+		// {
+		// 	escape = 1;
+		// 	micli->buffer[--char_total] = '\0'; 
+		// }
+		//que pasa con write EOF se me ha olvidao????? no se escribe nada????
+		if (!size) //si se vuelve size 0 por un ESC no cuenta como EOF :P
 		{
 			write(1, "exit\n", 5);
 			exit_success(micli);
 		}
-		else if (micli->buffer[size - 1] == '\n')
+		// else if (escape)//if chars are escaped, analyse in sub-buffer to determine if the sequence is an arrow key, if so, do arrow stuff and eliminate from main buffer, if not write them and continue as normal
+		// 	escape = handle_esc_seq(micli->buffer, &char_total);
+		else if (!is_esc_seq(micli->cmdhist.hist_stack[index], &char_total, &move_flag))
 		{
-			micli->buffer[size - 1] = '\0';
-			return (micli->buffer);
+			write(STDIN_FILENO, &micli->cmdhist.hist_stack[index][char_total - 1], 2);
+			if (micli->cmdhist.hist_stack[index][char_total - 1] == '\n')
+			{
+				//write(STDIN_FILENO, &micli->buffer[char_total - 1], 1);
+				micli->cmdhist.hist_stack[index][char_total - 1] = 0;
+				micli->cmdhist.active_line_size = char_total;
+				return (micli->cmdhist.hist_stack[index]);
+			}
 		}
-		bufsize += READLINE_BUFSIZE;
-		if (!(micli->buffer = ft_realloc(micli->buffer, bufsize, micli)))
+		if (char_total == bufsize)
+		{
+			bufsize += READLINE_BUFSIZE;
+			micli->cmdhist.hist_stack[index] = ft_realloc(micli->cmdhist.hist_stack[index], (bufsize + 1) * sizeof(short), (bufsize - READLINE_BUFSIZE) * sizeof(short), micli);
+		}
+		if (!micli->cmdhist.hist_stack[index])
 			exit_failure(micli);
+		
+		// if (micli->buffer[char_total - 1] == 'A' && micli->buffer[char_total - 2] == '[' && micli->buffer[char_total - 3] == 27)
+		// 	printf("\nFISTRO!! PECADOR DE LA PRADERA!!!!\n");
+		// else if (micli->buffer[char_total - 1] == 'B' && micli->buffer[char_total - 2] == '[' && micli->buffer[char_total - 3] == 27)
+		// 	printf("\nPOR LA GLORIA DE MI MADRE!!!!\n");
+		// else if (micli->buffer[char_total - 1] == 'C' && micli->buffer[char_total - 2] == '[' && micli->buffer[char_total - 3] == 27)
+		// 	printf("\nHASTA LUEGO LUCAS!!!!\n");
+		// else if (micli->buffer[char_total - 1] == 'D' && micli->buffer[char_total - 2] == '[' && micli->buffer[char_total - 3] == 27)
+		// 	printf("\nAL ATAQUERRRL!!!!\n");
+		//printf("BYTES READ: %zu\n", char_total);
+
 	}
 }
 
@@ -100,9 +168,19 @@ char	micli_loop(t_micli *micli)
 {
 	while (1)
 	{
+		enable_raw_mode(&micli->raw_term, &micli->orig_term);
 		signal(SIGINT, sigrun);
+		//printf("🚀 ");
 		write(STDOUT_FILENO, "🚀 ", 5);
-		micli->buffer = micli_readline(micli);
+		micli->active_line = micli_readline(micli);
+		micli->active_line = clean_ft_memdup(micli->active_line, micli->cmdhist.active_line_size * sizeof(short), micli);
+		push_to_hist_stack(micli, micli->active_line, &micli->cmdhist);
+		//cmdhist_ptr_array_alloc(micli, &micli->cmdhist);
+		if (micli->active_line[0] == 0)
+			micli->buffer = ft_strdup("\0");
+		else
+			micli->buffer = ft_short_to_strdup(micli->active_line);
+		micli->active_line = ft_del(micli->active_line);
 		process_raw_line(micli->buffer, micli);
 		micli->buffer = ft_del(micli->buffer);
 		signal(SIGQUIT, sigrun);
@@ -110,9 +188,9 @@ char	micli_loop(t_micli *micli)
 	return (0);
 }
 
-int		main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_micli micli;
+	t_micli	micli;
 
 	(void)argc;
 	(void)argv;
@@ -121,9 +199,12 @@ int		main(int argc, char **argv, char **envp)
 	ft_printf("\033[0;32m		 /  ' \\/ / __/ / /  	mrosario\n");
 	ft_printf("\033[0;32m		/_/_/_/_/\\__/_/_/   	mvillaes\n\033[0m");
 	ft_bzero(&micli, sizeof(t_micli));
-	micli.micli_loop = micli_loop;
-	norminette_made_me_do_it(&micli);
+	micli.cmdhist.hist_stack = clean_calloc(2, sizeof(short *), &micli);
+	micli.cmdhist.ptrs_in_hist = 1;
+	micli.cmdhist.cmdhist_buf = 1;
 	micli.envp = ft_envdup(envp, &micli);
+	tcgetattr(STDIN_FILENO, &micli.orig_term);
+	norminette_made_me_do_it(&micli);
 	delete_oldpwd(&micli);
 	micli_loop(&micli);
 	return (0);

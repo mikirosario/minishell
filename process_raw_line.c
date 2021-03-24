@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 21:53:26 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/22 21:19:32 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ char	*find_cmdline_end(char *lindex)
 		}
 		if (!escape_flag)
 		{
-			if (*lindex == '|' || *lindex == ';')
+			if ((*lindex == '|' || *lindex == ';') && !quote_flag)
 				break ;
 			quote_flag = toggle_quote_flag(*lindex, quote_flag);
 		}

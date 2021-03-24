@@ -1,3 +1,86 @@
+### Version 4.1
+
+- Cleaned up the short_to_strdup function, which now lives in its own file called short_to_chars.c.
+
+- Reimplemented single-byte escaping.
+
+- Banned the tab key at last! Inserted easter egg when pressed. ;)
+
+## Version 4.0
+
+- Changed character buffer to shorts as I've found that termios settings only go as far as enabling UTF-8. With UTF-8 enabled and all characters in editable lines now stored in shorts, both one- and two-byte characters can be deleted.
+
+- The character buffer is still converted to a standard char string before being passed on to the parser, so no functions downstream of the termcaps editing layer are affected by this overhaul.
+
+- Increased the maximum number of bytes read at a time by the read function to 2 to fill up the shorts.
+
+- New functions to handle the short strings, including:
+	- ft_strlen16, which returns the length of null-terminated 16-bit strings.
+	- ft_short_to_strdup, which converts 16-bit (short) strings back to 8-bit (char) strings.
+	- is_esc_seq, which detects the escape sequence for arrows enabling scrolling through the command history.
+	- push_hist_to_stack, which pushes the line being edited to the cmdhist.hist_stack every new line.
+	- del_from_buf, which deletes a character from a cmdhist.hist_stack line.
+	- ft_memdup, which functions similarly to ft_strdup, except for arrays of any type and it must be passed the size of the array to be duplicated.
+	- ft_free_short_split, to free the cmdhist.hist_stack array.
+
+- The backspace key has been enabled and will now have the effect of removing the character behind the cursor from the screen and from the buffer.
+
+- This version will need extensive bug testing.
+
+### Version 3.5
+
+- Changed character buffer to unsigned ints to enable a grand new invention - character deletion. :p
+
+- Wrote ft_memdup to replace ft_strdup for more general memory duplication use.
+
+### Version 3.42
+
+- Fixed awful bug that caused ';' and '|' to be mistaken for command line ends inside quotes.
+
+- Ambiguous redirect message for echo > test $NADA (undefined variable as file name) not implemented.
+
+### Version 3.41
+
+- Fixed crash that occurred in process_char in the is_escape_char check because since being externalized to its own function is_escape_char takes *(chr + 1) as a parameter without being protected by a null check for *chr first, so chr + 1 is out of bounds when analysing a null char. This has been corrected.
+
+- When cmdline.hist_stack is reallocated, the scratch log of the preceding cmdline.hist_stack is now always freed and replaced with a copy of the active_line. The next null entry in hist_stack will then become the new scratch log.
+
+- The active_line (still named as micli->buffer, after the original buffer) is duplicated immediately after its address is returned by micli_readline and before the duplicate is sent into parsing engine for processing. In pop_to_hist_stack the duplicate of the active line is reduplicated as the last saved (non-scratch) line in cmdline.hist_stack.
+
+- The active_line (micli->buffer) duplicate is freed and nulled after the parsing engine is complete.
+
+- Using the left and right arrows causes memory problems for reasons I don't understand yet. Everything else stable.
+
+### Version 3.4
+
+- Overhauled read buffer. Read buffer now defaults to the penultimate member of a dynamic pointer array called cmdline->hist_stack. The array is a stack of strings. Every time a string is processed with the enter key, it is popped onto the stack. Both the individual strings and the stack itself are reallocated as more space becomes necessary. The buffer size for both is currently set at just 1 member for stress testing purposes.
+
+- Using the up and down arrow keys will now move through the command history of the active session.
+
+- The left and right arrow keys have been effectively disabled. Delete is still not implemented.
+
+- Mysterious occasional double free problem with micli->buffer and occasional heap-use-after-free with ft_split. Problem seems to be ft_split-independent.
+
+- Empty lines are still passed to history stack. This will need to be corrected.
+
+### Version 3.3
+
+- Fixed bad buffer realloc code.
+
+### Version 3.2
+
+- Arrow key escape sequences are now intercepted and amusingly but non-usefully interpreted. Code looks like Lovecraftian horror for the moment.
+
+- Escaped characters will no longer be echoed. Escaped escapes will not escape.
+
+### Version 3.1
+
+- Raw lines are now saved in a buffered array of strings at micli->cmdhist.hist as they are sent in from terminal.
+
+- The function ft_realloc has been modified. It must now be passed both the size of new memory block and the size of the old memory block.
+
+- Canonical mode partially disabled. ECHO disabled, so I am now handling echoing directly. Canonical CRNL and POST and signal handling still active.
+
 ## Version 3.0
 
 - The most infamous bug in all of human history, which caused a segmentation fault when PATH was unset and a command was executed, has been fixed. It now behaves as in bash.

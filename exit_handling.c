@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:06:33 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/17 04:47:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/20 18:35:20 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 
 void	exit_failure(t_micli *micli)
 {
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &micli->orig_term);
 	sys_error(micli);
 	freeme(micli);
 	exit(EXIT_FAILURE);
@@ -36,6 +37,7 @@ void	exit_failure(t_micli *micli)
 
 void	exit_success(t_micli *micli)
 {
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &micli->orig_term);
 	freeme(micli);
 	exit(EXIT_SUCCESS);
 }

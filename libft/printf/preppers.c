@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   preppers.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 23:34:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 10:23:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/23 17:25:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int		ft_intprep(void)
 		if (g_flags.minwidth)
 			return (ft_spacesorzeros((g_flags.plus ? "+" : " "), 1, \
 			g_flags.minwidth));
-			write(1, (g_flags.plus ? "+" : " "), 1);
+		write(1, (g_flags.plus ? "+" : " "), 1);
 		return (1);
 	}
 	numstr = ft_intwrite(num);
