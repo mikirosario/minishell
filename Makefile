@@ -6,7 +6,7 @@
 #    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/23 22:21:55 by miki             ###   ########.fr        #
+#    Updated: 2021/03/24 19:16:32 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRC = main.c exit_handling.c memory_reservation.c memory_free.c flag_toggles.c \
 cmd_execution.c env_var_handling.c iamerror.c signals.c pipe_handling.c \
 process_raw_line.c process_cmdline.c process_token.c process_char.c  envp_dup.c \
 char_check.c char_operations.c redirection.c child_process.c find_cmd_path.c \
-cmd_history_alloc.c terminal_settings.c termcaps.c \
+cmd_history_alloc.c terminal_settings.c termcaps.c short_to_chars.c \
 $(BUILTINS)/export.c \
 $(BUILTINS)/builtins_helper.c \
 $(BUILTINS)/cd.c \

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 22:32:39 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/24 20:59:45 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,75 +14,7 @@
 
 
 /*
-** Convert short to char buffer. Discard insigificant bytes. Duplicate
-** significant bytes. Return duplicate. If there were no significant bytes,
-** return NULL.
-*/
-
-char	*short_to_chars(short short_char)
-{
-	unsigned char	charbuf[3];
-	char			*char_index;
-	int				i;
-
-	ft_bzero(charbuf, 3);
-	i = 0;
-	charbuf[0] = short_char & 0xff;
-	charbuf[1] = (short_char >> 8) & 0xff;
-	char_index = (char *)charbuf;
-	while (i++ < 2)
-		if (!(*char_index))
-			char_index++;
-	if (*char_index)
-		return (ft_strdup(char_index));
-	return (NULL);
-}
-
-/*
-** This frankenfunction accepts a null-terminated string of unsigned ints and
-** spits out a null_terminated string of chars, eliminating all the padding
-** bytes, no questions asked. If the operation fails, NULL is returned.
-**
-** WARNING: For little-endian systems only!
-**
-** EL PLAN BORRÓN!!!! Mwajajajaja. xD
-*/
-
-char	*ft_short_to_strdup(short *short_str)
-{
-	size_t	strlen16;
-	size_t 	i;
-	char	*delete;
-	char	*char_str;
-	char	*short_char;
-
-	char_str = NULL;
-	if (!short_str)
-		return (NULL);
-	strlen16 = ft_strlen16(short_str);
-	i = 0;
-	while (i < strlen16)
-	{
-		delete = char_str;
-		short_char = short_to_chars((unsigned short)short_str[i]);
-		if (short_char)
-		{
-			if (char_str)
-				char_str = ft_strjoin(char_str, short_char);
-			else
-				char_str = ft_strdup(short_char);
-			if (delete)
-				free(delete);
-			free(short_char);
-		}
-		i++;
-	}
-	return (char_str);
-}
-
-
-/*
-** This function is like strlen, but for null-terminated 32 bit strings.
+** This function is like strlen, but for null-terminated 16 bit strings.
 */
 
 size_t ft_strlen16(short *str)

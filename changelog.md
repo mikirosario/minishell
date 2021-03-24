@@ -1,3 +1,11 @@
+### Version 4.1
+
+- Cleaned up the short_to_strdup function, which now lives in its own file called short_to_chars.c.
+
+- Reimplemented single-byte escaping.
+
+- Banned the tab key at last! Inserted easter egg when pressed. ;)
+
 ## Version 4.0
 
 - Changed character buffer to shorts as I've found that termios settings only go as far as enabling UTF-8. With UTF-8 enabled and all characters in editable lines now stored in shorts, both one- and two-byte characters can be deleted.

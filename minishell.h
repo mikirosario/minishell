@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 22:28:18 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/24 19:18:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,11 @@ typedef struct s_micli
 }				t_micli;
 
 /*
-** Utils
+** Short String Functions
 */
 
 size_t			ft_strlen16(short *str);
+char			*ft_short_to_strdup(short *short_str);
 
 /*
 ** Main Loop
