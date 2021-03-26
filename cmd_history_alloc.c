@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 08:18:54 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 10:11:02 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,13 @@ t_cmdhist *cmdhist)
 	}
 	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
 	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, cmdhist->active_line_size * sizeof(short), micli);
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2][1] = cmdhist->active_line_size - 3; //update bufsize (total chars that can fit in the buffer) of duplicate with active_line_size buffer - the two state values - the null char
 	//DEBUG CODE
 	size_t i = cmdhist->ptrs_in_hist + 1;
 	size_t strlen;
 	while (i--)
 	{
-		printf("CMDHIST %zu: ", i); fflush(stdout);
+		printf("CMDHIST %zu: ChrTot: %hd BufSiz: %hd ", i, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][0] : 0, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][1] : 0); fflush(stdout);
 		if (cmdhist->hist_stack[i])
 			strlen = ft_strlen16(&cmdhist->hist_stack[i][2]);
 		else

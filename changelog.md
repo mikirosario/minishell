@@ -1,3 +1,13 @@
+### Version 4.21
+
+- Memory reserved for lines saved to the command history stack (aka. active_line_size) is now calculated as a function of the minimum buffer size as follows:
+	active_line_size = READLINE_BUFFER;
+	while (active_line_size / (char_total + 4) == 0)
+		active_line_size += READLINE_BUFFER;
+This means that minishell will find the smallest multiple of READLINE_BUFFER in which all of the characters + 1 extra space for an incoming read character + 2 data state items + 1 null character will fit. The reported 'bufsize' at hist_stack[line][1] gives the number of characters that can potentially be held by the current buffer, and so will be active_line_size - 3, that is, the total real size of the buffer minus the null character and the two data items.
+
+This should make the dynamic memory system robust enough to take on any minimum buffer size.
+
 ### Version 4.2
 
 - Libft has been moved over to Norminette v3. Note that while critical functions that have been rewritten, like the itoas and split, have been thoroughly tested, get_next_line, which we aren't using here, has been modified without testing for the moment, so be careful. :p

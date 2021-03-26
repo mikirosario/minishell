@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 09:14:06 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 10:20:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ typedef struct s_cmdline
 
 typedef struct s_cmdhist
 {
-	char			**hist;
 	short			**hist_stack;
 	size_t			active_line_size;
 	size_t			cmdhist_buf;
