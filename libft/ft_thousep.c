@@ -3,15 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   ft_thousep.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 19:42:54 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/21 02:24:22 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 04:29:41 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdio.h>
+
+static void	norminette_made_me_do_it(char *sepnum, char *numstr, int strlen, \
+char sep)
+{
+	int	comi;
+
+	comi = 0;
+	while (strlen >= 0 && numstr[strlen] != '-')
+	{
+		if (comi == 3)
+		{
+			*sepnum-- = sep;
+			comi -= 3;
+		}
+		else
+		{
+			*sepnum-- = numstr[strlen--];
+			comi++;
+		}
+	}
+}
 
 static int	ft_sepcount(char *numstr, int strlen)
 {
@@ -27,19 +47,18 @@ static int	ft_sepcount(char *numstr, int strlen)
 	return (newlen);
 }
 
-char		*ft_thousep(char *numstr, char sep)
+char	*ft_thousep(char *numstr, char sep)
 {
 	int		strlen;
-	int		comi;
 	int		newlen;
 	char	*sepnum;
 
-	comi = 0;
 	if (!numstr || (!(ft_isprint(sep))))
 		return (NULL);
 	strlen = ft_strlen(numstr);
 	newlen = ft_sepcount(numstr, strlen--);
-	if (!(sepnum = ft_calloc(1 + newlen--, sizeof(char))))
+	sepnum = ft_calloc(1 + newlen--, sizeof(char));
+	if (!sepnum)
 		return (NULL);
 	if (numstr[0] == '-')
 	{
@@ -47,11 +66,6 @@ char		*ft_thousep(char *numstr, char sep)
 		strlen--;
 		numstr++;
 	}
-	while (strlen >= 0 && numstr[strlen] != '-')
-	{
-		comi == 3 ? (sepnum[newlen--] = sep) : \
-					(sepnum[newlen--] = numstr[strlen--]);
-		comi == 3 ? comi -= 3 : comi++;
-	}
+	norminette_made_me_do_it(&sepnum[newlen], numstr, strlen, sep);
 	return (sepnum);
 }

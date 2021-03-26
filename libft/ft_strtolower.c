@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtolower.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/18 18:43:18 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/18 19:18:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:47:29 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*ft_strtolower(char *str)
 {
-	char *ptr;
+	char	*ptr;
 
 	ptr = str;
 	if (str && *str)

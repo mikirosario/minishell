@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:30:35 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@
 void	print_not_found(char *exec_path, char *cmd)
 {
 	if (!exec_path)
-		ft_printf("micli: %s: command not found\n", cmd);
+		printf("micli: %s: command not found\n", cmd);
 	else
-		ft_printf("micli: %s: %s\n", cmd, strerror(2));
+		printf("micli: %s: %s\n", cmd, strerror(2));
 }
 
 /*

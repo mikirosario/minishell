@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 18:46:28 by miki              #+#    #+#             */
-/*   Updated: 2021/03/24 20:07:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/24 22:27:18 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 
 char	*join_to_string(char *char_str, char *short_char)
 {
-	char *delete;
+	char	*delete;
 
 	if (char_str)
 	{
@@ -106,7 +106,7 @@ char	*short_to_chars(short short_char)
 char	*ft_short_to_strdup(short *short_str)
 {
 	size_t	strlen16;
-	size_t 	i;
+	size_t	i;
 	char	*char_str;
 	char	*short_char;
 

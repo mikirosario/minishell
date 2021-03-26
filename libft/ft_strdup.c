@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 16:35:18 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/10 17:27:42 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:43:18 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ char	*ft_strdup(char const *s1)
 	char	*ptr;
 
 	strsize = (ft_strlen(s1)) + 1;
-	if (!(ptr = ft_calloc(strsize, 1)))
+	ptr = ft_calloc(strsize, 1);
+	if (!ptr)
 		return (ptr);
 	ft_memcpy(ptr, s1, strsize);
 	return (ptr);

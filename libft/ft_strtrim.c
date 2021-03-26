@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 21:23:14 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/19 12:06:32 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 18:54:12 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ char	*ft_strtrim(char const *s1, char const *set)
 	char		*ptr;
 
 	if (!s1 || !set)
-		return (0);
+		return (NULL);
 	start = 0;
 	i = 0;
 	if (!(*s1))
@@ -32,7 +32,8 @@ char	*ft_strtrim(char const *s1, char const *set)
 		start++;
 	while (ft_strchr(set, s1[end]) && start < end)
 		end--;
-	if (!(ptr = ft_calloc(((strlen + 1) - (start + (strlen - end - 1))), 1)))
+	ptr = ft_calloc(((strlen + 1) - (start + (strlen - end - 1))), 1);
+	if (!ptr)
 		return (ptr);
 	if (start <= end)
 		while (start <= end)

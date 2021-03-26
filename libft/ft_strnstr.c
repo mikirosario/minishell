@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 19:39:53 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/13 22:25:33 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:47:00 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char			*ft_strnstr(char const *hay, char const *needle, size_t len)
+char	*ft_strnstr(char const *hay, char const *needle, size_t len)
 {
-	size_t needle_len;
-	size_t hay_len;
+	size_t	needle_len;
+	size_t	hay_len;
 
 	if (!*needle)
 		return ((char *)hay);
@@ -26,7 +26,7 @@ char			*ft_strnstr(char const *hay, char const *needle, size_t len)
 	while (*hay != 0 && len > 0 && hay_len >= needle_len && len-- >= needle_len)
 	{
 		if (ft_strncmp(needle, hay, needle_len) == 0)
-			return (char *)(hay);
+			return ((char *)(hay));
 		hay++;
 		hay_len--;
 	}

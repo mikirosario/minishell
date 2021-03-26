@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/14 22:48:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/02/11 22:24:33 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/25 03:06:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 t_list	*ft_lstnew(void const *content)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	tmp = malloc(sizeof(t_list));
 	if (tmp)

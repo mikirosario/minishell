@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 17:56:50 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/18 12:13:25 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:49:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	}
 	substr = &s[start];
 	substrsize = (len + 1);
-	if (!(substrcpy = ft_calloc(substrsize, 1)))
+	substrcpy = ft_calloc(substrsize, 1);
+	if (!substrcpy)
 		return (substrcpy);
 	substrcpy = (ft_memcpy(substrcpy, substr, len));
 	return (substrcpy);

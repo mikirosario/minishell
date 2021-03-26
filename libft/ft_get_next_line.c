@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_get_next_line.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:17:10 by mrosario          #+#    #+#             */
-/*   Updated: 2020/02/03 20:37:26 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:26:24 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,21 @@
 #include <fcntl.h>
 #include "libft.h"
 
-#define BUFFER_SIZE 4
+#define BUFFER_SIZE 8
+
+static void	norminette_made_me_do_it(char **queue, int fd, char *buf)
+{
+	char	*eraser;
+
+	if (!(queue[fd]))
+		queue[fd] = ft_strdup(buf);
+	else
+	{
+		eraser = queue[fd];
+		queue[fd] = ft_strjoin(queue[fd], buf);
+		free(eraser);
+	}	
+}
 
 static int	ft_ncases(char **qfd, char **line)
 {
@@ -57,11 +71,10 @@ static int	ft_result(char **qfd, char **line, int ret)
 		return (ft_ncases(qfd, line));
 }
 
-int			ft_get_next_line(int fd, char **line)
+int	ft_get_next_line(int fd, char **line)
 {
 	static char	*queue[4096];
 	char		buf[BUFFER_SIZE + 1];
-	char		*eraser;
 	int			ret;
 
 	if (!line || BUFFER_SIZE < 1 || fd < 0)
@@ -69,19 +82,14 @@ int			ft_get_next_line(int fd, char **line)
 	*line = ft_strdup("");
 	if (queue[fd] && (ft_chrcmp(queue[fd], '\n') != -1))
 		return (ft_ncases(&queue[fd], line));
-	while ((ret = read(fd, buf, BUFFER_SIZE)) > 0)
+	ret = read(fd, buf, BUFFER_SIZE);
+	while (ret > 0)
 	{
 		buf[ret] = '\0';
-		if (!(queue[fd]))
-			queue[fd] = ft_strdup(buf);
-		else
-		{
-			eraser = queue[fd];
-			queue[fd] = ft_strjoin(queue[fd], buf);
-			free(eraser);
-		}
+		norminette_made_me_do_it(queue, fd, buf);
 		if ((ft_chrcmp(buf, '\n') != -1))
 			break ;
+		ret = read(fd, buf, BUFFER_SIZE);
 	}
 	return (ft_result(&queue[fd], line, ret));
 }

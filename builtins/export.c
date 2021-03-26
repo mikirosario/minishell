@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/19 19:30:02 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		var_check(const char *str)
 		{
 			if (!(isvarchar(str[i])))
 			{
-				ft_printf("💥 export: '%s': not a valid identifier\n", str);
+				printf("💥 export: '%s': not a valid identifier\n", str);
 				return (0);
 			}
 			i++;
@@ -63,7 +63,7 @@ int		var_check(const char *str)
 		return (1);
 	}
 	if (!(ft_isalpha(str[0] || str[0] != '_')))
-		ft_printf("💥 export: '%s': not a valid identifier\n", str);
+		printf("💥 export: '%s': not a valid identifier\n", str);
 	return (0);
 }
 
@@ -119,12 +119,12 @@ void	export_print(t_micli *micli)
 	{
 		name_len = ft_name_len(micli->envp[mask[i]]);
 		str_len = ft_strlen(micli->envp[mask[i]]);
-		ft_printf("declare -x ");
+		printf("declare -x ");
 		write(1, micli->envp[mask[i]], name_len + 1);
 		if (str_len != name_len)
 		{
 			ft_putchar('\"');
-			ft_printf("%s\"\n", micli->envp[mask[i]] + name_len + 1);
+			printf("%s\"\n", micli->envp[mask[i]] + name_len + 1);
 		}
 		else
 			ft_putchar('\n');

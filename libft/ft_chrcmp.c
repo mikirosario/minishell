@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_chrcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/03 20:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2020/02/03 20:14:14 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 01:32:39 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 ** If char is not found, returns -1. For finding newlines.
 */
 
-int		ft_chrcmp(char *s1, char c)
+int	ft_chrcmp(char *s1, char c)
 {
 	int	i;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_getnextnum.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 20:50:15 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 18:10:58 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 01:55:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,7 @@ char	*ft_getnextnum(char *num)
 		num++;
 	while (*num && !(ft_isdigit(*num)))
 		num++;
-	return (*num ? num : NULL);
+	if (*num)
+		return (num);
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 22:30:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 08:18:54 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 /*
 ** This is one funky function. This function manages the history stack for
-** micli. The history stack is a null-terminated character pointer array.
+** micli. The history stack is a null-terminated short pointer array.
 **
 ** The lowest memory address in the array corresponds to the oldest entry. The
 ** penultimate address in the array is used as a scratch log for editing a new
@@ -44,8 +44,8 @@
 ** NOT the memory addressed by the pointers, which is reallocated as needed by
 ** micli->readline.
 **
-** Here is a schema of what is going on, where 0 is the scratch array, \0 is
-** the NULL and \n is some \n-terminated string:
+** Here is a schema of what is going on, where 0 is the scratch log, \0 is the
+** NULL and \n is some \n-terminated string of shorts:
 **
 ** active_line
 **	    v  v
@@ -63,22 +63,26 @@
 ** new scratch log, and the NULL termination after *that* becomes the new NULL
 ** terminator. Etc, as much as your memory will allow. ;)
 **
-** The function ft_free_split can be (and is) used to free this array.
+** The function ft_free_short_split is used to free this array.
+**
+** A null check at the beginning of this function prevents empty lines from
+** being saved to the command history, as in bash. New line characters are
+** converted to null characters before being onforwarded by micli_readline.
+** Lines thus point to a single null character when enter is pressed with no
+** text in the buffer. This causes the push_to_hist_stack function to
+** return immediately with no operation.
 */
 
 void	push_to_hist_stack(t_micli *micli, short *active_line, \
 t_cmdhist *cmdhist)
 {
-	//char *scratch_buf;
-
+	if (!*active_line)
+		return ;
 	cmdhist->ptrs_in_hist++;
-	//scratch_buf = cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2];
-	//scratch_buf_cpy = clean_ft_strdup(scratch_buf, micli);
-	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf) //1 scratch pointer, rest hist pointers
+	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf)
 	{
 		cmdhist->cmdhist_buf += CMDHIST_BUF;
-		//REALLOC
-		cmdhist->hist_stack = ft_realloc(cmdhist->hist_stack, \
+		cmdhist->hist_stack = clean_realloc(cmdhist->hist_stack, \
 		(cmdhist->cmdhist_buf + 1) * sizeof(short *), \
 		(cmdhist->ptrs_in_hist - 1) * sizeof(short *), micli);
 	}
@@ -91,11 +95,11 @@ t_cmdhist *cmdhist)
 	{
 		printf("CMDHIST %zu: ", i); fflush(stdout);
 		if (cmdhist->hist_stack[i])
-			strlen = ft_strlen16(cmdhist->hist_stack[i]);
+			strlen = ft_strlen16(&cmdhist->hist_stack[i][2]);
 		else
 			strlen = 0;
-		size_t j = 0;
-		while (j < strlen)
+		size_t j = 2;
+		while (j < strlen + 2)
 		{
 			write(1, &cmdhist->hist_stack[i][j], 2);
 			j++;
@@ -106,68 +110,5 @@ t_cmdhist *cmdhist)
 	 	// write(STDOUT_FILENO, cmdhist->hist_stack[i], strlen * sizeof(short));
 	 	printf("\n");
 	}
+	//DEBUG CODE
 }
-
-/*
-** This function adds every line from terminal (ended in '\n') to an array of
-** strings called cmdhist->hist. The array is buffered with CMDHIST_BUF. Every
-** new line saved in the history increments the counter cmdhist->ptrs_in_hist by
-** one.
-**
-** If adding a new line would cause an overflow the buffer is reallocated with
-** CMDHIST_BUF more pointers as necessary.
-**
-** Once the buffer is confirmed as prepared to accept the new line, a copy is 
-** made of micli->buffer (where) raw lines from terminal are stored and the last
-** free member of cmdhist->hist is made to point to it. The position of the last
-** free member of cmdhist->hist is ptrs_in_hist - 1 as ptrs_in_hist is a size,
-** not a length.
-*/
-
-// void	cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist)
-// {
-// 	cmdhist->ptrs_in_hist++;
-// 	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf)
-// 	{
-// 		cmdhist->cmdhist_buf += CMDHIST_BUF;
-// 		//REALLOC
-// 		cmdhist->hist_stack = ft_realloc(cmdhist->hist_stack,
-// 		(cmdhist->cmdhist_buf + 1) * sizeof(char *),
-// 		(cmdhist->cmdhist_buf - CMDHIST_BUF) * sizeof(char *), micli);
-// 	}
-// 	cmdhist->hist_stack[cmdhist->ptrs_in_hist] = clean_ft_strdup(micli->buffer,
-// 	micli);
-
-// 	//DEBUG CODE
-// 	size_t i = cmdhist->ptrs_in_hist;
-// 	while (i)
-// 	{
-// 		printf("CMDHIST %zu: %s\n", i, cmdhist->hist_stack[i]);
-// 		i--;
-// 	}
-// }
-
-// void	cmdhist_ptr_array_alloc(t_micli *micli, t_cmdhist *cmdhist)
-// {
-// 	cmdhist->ptrs_in_hist++;
-// 	if (cmdhist->ptrs_in_hist > cmdhist->cmdhist_buf)
-// 	{
-// 		cmdhist->cmdhist_buf += CMDHIST_BUF;
-// 		if (!cmdhist->hist) //ALLOC
-// 			cmdhist->hist = clean_calloc(cmdhist->cmdhist_buf + 1,
-// 			sizeof(char *), micli);
-// 		else //REALLOC
-// 			cmdhist->hist = ft_realloc(cmdhist->hist,
-// 			(cmdhist->cmdhist_buf + 1) * sizeof(char *), (cmdhist->cmdhist_buf - CMDHIST_BUF + 1) * sizeof(char *), micli);
-// 	}
-// 	cmdhist->hist[cmdhist->ptrs_in_hist - 1] = clean_ft_strdup(micli->buffer,
-// 	micli);
-
-// 	//DEBUG CODE
-// 	// size_t i = 0;
-// 	// while (i < cmdhist->ptrs_in_hist)
-// 	// {
-// 	// 	printf("CMDHIST %zu: %s\n", i, cmdhist->hist[i]);
-// 	// 	i++;
-// 	// }
-// }

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 04:56:26 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 06:50:17 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 ** it. An array of four integers is 4 * sizeof(int) = 16 bytes.
 */
 
-void	*ft_realloc(void *ptr, size_t new_size, size_t old_size, t_micli *micli)
+void	*clean_realloc(void *ptr, size_t new_size, size_t old_size, t_micli *micli)
 {
 	void *tmp;
 

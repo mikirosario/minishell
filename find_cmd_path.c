@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 12:04:55 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	et_phone_home(t_micli *micli)
 {	
-	ft_printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
+	printf("micli: %s: %s\n", micli->cmdline.cmd, strerror(2));
 	micli_loop(micli);
 }
 
