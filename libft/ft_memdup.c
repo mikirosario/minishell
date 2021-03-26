@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/23 01:05:00 by miki              #+#    #+#             */
-/*   Updated: 2021/03/23 01:07:44 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/25 03:07:05 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 ** allocation fails.
 */
 
-void *ft_memdup(void const *mem, size_t memsize)
+void	*ft_memdup(void const *mem, size_t memsize)
 {
-	void *dup;
+	void	*dup;
 
 	dup = ft_calloc(memsize, 1);
 	if (dup != NULL)

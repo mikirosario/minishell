@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/24 21:17:00 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 09:14:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ typedef struct s_micli
 */
 
 size_t			ft_strlen16(short *str);
+char			*short_to_chars(short short_char);
 char			*ft_short_to_strdup(short *short_str);
 
 /*
@@ -142,7 +143,7 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
-char			is_esc_seq(short *buf, size_t *size, char *move_flag);
+char			is_esc_seq(short *buf, short *char_total, char *move_flag);
 
 /*
 ** Command History
@@ -255,7 +256,8 @@ void			*clean_ft_memdup(void const *mem, size_t memsize, \
 char			*clean_ft_strjoin(char const *s1, char const *s2, \
 				t_micli *micli);
 char			**clean_ft_split(const char *s, char c, t_micli *micli);
-void			*ft_realloc(void *ptr, size_t new_size, size_t old_size, t_micli *micli);
+void			*clean_realloc(void *ptr, size_t new_size, size_t old_size, \
+				t_micli *micli);
 void			*clean_calloc(size_t count, size_t size, t_micli *micli);
 
 /*

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/13 21:20:16 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:07:29 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ void	get_argument(t_micli *micli)
 ** a file name for the current redirect.
 **
 ** Use this at the start of the function to check bytes reserved for each token:
-** ft_printf("Show bytes reserved: %u\n", micli->tokdata.toksize);
+** printf("Show bytes reserved: %u\n", micli->tokdata.toksize);
 */
 
 void	process_token(t_micli *micli)

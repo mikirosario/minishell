@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/06 22:44:12 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/09 11:57:57 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:47:19 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 char	*ft_strrchr(char const *s, int c)
 {
-	char ch;
-	char *lastval;
+	char	ch;
+	char	*lastval;
 
 	ch = c;
 	lastval = 0;

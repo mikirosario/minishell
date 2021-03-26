@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 10:20:33 by mrosario          #+#    #+#             */
-/*   Updated: 2019/11/13 19:25:38 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/25 03:44:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t			ft_strlcpy(char *dst, char const *src, size_t dstsize)
+size_t	ft_strlcpy(char *dst, char const *src, size_t dstsize)
 {
-	size_t srcsize;
+	size_t	srcsize;
 
 	if (!dst)
 		return (0);

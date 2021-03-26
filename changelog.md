@@ -1,3 +1,30 @@
+### Version 4.2
+
+- Libft has been moved over to Norminette v3. Note that while critical functions that have been rewritten, like the itoas and split, have been thoroughly tested, get_next_line, which we aren't using here, has been modified without testing for the moment, so be careful. :p
+
+- The function ft_printf has been deprecated in favour of printf, as per the new school standards.
+
+- Fixed bug that caused the first line of user-introduced text in minishell to be green.
+
+- Major rewrite/overhaul of micli_readline, which is now looking MUCH more stable. :) The command history stack lines have been modified to include embedded values about its state. The first two shorts in each stack line are now reserved to store the following information about the line:
+	- hist_stack[0] stores the number of characters stored in the line (char_total),
+	- hist_stack[1] stores the number of characters that will fit in the line (bufsize).
+These values change dynamically whenever characters are added or deleted from any of the lines and whenever a line is reallocated. They are used to curate the lines.
+
+- By using the new line-embedded state values to control memory allocation on a line-by-line basis, I've eliminated a memory misallocation problem introduced with the backspace function. Before the backspace it was possible to use strlen to determine the number of characters in any line and extrapolate the buffer size from that. After the backspace, however, this was no longer viable, as backspaced characters could leave a buffer of nearly any size with any number of characters (I don't reallocate down, as this would be wasteful). Consequently, buffer reallocation became chaotic. After a lot of thinking it over and some doodling in my trusty notebook, I decided to go with this solution of embedding these two state values reporting character count and buffer size in the first two shorts of each line. The great news? This seems to have eliminated the dreaded arrow-crash bug as well, though further testing on that will be needed. :)
+
+- By tying the character total to a short I have effectively limited each line's total potential length to SHRT_MAX. Though shorts allow for lines much longer than should ever reasonably be needed (over 32000 characters), as of present a buffer overflow of this kind is not contemplated in the code, so inputting a line of more than SHRT_MAX - 4 characters will cause a black hole to appear and swallow your computer if attempted. That's not a bug, it's a feature.
+
+- Once further testing is done it will be time to clean up esc_seq and HOPEFULLY that will leave this project in pristine condition. :)
+
+- Fixed bug caused by an unreverted change during testing which inserted DEL markers instead of NUL characters in place of deleted characters in the buffer.
+
+### Version 4.11
+
+- Empty lines will no longer be saved to the history
+
+- Holding down tab defeats tab block - known bug.
+
 ### Version 4.1
 
 - Cleaned up the short_to_strdup function, which now lives in its own file called short_to_chars.c.
@@ -77,7 +104,7 @@
 
 - Raw lines are now saved in a buffered array of strings at micli->cmdhist.hist as they are sent in from terminal.
 
-- The function ft_realloc has been modified. It must now be passed both the size of new memory block and the size of the old memory block.
+- The function clean_realloc has been modified. It must now be passed both the size of new memory block and the size of the old memory block.
 
 - Canonical mode partially disabled. ECHO disabled, so I am now handling echoing directly. Canonical CRNL and POST and signal handling still active.
 
@@ -220,7 +247,7 @@
 
 ### Version 2.62
 
-- The new generalized ft_realloc has been further modified to be more like the old realloc. It only need to be told the size of the memory to be reallocated, but will now work with any kind of array. The new generalized ft_realloc has now completely replaced the old one.
+- The new generalized clean_realloc has been further modified to be more like the old realloc. It only need to be told the size of the memory to be reallocated, but will now work with any kind of array. The new generalized clean_realloc has now completely replaced the old one.
 
 - Memory duplicated in children is now explicitly freed before exiting/repurposing their processes.
 
@@ -232,7 +259,7 @@
 
 - Removed the linked list that copied and saved sequestered redirect instructions for debugging. File paths are still copied before being sent to the open command.
 
-- I've written a more general version of ft_realloc to work with any kind of array, not just a character string, but it now needs to be told what the size of the array members will be. It hasn't yet been implemented so as not to break functions on other branches that use the prior implementation. Implementation will be coordinated in a future update.
+- I've written a more general version of clean_realloc to work with any kind of array, not just a character string, but it now needs to be told what the size of the array members will be. It hasn't yet been implemented so as not to break functions on other branches that use the prior implementation. Implementation will be coordinated in a future update.
 
 ## Version 2.6
 
@@ -347,7 +374,7 @@
 
 - The function pipe_count had to be modified to take ';' into account.
 
-- The read buffer has been increased to 1024 from 1, as, after weeks of stress-testing without failures, I now consider ft_realloc to have proven itself. ;)
+- The read buffer has been increased to 1024 from 1, as, after weeks of stress-testing without failures, I now consider clean_realloc to have proven itself. ;)
 
 ### Version 2.21
 

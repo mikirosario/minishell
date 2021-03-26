@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:14:38 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		ft_echo(const char **argv, t_micli *micli)
 	micli->builtins.argflag = 0;
 	if (!argv[i])
 	{
-		ft_printf("\n");
+		printf("\n");
 		return (0);
 	}
 	i = 1;
@@ -43,9 +43,9 @@ void	echo_helper(int i, const char **argv, t_micli *micli)
 {
 	while (argv[i] != 0)
 	{
-		ft_printf(argv[i + 1] ? "%s " : "%s", argv[i]);
+		printf(argv[i + 1] ? "%s " : "%s", argv[i]);
 		i++;
 	}
 	if (micli->builtins.argflag != 1)
-		ft_printf("\n");
+		printf("\n");
 }

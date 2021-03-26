@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/18 20:45:57 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,7 +362,7 @@ int		get_child_exit_status(int stat_loc)
 	{
 		exit_status = WTERMSIG(stat_loc);
 		if (WCOREDUMP(stat_loc))
-			ft_printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
+			printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
 	}
 	else if (WIFSTOPPED(stat_loc))
 		exit_status = WSTOPSIG(stat_loc);

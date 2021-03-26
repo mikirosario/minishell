@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mvillaes <mvillaes@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/13 19:07:20 by mvillaes         ###   ########.fr       */
+/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int		cd_helper(const char **argv, t_micli *micli)
 {
 	if (chdir(argv[1]) == -1)
 	{
-		ft_printf("cd: %s: %s\n", argv[1], strerror(errno));
+		printf("cd: %s: %s\n", argv[1], strerror(errno));
 		return (1);
 	}
 	update_pwd(micli);

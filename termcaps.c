@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/24 21:09:56 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 09:07:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,32 +89,51 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 ** most elegant way to do a backspace, I'm told, but for this old-school style
 ** project it will do nicely. :)
 **
-** YA QUE ESTAMOS VOY A PROHIBIR LAS TABULACIONES
+	/////////////////////
+** NOTE: In Linux, if I print debug text after an arrow check, and hold the
+** arrow key down, any arrow sequences subsequent to the first sequence come in
+** a cycling order of ESC[ -> DESC -> [D. If I don't, however, they seem to
+** remain in order ESC[ -> D -> ESC[. O_O That's convenient, but I don't know
+** why it's happening, and I don't know if I quite trust it. The same thing
+** happens with tab. If I uncomment the debug text and hold down tab, tabs come
+** in two at a time. If I comment it, they come in neatly one at a time. Need to
+** test this in Mac!
+** 	////////////////////
+**
 */
 
-char	is_esc_seq(short *buf, size_t *char_total, char *move_flag)
+char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 {
 	static char		esc_seq = 0;
 	short			start_seq;
+	short			chr;
 
-	//'\x1b['
+	//'\x1b[' == 23323
 	start_seq = 23323;
-	if (!esc_seq && buf[*char_total - 1] == '\t')
+	chr = buf[*char_total - 1];
+
+	// //DEBUG CODE DISPLAY
+	// printf("%hd\n", chr);
+	// //DEBUG CODE DISPLAY
+
+	//CASE 0
+	if (!esc_seq && (chr == '\t' || chr == 2313)) //2313 is the decimal representation of the value in chr with two contiguous tabs; happens when you hold down the tab key (NOT ALWAYS!!!! ONLY WITH MY DEBUG CODE!!!! O_O TRUE ALSO IN MAC?????)
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
-		
-		//DEBUG CODE
-		write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-		write(STDOUT_FILENO, "BAD BUNNY! NO TAB!", 18);
-		sleep(1);
-		write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-		write(STDOUT_FILENO, "🚀 ", 5);
-		write(STDOUT_FILENO, buf, *char_total * sizeof(short));
-		//DEBUG CODE
+		// //DEBUG CODE
+		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// write(STDOUT_FILENO, "BAD BUNNY! NO TAB!", 18);
+		// if (chr == '\t') //only sleep with one tab to limit accumulated sleep times when holding tab :p
+		// 	sleep(1);
+		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// write(STDOUT_FILENO, "🚀 ", 5);
+		// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+		// //DEBUG CODE
 		
 		return(1);
 	}
-	else if (!esc_seq && buf[*char_total - 1] == DEL) //unescaped backspace
+	//CASE 1
+	else if (!esc_seq && chr == DEL) //unescaped backspace
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		if (*char_total)
@@ -124,7 +143,15 @@ char	is_esc_seq(short *buf, size_t *char_total, char *move_flag)
 		}
 		return (1);
 	}
-	else if (!esc_seq && buf[*char_total - 1] == start_seq) //unescaped esc sequence \x1b[
+	//CASE 2
+	else if (!esc_seq && chr == '\x1b') //unescaped lone esc
+	{
+		esc_seq = 1;
+		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		return (1);
+	}
+	//CASE 3
+	else if (!esc_seq && chr == start_seq) //unescaped esc sequence \x1b[
 	{
 		esc_seq = 2; //set sequence id
 		// buf[*char_total - 1] = '\0';
@@ -132,19 +159,43 @@ char	is_esc_seq(short *buf, size_t *char_total, char *move_flag)
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1); //delete char (note, number indicates CHAR NOT BYTES! one deleted char is always a short/two bytes)
 		return (1); //return -> functionalize all this
 	}
-	else if (!esc_seq && buf[*char_total - 1] == '\x1b') //unescaped lone esc
-	{
-		esc_seq = 1;
-		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
-		return (1);
-	}
 	else if (esc_seq == 1)
 	{
-		if (buf[*char_total - 1] == '[')
+		//CASE 3
+		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		if (chr == '[')
 			esc_seq = 2;
 		else
 			esc_seq = 0;
-		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		if (chr == 16731 || chr == 16987 || chr == 17243 || chr == 17499)
+		{
+			if (chr == 16731)
+				*move_flag = 1;
+			else if (chr == 16987)
+				*move_flag = -1;
+			else if (chr == 17243)
+			{
+				// //DEBUG CODE
+				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				// write(STDOUT_FILENO, "FISTRO!! PECADOR DE LA PRADERA!!!!", 34);
+				// sleep(1);
+				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				// write(STDOUT_FILENO, "🚀 ", 5);
+				// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+				// //DEBUG CODE
+			}
+			else if (chr == 17499)
+			{
+				// //DEBUG CODE
+				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				// write(STDOUT_FILENO, "POR LA GLORIA DE MI MADRE!!!!", 29);
+				// sleep(1);
+				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				// write(STDOUT_FILENO, "🚀 ", 5);
+				// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+				// //DEBUG CODE
+			}
+		}
 		return (1);
 	}
 
@@ -159,21 +210,42 @@ char	is_esc_seq(short *buf, size_t *char_total, char *move_flag)
 	// 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 	// 	return (1);
 	// }
+	//CASE 4
 	else if (esc_seq == 2)
 	{
-		//arrow_addr = ft_strchr(arrows, (char)buf[*char_total - 1]);
-		if (buf[*char_total - 1] >= 'A' && buf[*char_total - 1] <= 'D')
-		{
-			{
-				if (buf[*char_total - 1] == 'A')
-					*move_flag = 1;
-				else if (buf[*char_total - 1 == 'B'])
-					*move_flag = -1;
-			}
-		}
-		
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
-		esc_seq = 0;
+		esc_seq = 0; 
+		if (chr == 6977 || chr == 6978 || chr == 6979 || chr == 6980)
+			esc_seq = 1;
+		//arrow_addr = ft_strchr(arrows, (char)buf[*char_total - 1]);
+		//if (buf[*char_total - 1] >= 'A' && buf[*char_total - 1] <= 'D')
+
+		if (chr == 'A' || chr == 6977)
+			*move_flag = 1;
+		else if (chr == 'B' || chr == 6978)
+			*move_flag = -1;
+		else if (chr == 'C' || chr == 6979)
+		{
+			// //DEBUG CODE
+			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			// write(STDOUT_FILENO, "FISTRO!! PECADOR DE LA PRADERA!!!!", 34);
+			// sleep(1);
+			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			// write(STDOUT_FILENO, "🚀 ", 5);
+			// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+			// //DEBUG CODE
+		}
+		else if (chr == 'D' || chr == 6980)
+		{
+			// //DEBUG CODE
+			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			// write(STDOUT_FILENO, "POR LA GLORIA DE MI MADRE!!!!", 29);
+			// sleep(1);
+			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+			// write(STDOUT_FILENO, "🚀 ", 5);
+			// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+			// //DEBUG CODE
+		}
 		return (1);
 	}
 	return (0);

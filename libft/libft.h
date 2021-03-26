@@ -6,22 +6,20 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/09 00:30:21 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 01:07:30 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 02:08:36 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_LIBFT_H
-# define FT_LIBFT_H
+#ifndef LIBFT_H
+# define LIBFT_H
 
 # include <stdlib.h>
-# include <wchar.h>
-# include "./printf/libftprintf.h"
 
-typedef struct	s_list
+typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}				t_list;
+}					t_list;
 
 void			*ft_memset(void *b, int c, size_t len);
 void			*ft_bzero(void *s, size_t n);
@@ -32,7 +30,6 @@ void			*ft_memchr(void const *s, int c, size_t n);
 int				ft_memcmp(void const *s1, void const *s2, size_t n);
 int				ft_chrcmp(char *s1, char c);
 size_t			ft_strlen(char const *s);
-size_t			ft_wstrlen(wchar_t const *s);
 int				ft_isalpha(int c);
 int				ft_isdigit(int c);
 int				ft_isalnum(int c);
@@ -61,16 +58,12 @@ char			**ft_split(char const *s, char c);
 char			**ft_free_split(char **split);
 char			*ft_itoa(int n);
 char			*ft_itoa_base(long long int num, int base);
-char			*ft_llitoa(long long int n);
-char			*ft_llitoa_base(long long int num, int base);
-char			*ft_lluitoa(unsigned long long int n);
 char			*ft_lluitoa_base(unsigned long long int num, int base);
 char			*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void			ft_putchar(char const c);
 void			ft_putchar_fd(char c, int fd);
 void			ft_putstr_fd(char *s, int fd);
 size_t			ft_putstr(char const *str, size_t len);
-size_t			ft_wputstr(wchar_t const *str, size_t len);
 void			ft_filler(char c, size_t n);
 void			ft_putendl_fd(char *s, int fd);
 void			ft_putnbr_fd(int n, int fd);
@@ -91,5 +84,6 @@ unsigned char	ft_isbitset(unsigned char byte, unsigned char bit);
 void			*ft_del(void *freethis);
 char			*ft_getnextnum(char *num);
 int				ft_strcmp(const char *s1, const char *s2);
+void			*ft_realloc(void *ptr, size_t new_size, size_t old_size);
 
 #endif
