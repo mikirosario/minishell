@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 09:52:50 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 20:57:06 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 ** This function is like strlen, but for null-terminated 16 bit strings.
 */
 
-size_t ft_strlen16(short *str)
+size_t	ft_strlen16(short *str)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (str[i])
@@ -62,8 +62,6 @@ void	norminette_made_me_do_it(t_micli *micli)
 	micli->tonti.f_ap = O_WRONLY | O_CREAT | O_APPEND;
 	micli->tonti.f_re = O_RDONLY | O_CREAT;
 }
-
-
 
 /*
 ** This function defines a buffer for reading from STDIN in steps determined by
@@ -162,11 +160,25 @@ short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 		}
 		if (*char_total == *bufsize) //if we ran out of space for more characters
 		{
-			//REALLOC
-			*bufsize += READLINE_BUFSIZE;
-			hist_stack[index] = clean_realloc(hist_stack[index], (*bufsize + 3) * sizeof(short), (*char_total + 2) * sizeof(short), micli); //reallocate all characters plus two data segments to new, bigger array
-			char_total = &hist_stack[index][0]; //Reset pointers
-			bufsize = &hist_stack[index][1];
+			if (*bufsize < SHRT_MAX - 4) //O REALLOC
+			{
+				*bufsize += READLINE_BUFSIZE;
+				hist_stack[index] = clean_realloc(hist_stack[index], (*bufsize + 3) * sizeof(short), (*char_total + 2) * sizeof(short), micli); //reallocate all characters plus two data segments to new, bigger array
+				char_total = &hist_stack[index][0]; //Reset pointers
+				bufsize = &hist_stack[index][1];
+			}
+			else //O BORRADO, SIN MEDIAS TINTAS
+			{
+				*char_total -= del_from_buf(&hist_stack[index][*char_total + 1], 1);
+				//DEBUG CODE
+				write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				write(STDOUT_FILENO, "BAD BUNNY! NO OVERFLOW!", 23);
+				sleep(1);
+				write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+				write(STDOUT_FILENO, "🚀 ", 5);
+				write(STDOUT_FILENO, &hist_stack[index][2], *char_total * sizeof(short));
+				//DEBUG CODE	
+			}
 		}
 	}
 

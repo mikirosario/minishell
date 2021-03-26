@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   termcaps.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 09:07:42 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 19:41:12 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,18 +105,12 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 {
 	static char		esc_seq = 0;
-	short			start_seq;
 	short			chr;
-
-	//'\x1b[' == 23323
-	start_seq = 23323;
 	chr = buf[*char_total - 1];
-
+	//'\x1b[' == 23323
 	// //DEBUG CODE DISPLAY
 	// printf("%hd\n", chr);
 	// //DEBUG CODE DISPLAY
-
-	//CASE 0
 	if (!esc_seq && (chr == '\t' || chr == 2313)) //2313 is the decimal representation of the value in chr with two contiguous tabs; happens when you hold down the tab key (NOT ALWAYS!!!! ONLY WITH MY DEBUG CODE!!!! O_O TRUE ALSO IN MAC?????)
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
@@ -128,11 +122,9 @@ char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
 		// write(STDOUT_FILENO, "🚀 ", 5);
 		// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
-		// //DEBUG CODE
-		
+		// //DEBUG CODE		
 		return(1);
 	}
-	//CASE 1
 	else if (!esc_seq && chr == DEL) //unescaped backspace
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
@@ -143,59 +135,54 @@ char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 		}
 		return (1);
 	}
-	//CASE 2
 	else if (!esc_seq && chr == '\x1b') //unescaped lone esc
 	{
 		esc_seq = 1;
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		return (1);
 	}
-	//CASE 3
-	else if (!esc_seq && chr == start_seq) //unescaped esc sequence \x1b[
+	else if (!esc_seq && chr == 23323) ////unescaped esc sequence '\x1b[' == 23323
 	{
-		esc_seq = 2; //set sequence id
-		// buf[*char_total - 1] = '\0';
-		// *char_total -= 1;
+		esc_seq = 2;
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1); //delete char (note, number indicates CHAR NOT BYTES! one deleted char is always a short/two bytes)
 		return (1); //return -> functionalize all this
 	}
 	else if (esc_seq == 1)
 	{
-		//CASE 3
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		if (chr == '[')
 			esc_seq = 2;
 		else
 			esc_seq = 0;
-		if (chr == 16731 || chr == 16987 || chr == 17243 || chr == 17499)
-		{
-			if (chr == 16731)
-				*move_flag = 1;
-			else if (chr == 16987)
-				*move_flag = -1;
-			else if (chr == 17243)
-			{
-				// //DEBUG CODE
-				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-				// write(STDOUT_FILENO, "FISTRO!! PECADOR DE LA PRADERA!!!!", 34);
-				// sleep(1);
-				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-				// write(STDOUT_FILENO, "🚀 ", 5);
-				// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
-				// //DEBUG CODE
-			}
-			else if (chr == 17499)
-			{
-				// //DEBUG CODE
-				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-				// write(STDOUT_FILENO, "POR LA GLORIA DE MI MADRE!!!!", 29);
-				// sleep(1);
-				// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-				// write(STDOUT_FILENO, "🚀 ", 5);
-				// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
-				// //DEBUG CODE
-			}
-		}
+		// if (chr == 16731 || chr == 16987 || chr == 17243 || chr == 17499)
+		// {
+		// 	if (chr == 16731)
+		// 		*move_flag = 1;
+		// 	else if (chr == 16987)
+		// 		*move_flag = -1;
+		// 	else if (chr == 17243)
+		// 	{
+		// 		// //DEBUG CODE
+		// 		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// 		// write(STDOUT_FILENO, "FISTRO!! PECADOR DE LA PRADERA!!!!", 34);
+		// 		// sleep(1);
+		// 		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// 		// write(STDOUT_FILENO, "🚀 ", 5);
+		// 		// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+		// 		// //DEBUG CODE
+		// 	}
+		// 	else if (chr == 17499)
+		// 	{
+		// 		// //DEBUG CODE
+		// 		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// 		// write(STDOUT_FILENO, "POR LA GLORIA DE MI MADRE!!!!", 29);
+		// 		// sleep(1);
+		// 		// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
+		// 		// write(STDOUT_FILENO, "🚀 ", 5);
+		// 		// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
+		// 		// //DEBUG CODE
+		// 	}
+		// }
 		return (1);
 	}
 
@@ -215,16 +202,16 @@ char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		esc_seq = 0; 
-		if (chr == 6977 || chr == 6978 || chr == 6979 || chr == 6980)
-			esc_seq = 1;
+		// if (chr == 6977 || chr == 6978 || chr == 6979 || chr == 6980)
+		// 	esc_seq = 1;
 		//arrow_addr = ft_strchr(arrows, (char)buf[*char_total - 1]);
 		//if (buf[*char_total - 1] >= 'A' && buf[*char_total - 1] <= 'D')
 
-		if (chr == 'A' || chr == 6977)
+		if (chr == 'A'/* || chr == 6977*/)
 			*move_flag = 1;
-		else if (chr == 'B' || chr == 6978)
+		else if (chr == 'B'/* || chr == 6978*/)
 			*move_flag = -1;
-		else if (chr == 'C' || chr == 6979)
+		else if (chr == 'C'/* || chr == 6979*/)
 		{
 			// //DEBUG CODE
 			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
@@ -235,7 +222,7 @@ char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 			// write(STDOUT_FILENO, buf, *char_total * sizeof(short));
 			// //DEBUG CODE
 		}
-		else if (chr == 'D' || chr == 6980)
+		else if (chr == 'D'/* || chr == 6980*/)
 		{
 			// //DEBUG CODE
 			// write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
@@ -250,36 +237,3 @@ char	is_esc_seq(short *buf, short *char_total, char *move_flag)
 	}
 	return (0);
 }
-
-
-	// else if (esc_seq == 2)
-	// {
-	// 	arrow_addr = ft_strchr(arrows, buf[*char_total - 1]);
-	// 	if (arrow_addr)
-	// 	{
-	// 		if (arrow_addr < (arrows + 2)) //si arrow_addr > arrows + 2 son flechas derecha e izquierda... no  hacemos nada con ellas en esta versión
-	// 		{
-	// 			//printf("BAILA MALDITO (CMD HIST)");
-	// 			if (*arrow_addr == 'A')
-	// 				*move_flag = 1;
-	// 			else
-	// 				*move_flag = -1;
-	// 		}
-	// 		//esc_seq = 0;
-	// 	}
-	// 	// else if (buf[*char_total - 1] == '3')
-	// 	// 	esc_seq++;
-	// 	//else
-	// 	esc_seq = 0;
-	// 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
-	// 	return (1);
-	// }
-	// // else if (esc_seq == 3)
-	// // {
-	// // 	if (buf[*char_total - 1] == '~')
-	// // 	{
-	// // 		write(STDOUT_FILENO, "\x1b[D \x1b[D", 3);
-	// // 	}
-	// // 	*char_total -= del_from_buf(&buf[*char_total - 1], 1);
-	// // }
-	// return (0);

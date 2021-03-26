@@ -3,22 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 19:04:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_cd(const char **argv, t_micli *micli)
+int	ft_cd(const char **argv, t_micli *micli)
 {
 	char	*home;
 
 	oldpwd(micli);
-	if (argv[1] == NULL || (*argv[1] == '~' && (argv[1][1] == '/'
-										|| argv[1][1] == '\0')))
+	if (argv[1] == NULL || \
+	(*argv[1] == '~' && (argv[1][1] == '/' || argv[1][1] == '\0')))
 	{
 		home = find_var("HOME", 4, micli->envp);
 		if (argv[1] && ft_strlen(argv[1]) > 2)
@@ -33,11 +33,12 @@ int		ft_cd(const char **argv, t_micli *micli)
 		return (0);
 	}
 	else
-		cd_helper(argv, micli);
+		if (cd_helper(argv, micli))
+			return (1);
 	return (0);
 }
 
-int		cd_helper(const char **argv, t_micli *micli)
+int	cd_helper(const char **argv, t_micli *micli)
 {
 	if (chdir(argv[1]) == -1)
 	{
