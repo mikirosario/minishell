@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 07:45:57 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 09:07:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 
 	deleted_chars = num_chars;
 	while (num_chars--)
-		*chr-- = DEL;
+		*chr-- = 0;
 
 	return (deleted_chars);
 }

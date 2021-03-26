@@ -17,6 +17,8 @@ These values change dynamically whenever characters are added or deleted from an
 
 - Once further testing is done it will be time to clean up esc_seq and HOPEFULLY that will leave this project in pristine condition. :)
 
+- Fixed bug caused by an unreverted change during testing which inserted DEL markers instead of NUL characters in place of deleted characters in the buffer.
+
 ### Version 4.11
 
 - Empty lines will no longer be saved to the history
