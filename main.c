@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 09:08:42 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 09:52:50 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,10 @@ short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 				//hist_stack[index][*char_total + 1] = 0;
 				*char_total -= del_from_buf(&hist_stack[index][*char_total + 1], 1); //We null the new line here, so the nulled newline makes space for another character
 																					//This is why we reallocate after this section.
-				cmdhist->active_line_size = *char_total + 4; //to duplicate this line we need space for: all the chars + 2 data values + space for reading in 1 more char + 1 null terminator.
+				//to duplicate this active line we need space for: all the chars + 2 data values + space for reading in 1 more char + 1 null terminator.
+				cmdhist->active_line_size = READLINE_BUFSIZE;
+				while (cmdhist->active_line_size / (*char_total + 4) == 0) //Get the minimum buffer size necessary to contain all the chars + 2 data values + space for
+					cmdhist->active_line_size += READLINE_BUFSIZE;		//reading in 1 more char + 1 null terminator.
 				return (hist_stack[index]);
 			}
 		}

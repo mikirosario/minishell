@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 22:31:37 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 10:00:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,6 @@ void	freeme(t_micli *micli)
 		micli->buffer = ft_del(micli->buffer);
 	if (micli->active_line)
 		micli->active_line = ft_del(micli->active_line);
-	if (micli->cmdhist.hist)
-		ft_free_split(micli->cmdhist.hist);
 	if (micli->cmdhist.hist_stack)
 		ft_free_short_split(micli->cmdhist.hist_stack);
 	clear_cmdline(micli);
