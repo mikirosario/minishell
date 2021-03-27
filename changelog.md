@@ -2,7 +2,9 @@
 
 - The functions in termcaps.c norminetted.
 
+- Fixed signals.
 
+- Norminette.
 
 ### Version 4.22
 
