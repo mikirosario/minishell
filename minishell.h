@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 18:58:27 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/27 21:01:41 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # define SUB 26
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
+# define BUF_OVERFLOW "\nBAD BUNNY! TOO MANY CHARACTERS IN LINE BUFFER!"
 
 typedef struct s_tokendata
 {
@@ -267,6 +268,7 @@ void			*clean_calloc(size_t count, size_t size, t_micli *micli);
 void			catch_signal(int signum);
 void			waiting(int signum);
 void			sigrun(int sig);
+void			sigquit(int signum);
 
 /*
 ** Builtins

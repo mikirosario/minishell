@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   memory_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 10:00:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/27 21:53:10 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 /*
 ** Frees all memory reserved for a null-terminated pointer array of

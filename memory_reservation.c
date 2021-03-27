@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 06:50:17 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/27 21:55:16 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ void	*clean_ft_memdup(void const *mem, size_t memsize, t_micli *micli)
 	return (ptr);
 }
 
-
-
 /*
 ** This function is a wrapper around ft_strdup that sets the proper error flag
 ** and aborts the program in case of lack of memory. Errno 28 is for lack of
@@ -43,7 +41,8 @@ char	*clean_ft_strdup(char const *str, t_micli *micli)
 {
 	char	*ptr;
 
-	if (!(ptr = ft_strdup(str)))
+	ptr = ft_strdup(str);
+	if (!ptr)
 	{
 		micli->syserror = 28;
 		exit_failure(micli);
@@ -61,7 +60,8 @@ char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli)
 {
 	char	*ptr;
 
-	if (!(ptr = ft_strjoin(s1, s2)))
+	ptr = ft_strjoin(s1, s2);
+	if (!ptr)
 	{
 		micli->syserror = 28;
 		exit_failure(micli);
@@ -77,11 +77,12 @@ char	*clean_ft_strjoin(char const *s1, char const *s2, t_micli *micli)
 
 char	**clean_ft_split(const char *s, char c, t_micli *micli)
 {
-	char **ptr;
+	char	**ptr;
 
 	if (!s)
-		return(NULL);
-	if (!(ptr = ft_split(s, c)))
+		return (NULL);
+	ptr = ft_split(s, c);
+	if (!ptr)
 	{
 		micli->syserror = 28;
 		exit_failure(micli);

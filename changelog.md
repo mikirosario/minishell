@@ -1,3 +1,9 @@
+### Version 4.23
+
+- The functions in termcaps.c norminetted.
+
+
+
 ### Version 4.22
 
 - Added an upper limit of SHRT_MAX - 4 to character buffering, so if SHRT_MAX - 4 characters are loaded into the buffer (that's somewhere north of 32,000 characters), the program will continuously delete the next typed character, preventing an overflow.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/27 21:51:55 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	et_phone_home(t_micli *micli)
 ** names.
 */
 
-int		find_builtin(char *cmd)
+int	find_builtin(char *cmd)
 {
 	char	*startl;
 	char	*endl;
@@ -46,7 +46,7 @@ int		find_builtin(char *cmd)
 		while (*endl && *endl != ',')
 			endl++;
 		if (cmd_strlen == (size_t)(endl - startl) \
-		&& !(ft_strncmp(startl, cmd, endl - startl)))
+		 && !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
 			endl++;

@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   terminal_settings.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 18:05:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 18:35:22 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/27 20:41:15 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 int	get_window_size(int *rows, int *cols)
 {
@@ -43,5 +42,5 @@ void	enable_raw_mode(struct termios *raw_term, struct termios *orig_term)
 	raw_term->c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON);
 	raw_term->c_cflag |= (CS8);
 	raw_term->c_lflag &= ~(ECHO | ICANON);
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, raw_term);
+	tcsetattr(STDIN_FILENO, TCSADRAIN, raw_term);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/27 21:52:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 ** method, it's awful. xD
 */
 
-int		broken_pipe_check(pid_t pid)
+int	broken_pipe_check(pid_t pid)
 {
 	int		stat_loc;
 	size_t	i;
@@ -57,7 +57,7 @@ void	sys_error(t_micli *micli)
 ** error, command result is set to 2, which appears to be bash behaviour.
 */
 
-int		print_error(char *error_message, char *error_location, t_micli *micli)
+int	print_error(char *error_message, char *error_location, t_micli *micli)
 {
 	if (error_location[1])
 		printf("💥 %s '%.2s'\n", error_message, error_location);
@@ -78,7 +78,7 @@ int		print_error(char *error_message, char *error_location, t_micli *micli)
 ** syntax error is printed and 1 is returned.
 */
 
-int		invalid_redir(char *line, unsigned char quote_flag, \
+int	invalid_redir(char *line, unsigned char quote_flag, \
 unsigned char esc_flag, t_micli *micli)
 {
 	if ((*line != '<' && *line != '>') || quote_flag || esc_flag)
@@ -121,7 +121,7 @@ unsigned char esc_flag, t_micli *micli)
 ** Norminette made me do it.
 */
 
-int		syntax_check(char *line, t_micli *micli)
+int	syntax_check(char *line, t_micli *micli)
 {
 	unsigned char	quote_flag;
 	unsigned char	esc_flag;

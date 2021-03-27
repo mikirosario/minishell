@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/22 21:19:32 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/27 20:30:09 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,8 @@ char	*micli_cpy(char *dst, const char *src, char *src_end, t_micli *micli)
 
 char	*find_cmdline_end(char *lindex)
 {
-	unsigned char quote_flag;
-	unsigned char escape_flag;
+	unsigned char	quote_flag;
+	unsigned char	escape_flag;
 
 	quote_flag = 0;
 	escape_flag = 0;
