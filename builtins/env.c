@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:09:59 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:30:02 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	print_env(char *str)
 	write(1, "\n", 1);
 }
 
-int		ft_env(char **envp, const char **argv)
+int	ft_env(char **envp, const char **argv)
 {
 	int		i;
 	char	*store;

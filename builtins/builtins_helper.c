@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:17:37 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/19 16:23:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:52:32 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 ** This function executes built-ins when they are called from shell.
 */
 
-int		exec_builtin(char *cmd, t_micli *micli)
+int	exec_builtin(char *cmd, t_micli *micli)
 {
 	if (!(ft_strcmp(cmd, "exit")))
 		exit_success(micli);
 	else if (!(ft_strcmp(cmd, "cd")))
 		return (ft_cd((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "pwd")))
-		return (ft_pwd((const char**)micli->cmdline.micli_argv));
+		return (ft_pwd((const char **)micli->cmdline.micli_argv));
 	else if (!(ft_strcmp(cmd, "echo")))
 		return (ft_echo((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "unset")))
@@ -41,7 +41,7 @@ char	find_pos(const char *name, size_t name_len, char **envp)
 
 	i = 0;
 	while (envp[i] != NULL && (ft_strncmp(name, envp[i], name_len) \
-	|| (envp[i][name_len] != '=' && envp[i][name_len] != '\0')))
+	 || (envp[i][name_len] != '=' && envp[i][name_len] != '\0')))
 		i++;
 	return (i);
 }
@@ -64,9 +64,9 @@ size_t	ft_name_len(const char *str)
 
 size_t	*export_order(t_micli *micli)
 {
-	size_t *mask;
-	size_t countarr;
-	size_t i;
+	size_t	*mask;
+	size_t	countarr;
+	size_t	i;
 
 	countarr = ft_countarr(micli->envp);
 	mask = clean_calloc(countarr, sizeof(size_t), micli);
@@ -82,9 +82,9 @@ size_t	*export_order(t_micli *micli)
 
 void	exp_order_h(size_t countarr, size_t *mask, t_micli *micli)
 {
-	size_t i;
-	size_t j;
-	size_t swap;
+	size_t	i;
+	size_t	j;
+	size_t	swap;
 
 	i = 0;
 	while (i < countarr - 1)

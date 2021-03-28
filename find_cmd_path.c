@@ -3,14 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:51:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:08:36 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Norminette v3 forced me to turn this awfully written code with an assignment
+** inside a control structure:
+**
+**	while ((dirent = readdir(dir)))
+**		do_stuff_with_dirent
+**
+** Into this lovely, sensible function. Why, only Xavier knows.		
+*/
+
+static char	norminette_made_me_do_it(struct dirent **dirent, DIR *dir)
+{
+	*dirent = readdir(dir);
+	return (1);
+}
 
 void	et_phone_home(t_micli *micli)
 {	
@@ -137,15 +153,13 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	{
 		dir = opendir(micli->tokdata.path_array[y]);
 		if (dir)
-			while ((dirent = readdir(dir)))
+			while (norminette_made_me_do_it(&dirent, dir) && dirent)
 				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
 					ret = generate_pathname(micli->tokdata.path_array[y], \
 					cmd, micli);
-		if (dir)
-			closedir(dir);
+		closedir(dir);
 		y++;
 	}
-	if (micli->tokdata.path_array)
-		micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
+	micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
 	return (ret);
 }

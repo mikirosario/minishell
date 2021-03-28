@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   char_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 18:01:19 by miki              #+#    #+#             */
-/*   Updated: 2021/03/27 21:28:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:42:38 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,10 +139,13 @@ unsigned char quote_flag)
 ** function var_alloc. The function var_alloc will also return NULL if it fails.
 */
 
-int	is_variable_start(char chr, t_tokendata *tokdata)
+int	is_variable_start(char *chr, t_tokendata *tokdata, t_micli *micli)
 {
-	if (chr != '$' || tokdata->var_flag || tokdata->escape_flag \
+	if (*chr != '$' || tokdata->var_flag || tokdata->escape_flag \
 	 || tokdata->quote_flag == 2)
+		return (0);
+	tokdata->var_flag = var_alloc(chr + 1, micli);
+	if (!tokdata->var_flag)
 		return (0);
 	return (1);
 }

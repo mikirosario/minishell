@@ -1,3 +1,7 @@
+### Version 4.24
+
+- More norminette.
+
 ### Version 4.23
 
 - The functions in termcaps.c norminetted.

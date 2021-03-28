@@ -6,13 +6,13 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:30:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_export(const char **argv, t_micli *micli)
+int	ft_export(const char **argv, t_micli *micli)
 {
 	size_t	name_len;
 	size_t	str_len;
@@ -42,7 +42,7 @@ int		ft_export(const char **argv, t_micli *micli)
 	return (0);
 }
 
-int		var_check(const char *str)
+int	var_check(const char *str)
 {
 	int		len;
 	int		i;

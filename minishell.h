@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:01:41 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:41:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,8 @@ int				is_quote_char(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag);
 int				is_cmdline(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag);
-int				is_variable_start(char chr, t_tokendata *tokdata);
+int				is_variable_start(char *chr, t_tokendata *tokdata, \
+				t_micli *micli);
 int				is_variable_end(char *chr, char *end_var_addr);
 int				is_redirect_start(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag, char *redir_end);

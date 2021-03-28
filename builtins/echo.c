@@ -6,13 +6,13 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:23:41 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int		ft_echo(const char **argv, t_micli *micli)
+int	ft_echo(const char **argv, t_micli *micli)
 {
 	int		i;
 	char	*n;
@@ -43,7 +43,10 @@ void	echo_helper(int i, const char **argv, t_micli *micli)
 {
 	while (argv[i] != 0)
 	{
-		printf(argv[i + 1] ? "%s " : "%s", argv[i]);
+		if (argv[i + 1])
+			printf("%s ", argv[i]);
+		else
+			printf("%s", argv[i]);
 		i++;
 	}
 	if (micli->builtins.argflag != 1)

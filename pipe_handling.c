@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/18 12:14:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 01:34:39 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 00:28:51 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 ** Otherwise the function will exit with 1.
 */
 
-int		close_pipes(size_t fd_num, int *pipes_array, t_micli *micli)
+int	close_pipes(size_t fd_num, int *pipes_array, t_micli *micli)
 {
 	size_t	i;
 
@@ -114,7 +114,7 @@ void	clear_pipes(t_pipes *pipes, t_micli *micli)
 ** failed and then close pipes failed, errno will report close pipe failure.
 */
 
-int		pipe_reset(t_pipes *pipes, t_micli *micli)
+int	pipe_reset(t_pipes *pipes, t_micli *micli)
 {
 	size_t	i;
 

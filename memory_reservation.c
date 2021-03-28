@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_reservation.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:55:16 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:21:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 ** This function is a wrapper around ft_memdup that sets the proper error flag
 ** and aborts the program in case of lack of memory. Errno 28 is for lack of
-** memory. I hardcode it as ft_split does not set it.
+** memory.
 */
 
 void	*clean_ft_memdup(void const *mem, size_t memsize, t_micli *micli)
@@ -112,9 +112,10 @@ char	**clean_ft_split(const char *s, char c, t_micli *micli)
 ** it. An array of four integers is 4 * sizeof(int) = 16 bytes.
 */
 
-void	*clean_realloc(void *ptr, size_t new_size, size_t old_size, t_micli *micli)
+void	*clean_realloc(void *ptr, size_t new_size, size_t old_size, \
+t_micli *micli)
 {
-	void *tmp;
+	void	*tmp;
 
 	tmp = ptr;
 	if (!ptr)
@@ -137,7 +138,8 @@ void	*clean_calloc(size_t count, size_t size, t_micli *micli)
 {
 	void	*ptr;
 
-	if (!(ptr = ft_calloc(count, size)))
+	ptr = ft_calloc(count, size);
+	if (!ptr)
 	{
 		micli->syserror = errno;
 		exit_failure(micli);

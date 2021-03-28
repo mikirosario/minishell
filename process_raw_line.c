@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_raw_line.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 20:30:09 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/27 23:31:31 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void	process_raw_line(char *line, t_micli *micli)
 
 	if (!syntax_check(line, micli))
 		return ;
-	lindex = line;
+	lindex = ft_skipspaces(line);
 	cmdline_end = ';';
 	while (*lindex)
 	{

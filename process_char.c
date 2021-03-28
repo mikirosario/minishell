@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/22 12:35:03 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 00:42:48 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@
 ** bash: \lol -> lol
 */
 
-char			process_char(char *chr, t_micli *micli)
+char	process_char(char *chr, t_micli *micli)
 {
 	if (is_variable_end(chr, micli->tokdata.var_flag))
 		micli->tokdata.var_flag = NULL;
@@ -135,8 +135,7 @@ char			process_char(char *chr, t_micli *micli)
 	else if (is_quote_char(*chr, micli->tokdata.escape_flag, \
 	micli->tokdata.quote_flag))
 		quote_operations(chr, micli);
-	else if (is_variable_start(*chr, &micli->tokdata) \
-	&& (micli->tokdata.var_flag = var_alloc(chr + 1, micli)))
+	else if (is_variable_start(chr, &micli->tokdata, micli))
 		variable_start_operations(chr, micli);
 	else if (micli->tokdata.var_flag)
 		*chr = DEL;

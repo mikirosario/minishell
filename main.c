@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:16:36 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:27:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	putstr16(short *str)
 ** *le eyeroll*
 */
 
-void	norminette_made_me_do_it(t_micli *micli)
+static void	norminette_made_me_do_it(t_micli *micli)
 {
 	ft_bzero(&micli->tonti, sizeof(t_normis_fault));
 	micli->tonti.pipe_max = __SIZE_MAX__ / 2;
