@@ -1,3 +1,7 @@
+### Version 4.26
+
+- Tweaked buffer size allocation. Changed active_line_size variable name to active_line_bufsize for clarity. Bufsize now consistently means total amount of characters (including scratch character) that will fit in the buffer. Bufsize + 3 shorts are always reserved for any line (for the two data segments and the null terminator). The char_total should never be more than bufsize - 1.
+
 ### Version 4.25
 
 - Restored null dir check to find_cmd_path as it caused segmentation fault in closedir with null pointers.
@@ -20,11 +24,11 @@
 
 ### Version 4.21
 
-- Memory reserved for lines saved to the command history stack (aka. active_line_size) is now calculated as a function of the minimum buffer size as follows:
-	active_line_size = READLINE_BUFFER;
-	while (active_line_size / (char_total + 4) == 0)
-		active_line_size += READLINE_BUFFER;
-This means that minishell will find the smallest multiple of READLINE_BUFFER in which all of the characters + 1 extra space for an incoming read character + 2 data state items + 1 null character will fit. The reported 'bufsize' at hist_stack[line][1] gives the number of characters that can potentially be held by the current buffer, and so will be active_line_size - 3, that is, the total real size of the buffer minus the null character and the two data items.
+- Memory reserved for lines saved to the command history stack (aka. active_line_bufsize) is now calculated as a function of the minimum buffer size as follows:
+	active_line_bufsize = READLINE_BUFFER;
+	while (active_line_bufsize / (char_total + 4) == 0)
+		active_line_bufsize += READLINE_BUFFER;
+This means that minishell will find the smallest multiple of READLINE_BUFFER in which all of the characters + 1 extra space for an incoming read character + 2 data state items + 1 null character will fit. The reported 'bufsize' at hist_stack[line][1] gives the number of characters that can potentially be held by the current buffer, and so will be active_line_bufsize - 3, that is, the total real size of the buffer minus the null character and the two data items.
 
 This should make the dynamic memory system robust enough to take on any minimum buffer size.
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_history_alloc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 18:57:00 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/29 00:51:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,8 @@ t_cmdhist *cmdhist)
 		(cmdhist->ptrs_in_hist - 1) * sizeof(short *), micli);
 	}
 	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, cmdhist->active_line_size * sizeof(short), micli);
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2][1] = cmdhist->active_line_size - 3; //update bufsize (total chars that can fit in the buffer) of duplicate with active_line_size buffer - the two state values - the null char
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, (cmdhist->active_line_bufsize + 3) * sizeof(short), micli);
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2][1] = cmdhist->active_line_bufsize; //update bufsize (total chars that can fit in the buffer) of duplicate with active_line_bufsize buffer - the two state values - the null char
 	//DEBUG CODE
 	size_t i = cmdhist->ptrs_in_hist + 1;
 	size_t strlen;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 20:41:51 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/29 00:51:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ typedef struct s_cmdline
 typedef struct s_cmdhist
 {
 	short			**hist_stack;
-	size_t			active_line_size;
+	size_t			active_line_bufsize;
 	size_t			cmdhist_buf;
 	size_t			ptrs_in_hist;
 	size_t			index;

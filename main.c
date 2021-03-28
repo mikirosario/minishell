@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 18:30:32 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/29 00:51:52 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,9 +166,9 @@ short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 				*char_total -= del_from_buf(&hist_stack[index][*char_total + 1], 1); //We null the new line here, so the nulled newline makes space for another character
 																					//This is why we reallocate after this section.
 				//to duplicate this active line we need space for: all the chars + 2 data values + space for reading in 1 more char + 1 null terminator.
-				cmdhist->active_line_size = READLINE_BUFSIZE;
-				while (cmdhist->active_line_size / (*char_total + 4) == 0) //Get the minimum buffer size necessary to contain all the chars + 2 data values + space for
-					cmdhist->active_line_size += READLINE_BUFSIZE;		//reading in 1 more char + 1 null terminator.
+				cmdhist->active_line_bufsize = READLINE_BUFSIZE;
+				while (cmdhist->active_line_bufsize / (*char_total + 1) == 0) //Get the minimum buffer size necessary to contain all the chars + 2 data values + space for
+					cmdhist->active_line_bufsize += READLINE_BUFSIZE;		//reading in 1 more char + 1 null terminator.
 				return (hist_stack[index]);
 			}
 		}
@@ -201,7 +201,7 @@ char	micli_loop(t_micli *micli)
 		signal(SIGQUIT, sigrun);
 		write(STDOUT_FILENO, "🚀 ", 5);
 		micli->active_line = micli_readline(micli, &micli->cmdhist, micli->cmdhist.hist_stack);
-		micli->active_line = clean_ft_memdup(micli->active_line, micli->cmdhist.active_line_size * sizeof(short), micli);
+		micli->active_line = clean_ft_memdup(micli->active_line, (micli->cmdhist.active_line_bufsize + 3) * sizeof(short), micli);
 		push_to_hist_stack(micli, micli->active_line, &micli->cmdhist);
 		if (micli->active_line[2] == 0)
 			micli->buffer = ft_strdup("\0");
