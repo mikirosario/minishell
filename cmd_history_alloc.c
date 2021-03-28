@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_history_alloc.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 10:11:02 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/26 18:57:00 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ t_cmdhist *cmdhist)
 	size_t strlen;
 	while (i--)
 	{
-		printf("CMDHIST %zu: ChrTot: %hd BufSiz: %hd ", i, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][0] : 0, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][1] : 0); fflush(stdout);
+		printf("CMDHIST %zu: ChrTot: %d BufSiz: %d ", i, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][0] : 0, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][1] : 0); fflush(stdout);
 		if (cmdhist->hist_stack[i])
 			strlen = ft_strlen16(&cmdhist->hist_stack[i][2]);
 		else

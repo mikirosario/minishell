@@ -6,12 +6,11 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 18:23:53 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 10:20:50 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:55:33 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 /*
 ** Frees all memory reserved for a null-terminated pointer array of

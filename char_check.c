@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   char_check.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 18:01:19 by miki              #+#    #+#             */
-/*   Updated: 2021/03/18 21:45:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/28 00:42:38 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,11 @@
 ** actually a composite of three checks, so it goes last.
 */
 
-int		is_escape_char(char chr, char next_chr,
+int	is_escape_char(char chr, char next_chr,
 unsigned char escape_flag, unsigned char quote_flag)
 {
-	if (chr != '\\' || escape_flag || quote_flag == 2 ||
-	(quote_flag == 1 && ft_memchr(DQUOTE_ESC_CHARS, next_chr, 3) == NULL))
+	if (chr != '\\' || escape_flag || quote_flag == 2 \
+	 || (quote_flag == 1 && ft_memchr(DQUOTE_ESC_CHARS, next_chr, 3) == NULL))
 		return (0);
 	return (1);
 }
@@ -89,13 +89,13 @@ unsigned char escape_flag, unsigned char quote_flag)
 ** 11  (3) = Double quotes opened, single quotes opened.
 */
 
-int		is_quote_char(char chr, unsigned char escape_flag, \
+int	is_quote_char(char chr, unsigned char escape_flag, \
 unsigned char quote_flag)
 {
-	if ((!escape_flag &&
-		((quote_flag == 0 && (chr == '"' || chr == '\'')) || \
-		(quote_flag == 1 && chr == '"'))) || \
-		(quote_flag == 2 && chr == '\''))
+	if ((!escape_flag \
+	 && ((quote_flag == 0 && (chr == '"' || chr == '\'')) \
+	 || (quote_flag == 1 && chr == '"'))) \
+	 || (quote_flag == 2 && chr == '\''))
 		return (1);
 	return (0);
 }
@@ -139,10 +139,13 @@ unsigned char quote_flag)
 ** function var_alloc. The function var_alloc will also return NULL if it fails.
 */
 
-int		is_variable_start(char chr, t_tokendata *tokdata)
+int	is_variable_start(char *chr, t_tokendata *tokdata, t_micli *micli)
 {
-	if (chr != '$' || tokdata->var_flag || tokdata->escape_flag \
-	|| tokdata->quote_flag == 2)
+	if (*chr != '$' || tokdata->var_flag || tokdata->escape_flag \
+	 || tokdata->quote_flag == 2)
+		return (0);
+	tokdata->var_flag = var_alloc(chr + 1, micli);
+	if (!tokdata->var_flag)
 		return (0);
 	return (1);
 }
@@ -168,7 +171,7 @@ int		is_variable_start(char chr, t_tokendata *tokdata)
 ** single null check at the beginning, and 0 will be returned.
 */
 
-int		is_variable_end(char *chr, char *end_var_addr)
+int	is_variable_end(char *chr, char *end_var_addr)
 {
 	if (end_var_addr == NULL || chr < end_var_addr)
 		return (0);
@@ -185,11 +188,11 @@ int		is_variable_end(char *chr, char *end_var_addr)
 ** Fairly straightforward.
 */
 
-int		is_redirect_start(char chr, unsigned char escape_flag, \
+int	is_redirect_start(char chr, unsigned char escape_flag, \
 unsigned char quote_flag, char *redir_end)
 {
 	if ((chr == '>' || chr == '<') && redir_end == NULL && !escape_flag \
-	&& !quote_flag)
+	 && !quote_flag)
 		return (1);
 	return (0);
 }

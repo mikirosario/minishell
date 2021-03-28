@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/13 21:20:16 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 02:18:43 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 00:46:58 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@
 ** redirects last. Can you tell? xD
 */
 
-int		is_redir_instruction(t_micli *micli)
+int	is_redir_instruction(t_micli *micli)
 {
 	if (micli->cmdline.redir_end && \
 	((micli->tokdata.tok_end > micli->cmdline.redir_start && \
@@ -100,7 +100,7 @@ void	get_command(t_micli *micli)
 
 void	get_argument(t_micli *micli)
 {
-	char *dst;
+	char	*dst;
 
 	micli->tokdata.args++;
 	dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
@@ -182,7 +182,7 @@ void	process_token(t_micli *micli)
 		get_argument(micli);
 	micli->tokdata.tok_end = ft_skipspaces(micli->tokdata.tok_end);
 	if ((*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<') \
-	&& micli->tokdata.tok_start == micli->tokdata.tok_end)
+	 && micli->tokdata.tok_start == micli->tokdata.tok_end)
 	{
 		while (*micli->tokdata.tok_end == '>' || *micli->tokdata.tok_end == '<')
 			micli->tokdata.tok_end++;

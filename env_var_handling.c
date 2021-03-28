@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 15:44:35 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/27 21:36:48 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,13 @@ char	*find_var(const char *name, size_t name_len, char **envp)
 	char	**ptr;
 
 	ptr = NULL;
-	if (envp && (ptr = envp))
+	if (envp)
+	{
+		ptr = envp;
 		while (*ptr && (ft_strncmp(name, *ptr, name_len) \
-		|| (*(*ptr + name_len) != '=' && *(*ptr + name_len) != '\0')))
+		 || (*(*ptr + name_len) != '=' && *(*ptr + name_len) != '\0')))
 			ptr++;
+	}
 	return (*ptr);
 }
 
@@ -79,7 +82,7 @@ size_t	get_var_lengths(t_list *var_lst)
 ** www.gnu.org/software/bash/manual/html_node/Definitions.html#index-name
 */
 
-int		isvarchar(char chr)
+int	isvarchar(char chr)
 {
 	if (ft_isalpha(chr) || chr == '_')
 		return (1);
@@ -111,6 +114,7 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	char	*varp;
 	t_list	*new;
 
+	varp = find_var(var_name, var_name_strlen, micli->envp);
 	if (*var_name == '?')
 	{
 		if (micli->cmd_result_str)
@@ -118,7 +122,7 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 		micli->cmd_result_str = ft_itoa(micli->cmd_result);
 		new = ft_lstnew(micli->cmd_result_str);
 	}
-	else if ((varp = find_var(var_name, var_name_strlen, micli->envp)))
+	else if (varp)
 	{
 		varp = (ft_strchr(varp, '=') + 1);
 		new = ft_lstnew(varp);
@@ -185,7 +189,7 @@ char	*var_alloc(char *var_name, t_micli *micli)
 
 	i = 0;
 	if (var_name[i] == '?' || var_name[i] == '$' || var_name[i] == '!' \
-	|| var_name[i] == '@' || ft_isdigit(var_name[i]))
+	 || var_name[i] == '@' || ft_isdigit(var_name[i]))
 		i++;
 	else if (!isvarchar(var_name[i++]))
 		return (NULL);

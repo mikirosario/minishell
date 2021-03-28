@@ -6,11 +6,27 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 09:14:46 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:55:54 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Norminette v3 forced me to turn this awfully written code with an assignment
+** inside a control structure:
+**
+**	while ((dirent = readdir(dir)))
+**		do_stuff_with_dirent
+**
+** Into this lovely, sensible function. Why, only Xavier knows.		
+*/
+
+static char	norminette_made_me_do_it(struct dirent **dirent, DIR *dir)
+{
+	*dirent = readdir(dir);
+	return (1);
+}
 
 void	et_phone_home(t_micli *micli)
 {	
@@ -32,7 +48,7 @@ void	et_phone_home(t_micli *micli)
 ** names.
 */
 
-int		find_builtin(char *cmd)
+int	find_builtin(char *cmd)
 {
 	char	*startl;
 	char	*endl;
@@ -46,7 +62,7 @@ int		find_builtin(char *cmd)
 		while (*endl && *endl != ',')
 			endl++;
 		if (cmd_strlen == (size_t)(endl - startl) \
-		&& !(ft_strncmp(startl, cmd, endl - startl)))
+		 && !(ft_strncmp(startl, cmd, endl - startl)))
 			return (1);
 		else if (*endl == ',')
 			endl++;
@@ -137,15 +153,13 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 	{
 		dir = opendir(micli->tokdata.path_array[y]);
 		if (dir)
-			while ((dirent = readdir(dir)))
+			while (norminette_made_me_do_it(&dirent, dir) && dirent)
 				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
 					ret = generate_pathname(micli->tokdata.path_array[y], \
 					cmd, micli);
-		if (dir)
-			closedir(dir);
+		closedir(dir);
 		y++;
 	}
-	if (micli->tokdata.path_array)
-		micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
+	micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);
 	return (ret);
 }

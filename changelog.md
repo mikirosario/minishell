@@ -1,3 +1,19 @@
+### Version 4.24
+
+- More norminette.
+
+### Version 4.23
+
+- The functions in termcaps.c norminetted.
+
+- Fixed signals.
+
+- Norminette.
+
+### Version 4.22
+
+- Added an upper limit of SHRT_MAX - 4 to character buffering, so if SHRT_MAX - 4 characters are loaded into the buffer (that's somewhere north of 32,000 characters), the program will continuously delete the next typed character, preventing an overflow.
+
 ### Version 4.21
 
 - Memory reserved for lines saved to the command history stack (aka. active_line_size) is now calculated as a function of the minimum buffer size as follows:

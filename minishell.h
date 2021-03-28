@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/26 10:20:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 03:58:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <fcntl.h>
+# include <limits.h>
 # include <errno.h>
 # include <string.h>
 # include <dirent.h>
@@ -34,6 +35,7 @@
 # define SUB 26
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
+# define BUF_OVERFLOW "\nBAD BUNNY! TOO MANY CHARACTERS IN LINE BUFFER!"
 
 typedef struct s_tokendata
 {
@@ -179,7 +181,8 @@ int				is_quote_char(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag);
 int				is_cmdline(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag);
-int				is_variable_start(char chr, t_tokendata *tokdata);
+int				is_variable_start(char *chr, t_tokendata *tokdata, \
+				t_micli *micli);
 int				is_variable_end(char *chr, char *end_var_addr);
 int				is_redirect_start(char chr, unsigned char escape_flag, \
 				unsigned char quote_flag, char *redir_end);
@@ -266,6 +269,7 @@ void			*clean_calloc(size_t count, size_t size, t_micli *micli);
 void			catch_signal(int signum);
 void			waiting(int signum);
 void			sigrun(int sig);
+void			sigquit(int signum);
 
 /*
 ** Builtins

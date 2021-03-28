@@ -6,23 +6,11 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 18:05:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/23 18:35:22 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 00:49:48 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
-int	get_window_size(int *rows, int *cols)
-{
-	struct winsize tmp;
-
-	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &tmp) == -1 || (tmp.ws_col == 0 || tmp.ws_row == 0))
-		return (0);
-	*rows = tmp.ws_row;
-	*cols = tmp.ws_col;
-	return (1);
-}
 
 /*
 ** This function partially enables raw mode. I don't disactivate ICRNL and OPOST
@@ -43,5 +31,5 @@ void	enable_raw_mode(struct termios *raw_term, struct termios *orig_term)
 	raw_term->c_iflag &= ~(BRKINT | INPCK | ISTRIP | IXON);
 	raw_term->c_cflag |= (CS8);
 	raw_term->c_lflag &= ~(ECHO | ICANON);
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, raw_term);
+	tcsetattr(STDIN_FILENO, TCSADRAIN, raw_term);
 }

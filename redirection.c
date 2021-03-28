@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 20:47:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/19 03:07:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 00:47:47 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 
 void	open_redir_file(t_normis_fault *tonti, t_micli *micli)
 {
-	char *dst;
+	char	*dst;
 
 	dst = clean_calloc(micli->tokdata.toksize, sizeof(char), micli);
 	micli_cpy(dst, micli->tokdata.tok_start, micli->tokdata.tok_end, micli);
@@ -143,8 +143,8 @@ char	*find_redir_end(char *redir_str)
 			redir_str += 1;
 		redir_str = ft_skipspaces(redir_str);
 		while (*redir_str && (escape_flag || (*redir_str != '>' \
-		&& *redir_str != '<' && *redir_str != ' ' && *redir_str != ';' \
-		&& *redir_str != '|')))
+		 && *redir_str != '<' && *redir_str != ' ' && *redir_str != ';' \
+		 && *redir_str != '|')))
 		{
 			if (!escape_flag && *redir_str == '\\')
 				escape_flag = 1;
