@@ -1,3 +1,7 @@
+### Version 4.25
+
+- Restored null dir check to find_cmd_path as it caused segmentation fault in closedir with null pointers.
+
 ### Version 4.24
 
 - More norminette.

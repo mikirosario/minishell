@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 03:58:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 20:41:51 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@
 # include <sys/ioctl.h>
 # include "libft.h"
 
-# define READLINE_BUFSIZE 1
-# define CMDHIST_BUF 1
+# define READLINE_BUFSIZE 10
+# define CMDHIST_BUF 20
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
 # define DQUOTE_ESC_CHARS "\"$\\"
 # define DEL 127

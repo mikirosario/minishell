@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   find_cmd_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/18 20:50:37 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 03:55:54 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 16:18:37 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,8 @@ char	*find_cmd_path(char *cmd, const char *paths, t_micli *micli)
 				if (!(ft_strncmp(dirent->d_name, cmd, ft_strlen(cmd) + 1)))
 					ret = generate_pathname(micli->tokdata.path_array[y], \
 					cmd, micli);
-		closedir(dir);
+		if (dir)
+			closedir(dir);
 		y++;
 	}
 	micli->tokdata.path_array = ft_free_split(micli->tokdata.path_array);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:17:37 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/28 00:52:32 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/28 16:38:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,12 @@
 int	exec_builtin(char *cmd, t_micli *micli)
 {
 	if (!(ft_strcmp(cmd, "exit")))
+	{
+		write(STDOUT_FILENO, "exit\n", 5);
+		if (micli->cmdline.micli_argv[1])
+			write(STDOUT_FILENO, "I'm ignoring your arguments :)\n", 31);
 		exit_success(micli);
+	}
 	else if (!(ft_strcmp(cmd, "cd")))
 		return (ft_cd((const char **)micli->cmdline.micli_argv, micli));
 	else if (!(ft_strcmp(cmd, "pwd")))
