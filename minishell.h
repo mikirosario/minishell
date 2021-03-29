@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 00:51:58 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/29 04:12:38 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
+char			check_horizontal_cursor_pos(void);
 char			is_esc_seq(short *buf, short *char_total, char *move_flag);
 
 /*

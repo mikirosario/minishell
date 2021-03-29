@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 00:51:52 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/29 04:12:47 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 		}
 		if (*char_total == *bufsize) //if we ran out of space for more characters
 		{
-			if (*bufsize < SHRT_MAX - 4) //O REALLOC
+			if (*bufsize < SHRT_MAX - 3) //O REALLOC
 			{
 				*bufsize += READLINE_BUFSIZE;
 				hist_stack[index] = clean_realloc(hist_stack[index], (*bufsize + 3) * sizeof(short), (*char_total + 2) * sizeof(short), micli); //reallocate all characters plus two data segments to new, bigger array

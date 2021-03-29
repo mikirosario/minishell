@@ -1,6 +1,16 @@
+### Version 4.28
+
+- Backspace will now work on multiple lines thanks to a rough but functional implementation. ;)
+
+### Version 4.27
+
+- Tweaked bufsize upper limit to SHRT_MAX - 3, as SHRT_MAX - 3 characters will always fit into the buffer without overwritng the reserveds.
+
 ### Version 4.26
 
-- Tweaked buffer size allocation. Changed active_line_size variable name to active_line_bufsize for clarity. Bufsize now consistently means total amount of characters (including scratch character) that will fit in the buffer. Bufsize + 3 shorts are always reserved for any line (for the two data segments and the null terminator). The char_total should never be more than bufsize - 1.
+- Tweaked buffer size allocation. Changed active_line_size variable name to active_line_bufsize for clarity. Bufsize now consistently means total amount of characters (including scratch character) that will fit in the buffer. Bufsize + 3 shorts are always reserved for any line (for the two data segments and the null terminator). The char_total should never be more than bufsize - 1. Thus now the needed bufsize is given by:
+	while (active_line_bufsize / (char_total + 1) == 0)
+		active_line_bufsize += READLINE_BUFFER;
 
 ### Version 4.25
 
