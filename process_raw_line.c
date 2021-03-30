@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:20:47 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 23:31:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 05:10:17 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,11 +167,16 @@ void	process_raw_line(char *line, t_micli *micli)
 	while (*lindex)
 	{
 		lstart = lindex;
-		if (cmdline_end == ';' && (micli->pipes.count = pipe_count(lstart)))
-			pipe_reset(&micli->pipes, micli);
+		if (cmdline_end == ';')
+		{
+			micli->pipes.count = pipe_count(lstart);
+			if (micli->pipes.count)
+				pipe_reset(&micli->pipes, micli);
+		}
 		lindex = find_cmdline_end(lindex);
 		process_cmdline(lstart, lindex, micli);
-		if ((cmdline_end = *lindex))
+		cmdline_end = *lindex;
+		if (cmdline_end)
 			lindex++;
 		lindex = ft_skipspaces(lindex);
 	}

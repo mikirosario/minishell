@@ -6,12 +6,34 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 04:12:47 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 05:03:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/stat.h>
+
+/*
+** For reasons I have yet to discover, Linux really seems get discombobulated
+** when the OLDPWD environmental variable is undefined, even though this is what
+** bash seems to do in Linux too... so clearly I am missing something about
+** this. With OLDPWD undefined in my Linux home computer, some commands, like
+** make, fail.
+**
+** This is a quick and dirty patch for that problem. If the program detects that
+** it is running on Linux, it launches "linux_compatibility_mode", which
+** basically just calls cd on '.' to set the current working directory as
+** OLDPWD. This fixes any issues.
+*/
+
+void	linux_compatibility_mode(t_micli *micli)
+{
+	const char	*fake_argv[2];
+
+	fake_argv[0] = "cd";
+	fake_argv[1] = ".";
+	ft_cd(fake_argv, micli);
+}
 
 /*
 ** This function is like strlen, but for null-terminated 16 bit strings.
@@ -25,19 +47,6 @@ size_t	ft_strlen16(short *str)
 	while (str[i])
 		i++;
 	return (i);
-}
-
-/*
-** PARA DEBUG
-*/
-
-void	putstr16(short *str)
-{
-	size_t	strlen;
-
-	strlen = ft_strlen16(str);
-	write(STDOUT_FILENO, str, strlen * sizeof(short));
-	printf("\n");
 }
 
 /*
@@ -64,133 +73,36 @@ static void	norminette_made_me_do_it(t_micli *micli)
 }
 
 /*
-** This function defines a line buffer at the last free position of hist_stack
-** of the SHORT type and will reserve memory for (READLINE_BUFSIZE + 3) * SHORT
-** bytes. The first two shorts of the line are reserved and used to record the
-** number of characters present in the buffer (char_total) and the number of
-** characters that the buffer can hold (bufsize). The last short is reserved as
-** the null terminator. Text will be written to this buffer one short at a time
-** as it is read from STDIN by the read function.
+** This is the main loop of the program. The first thing it does is to enable
+** raw mode. This deactivates canonical tty mode and gives us more direct
+** control of keyed input, which we need for the command line history feature.
 **
-** The char_total pointer points to the first short in the line buffer. The
-** bufsize pointer points to the second short in the line buffer. The *bufsize
-** value is intiialized to READLINE_BUFSIZE. The char_total value is initialized
-** to 0. This is not done explicitly in the function because we reserve the line
-** buffer with calloc, which zeroes all reserved memory.
+** We set the SIGINT and SIGQUIT signals to trigger the sigrun function. We
+** write the prompt to the terminal. Then we go into micli_readline, which will
+** set up a readline buffer and read all input from STDIN to the buffer.
 **
-** The first task in the while is a scroll check to see if need to change the
-** active line to one of the lines in our history (hist_stack), but I'll explain
-** this last.
+** The function micli_readline will return its readline_buffer when it receives
+** a \n character, and we save the address of the generated buffer at
+** micli_active_line. We then make a duplicate of it using clean_ft_memdup and
+** save its address to micli->active line. Don't worry, we haven't lost the
+** reference to the original... there is another. ;)
 **
-** The next task is the read function.
+** Then we call push_to_hist_stack. This function will take the active line and
+** store it at the top of the the command line history stack as an entry, so the
+** user can scroll back up to it. The hist_stack is a pointer to short array.
 **
-** When reading from STDIN the read() function hangs until '\n' newline or
-** terminal EOF is input, after which it will read the first thing in its
-** buffer in a chunk defined by the third argument and copy it to the address
-** passed as the second argument. For every subsequent call it will read the
-** subsequent chunk in the buffer until the newline or EOF. If the third
-** argument defines a chunk size that is larger than what remains
-** in the buffer to be read, the smaller size will be read. After reaching
-** newline or EOF it will hang again pending another newline or EOF. Newline
-** counts as a character.
+** Now we need to to send this command line to our parser, which is not designed
+** to parse through a short string, but rather through a normal char string.
+** That is not a problem though. We pass the active_line short string to the
+** function ft_short_to_strdup, which converts a null-terminated string made of
+** shorts into a null-terminated string made of chars. (If it's just a null char
+** we just use ft_strdup with a literal).
 **
-** This function has been rewritten from the initial loop that more closely
-** mirrored an online tutorial to better use the read buffer. The read function
-** will now read up to READLINE_BUFSIZE bytes from stdout at a time and copy
-** them to the buffer. The number of bytes read are returned and stored in the
-** size variable.
+** Now we're done with active line and we free it.
 **
-** If READLINE_BUFSIZE bytes have been copied to the buffer and EOF or new line
-** is not found at buffer[size - 1] (transforming size to position to point to
-** the last copied byte in the buffer), there is more left to be copied, so we
-** reallocate the buffer, increasing its size by a further READLINE_BUFSIZE
-** bytes, and then read again, adding the number of bytes read to the prior
-** number of bytes read. Once EOF or new line is found, it is replaced with a
-** null terminator and the function returns the address of the buffer for
-** parsing.
+** Then we use tcsetattr to restore the canonical mode.
+** 
 */
-
-short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
-{
-	size_t	index;
-	short	*bufsize;
-	short	*char_total;
-	char	scroll; //0 ==no scroll, 1== scroll up, -1 == scroll down
-
-	//SCRATCH LOG INIT
-	index = micli->cmdhist.ptrs_in_hist - 1; //scratch log
-	//starting buffer size, + 3, 2 initial shorts with information on the buffer, and one null terminator
-	//buf[0] == total chars in buffer, buf[1] == buffer size
-	hist_stack[index] = clean_calloc(READLINE_BUFSIZE + 3, sizeof(short), micli); //scratch log reservation
-	char_total = &hist_stack[index][0]; //char_total accesses index's character counter expressed in number of characters
-										//present in the buffer.
-	bufsize = &hist_stack[index][1]; //bufsize accesses index's buffer size expressed in number of characters that can 
-									//fit in the buffer (always 3 less than actual size to make room for the two data
-									//segments and the null terminator)
-	*bufsize = READLINE_BUFSIZE; //record initial bufsize
-								//intial char_total is 0, which will already be the default value, as we use calloc
-	scroll = 0;
-	ssize_t size = 0;
-	while (1)
-	{
-		if (scroll)
-		{
-			if (scroll == 1 && index > 0)
-				index--;
-			if (scroll == -1 && index < cmdhist->ptrs_in_hist - 1)
-				index++;
-			scroll = 0;
-			char_total = &hist_stack[index][0]; //Reset pointers
-			bufsize = &hist_stack[index][1];
-			write(STDOUT_FILENO, "\x1b[2K\r", 5); //\x1b[2K == erase line, \r == carriage return in ANSI-speak
-			write(STDOUT_FILENO, "🚀 ", 5);
-			write(STDOUT_FILENO, &hist_stack[index][2], *char_total * sizeof(short));
-		}
-		size = read(STDIN_FILENO, &hist_stack[index][*char_total + 2], 2); //if read returns 0, it is EOF
-		if (hist_stack[index][*char_total + 2] == 4 || !size) //EOF
-		{
-			write(1, "exit\n", 5);
-			exit_success(micli);
-		}
-		*char_total += 1; //If we read a char
-		//DECIDE WHETHER TO REALLOC
-		//DETERMINE WHETHER CHARACTER IS PART OF AN ESCAPE SEQUENCE OR UNPRINTABLE
-		//hist_stac[index][2] is the beginning of the string, after the two data segments
-		if (!is_esc_seq(&hist_stack[index][2], char_total, &scroll))
-		{
-			write(STDIN_FILENO, &hist_stack[index][*char_total + 1], 2);
-			if (hist_stack[index][*char_total + 1] == '\n')
-			{
-				//write(STDIN_FILENO, &micli->buffer[char_total - 1], 1);
-				//hist_stack[index][*char_total + 1] = 0;
-				*char_total -= del_from_buf(&hist_stack[index][*char_total + 1], 1); //We null the new line here, so the nulled newline makes space for another character
-																					//This is why we reallocate after this section.
-				//to duplicate this active line we need space for: all the chars + 2 data values + space for reading in 1 more char + 1 null terminator.
-				cmdhist->active_line_bufsize = READLINE_BUFSIZE;
-				while (cmdhist->active_line_bufsize / (*char_total + 1) == 0) //Get the minimum buffer size necessary to contain all the chars + 2 data values + space for
-					cmdhist->active_line_bufsize += READLINE_BUFSIZE;		//reading in 1 more char + 1 null terminator.
-				return (hist_stack[index]);
-			}
-		}
-		if (*char_total == *bufsize) //if we ran out of space for more characters
-		{
-			if (*bufsize < SHRT_MAX - 3) //O REALLOC
-			{
-				*bufsize += READLINE_BUFSIZE;
-				hist_stack[index] = clean_realloc(hist_stack[index], (*bufsize + 3) * sizeof(short), (*char_total + 2) * sizeof(short), micli); //reallocate all characters plus two data segments to new, bigger array
-				char_total = &hist_stack[index][0]; //Reset pointers
-				bufsize = &hist_stack[index][1];
-			}
-			else //O BORRADO, SIN MEDIAS TINTAS
-			{
-				write(STDOUT_FILENO, "\x1b[D \x1b[D", 7);
-				*char_total -= del_from_buf(&hist_stack[index][*char_total + 1], 1);
-				write(STDOUT_FILENO, BUF_OVERFLOW, 47);
-			}
-		}
-	}
-
-}
 
 char	micli_loop(t_micli *micli)
 {
@@ -200,11 +112,13 @@ char	micli_loop(t_micli *micli)
 		signal(SIGINT, sigrun);
 		signal(SIGQUIT, sigrun);
 		write(STDOUT_FILENO, "🚀 ", 5);
-		micli->active_line = micli_readline(micli, &micli->cmdhist, micli->cmdhist.hist_stack);
-		micli->active_line = clean_ft_memdup(micli->active_line, (micli->cmdhist.active_line_bufsize + 3) * sizeof(short), micli);
+		micli->active_line = micli_readline(micli, &micli->cmdhist, \
+		micli->cmdhist.hist_stack);
+		micli->active_line = clean_ft_memdup(micli->active_line, \
+		(micli->cmdhist.recalc_bufsize + 3) * sizeof(short), micli);
 		push_to_hist_stack(micli, micli->active_line, &micli->cmdhist);
 		if (micli->active_line[2] == 0)
-			micli->buffer = ft_strdup("\0");
+			micli->buffer = clean_ft_strdup("\0", micli);
 		else
 			micli->buffer = ft_short_to_strdup(&micli->active_line[2]);
 		micli->active_line = ft_del(micli->active_line);
@@ -233,6 +147,8 @@ int	main(int argc, char **argv, char **envp)
 	tcgetattr(STDIN_FILENO, &micli.orig_term);
 	norminette_made_me_do_it(&micli);
 	delete_oldpwd(&micli);
+	if (LINUX == 1)
+		linux_compatibility_mode(&micli);
 	micli_loop(&micli);
 	return (0);
 }

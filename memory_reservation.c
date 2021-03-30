@@ -6,30 +6,11 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:13:45 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 03:55:13 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 03:35:35 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/*
-** This function is a wrapper around ft_memdup that sets the proper error flag
-** and aborts the program in case of lack of memory. Errno 28 is for lack of
-** memory.
-*/
-
-void	*clean_ft_memdup(void const *mem, size_t memsize, t_micli *micli)
-{
-	void	*ptr;
-
-	ptr = ft_memdup(mem, memsize);
-	if (!ptr)
-	{
-		micli->syserror = 28;
-		exit_failure(micli);
-	}
-	return (ptr);
-}
 
 /*
 ** This function is a wrapper around ft_strdup that sets the proper error flag

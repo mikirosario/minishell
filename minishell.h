@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 04:12:38 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 05:19:04 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <sys/ioctl.h>
 # include "libft.h"
 
-# define READLINE_BUFSIZE 10
+# define READLINE_BUFSIZE 100
 # define CMDHIST_BUF 20
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
 # define DQUOTE_ESC_CHARS "\"$\\"
@@ -36,6 +36,11 @@
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
 # define BUF_OVERFLOW "\nBAD BUNNY! TOO MANY CHARACTERS IN LINE BUFFER!"
+# ifdef __linux__
+#  define LINUX 1
+# else
+#  define LINUX 0
+# endif
 
 typedef struct s_tokendata
 {
@@ -74,10 +79,13 @@ typedef struct s_cmdline
 typedef struct s_cmdhist
 {
 	short			**hist_stack;
-	size_t			active_line_bufsize;
+	short			*bufsize;
+	short			*char_total;
+	size_t			recalc_bufsize;
 	size_t			cmdhist_buf;
 	size_t			ptrs_in_hist;
 	size_t			index;
+	char			scroll;
 }				t_cmdhist;
 
 typedef struct s_builtins
@@ -111,8 +119,10 @@ typedef struct s_micli
 	t_builtins		builtins;
 	t_pipes			pipes;
 	t_normis_fault	tonti;
+	struct winsize	winsize;
 	struct termios	orig_term;
 	struct termios	raw_term;
+	int				home_row;
 	int				syserror;
 	int				cmd_result;
 	char			*cmd_result_str;
@@ -122,6 +132,14 @@ typedef struct s_micli
 	unsigned char	quote_flag : 1;
 	unsigned char	pipe_flag : 2;
 }				t_micli;
+
+typedef struct s_terminal
+{
+	short	*char_total;
+	short	*bufsize;
+	int		scroll;
+
+}				t_terminal;
 
 /*
 ** Short String Functions
@@ -136,6 +154,8 @@ char			*ft_short_to_strdup(short *short_str);
 */
 
 size_t			del_from_buf(short *chr, size_t num_chars);
+short			*micli_readline(t_micli *micli, t_cmdhist *cmdhist, \
+				short **hist_stack);
 char			micli_loop(t_micli *micli);
 
 /*
@@ -144,8 +164,10 @@ char			micli_loop(t_micli *micli);
 
 void			enable_raw_mode(struct termios *raw_term, \
 				struct termios *orig_term);
+int				get_window_size(t_micli *micli);
 char			check_horizontal_cursor_pos(void);
-char			is_esc_seq(short *buf, short *char_total, char *move_flag);
+void			remove_prompt_line(t_micli *micli, short char_total);
+char			do_not_echo(short *buf, short *char_total, char *move_flag);
 
 /*
 ** Command History
@@ -262,12 +284,13 @@ char			**clean_ft_split(const char *s, char c, t_micli *micli);
 void			*clean_realloc(void *ptr, size_t new_size, size_t old_size, \
 				t_micli *micli);
 void			*clean_calloc(size_t count, size_t size, t_micli *micli);
+void			reallocate_readline_buffer(t_micli *micli, t_cmdhist *cmdhist, \
+				short **hist_stack);
 
 /*
 ** Signal Call
 */
 
-void			catch_signal(int signum);
 void			waiting(int signum);
 void			sigrun(int sig);
 void			sigquit(int signum);

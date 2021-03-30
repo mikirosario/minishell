@@ -1,3 +1,15 @@
+### Version 4.3
+
+- Multiline text in the terminal will now be overwritten properly when scrolling through the command history, regardless of window size.
+
+- Linux compatibility mode introduced to patch out OLDPWD bug when running under Ubuntu 20.04.
+
+- Updated function descriptions.
+
+- Realloc functions have passed the stress test. Set character buffer to 100 and history pointer array buffer to 20.
+
+- Nearly everything has been adapted to Norminette v3 except for a single control structure assignment in cmd_execution.c that I need to look at closely, and after I've gotten some rest. xD
+
 ### Version 4.28
 
 - Backspace will now work on multiple lines thanks to a rough but functional implementation. ;)
@@ -8,9 +20,9 @@
 
 ### Version 4.26
 
-- Tweaked buffer size allocation. Changed active_line_size variable name to active_line_bufsize for clarity. Bufsize now consistently means total amount of characters (including scratch character) that will fit in the buffer. Bufsize + 3 shorts are always reserved for any line (for the two data segments and the null terminator). The char_total should never be more than bufsize - 1. Thus now the needed bufsize is given by:
-	while (active_line_bufsize / (char_total + 1) == 0)
-		active_line_bufsize += READLINE_BUFFER;
+- Tweaked buffer size allocation. Changed active_line_size variable name to recalc_bufsize for clarity. Bufsize now consistently means total amount of characters (including scratch character) that will fit in the buffer. Bufsize + 3 shorts are always reserved for any line (for the two data segments and the null terminator). The char_total should never be more than bufsize - 1. Thus now the needed bufsize is given by:
+	while (recalc_bufsize / (char_total + 1) == 0)
+		recalc_bufsize += READLINE_BUFFER;
 
 ### Version 4.25
 
@@ -34,11 +46,11 @@
 
 ### Version 4.21
 
-- Memory reserved for lines saved to the command history stack (aka. active_line_bufsize) is now calculated as a function of the minimum buffer size as follows:
-	active_line_bufsize = READLINE_BUFFER;
-	while (active_line_bufsize / (char_total + 4) == 0)
-		active_line_bufsize += READLINE_BUFFER;
-This means that minishell will find the smallest multiple of READLINE_BUFFER in which all of the characters + 1 extra space for an incoming read character + 2 data state items + 1 null character will fit. The reported 'bufsize' at hist_stack[line][1] gives the number of characters that can potentially be held by the current buffer, and so will be active_line_bufsize - 3, that is, the total real size of the buffer minus the null character and the two data items.
+- Memory reserved for lines saved to the command history stack (aka. recalc_bufsize) is now calculated as a function of the minimum buffer size as follows:
+	recalc_bufsize = READLINE_BUFFER;
+	while (recalc_bufsize / (char_total + 4) == 0)
+		recalc_bufsize += READLINE_BUFFER;
+This means that minishell will find the smallest multiple of READLINE_BUFFER in which all of the characters + 1 extra space for an incoming read character + 2 data state items + 1 null character will fit. The reported 'bufsize' at hist_stack[line][1] gives the number of characters that can potentially be held by the current buffer, and so will be recalc_bufsize - 3, that is, the total real size of the buffer minus the null character and the two data items.
 
 This should make the dynamic memory system robust enough to take on any minimum buffer size.
 

@@ -6,12 +6,11 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:48:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 00:51:52 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 05:15:37 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 /*
 ** This is one funky function. This function manages the history stack for
@@ -86,30 +85,41 @@ t_cmdhist *cmdhist)
 		(cmdhist->cmdhist_buf + 1) * sizeof(short *), \
 		(cmdhist->ptrs_in_hist - 1) * sizeof(short *), micli);
 	}
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = clean_ft_memdup(active_line, (cmdhist->active_line_bufsize + 3) * sizeof(short), micli);
-	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2][1] = cmdhist->active_line_bufsize; //update bufsize (total chars that can fit in the buffer) of duplicate with active_line_bufsize buffer - the two state values - the null char
-	//DEBUG CODE
-	size_t i = cmdhist->ptrs_in_hist + 1;
-	size_t strlen;
-	while (i--)
-	{
-		printf("CMDHIST %zu: ChrTot: %d BufSiz: %d ", i, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][0] : 0, cmdhist->hist_stack[i] ? cmdhist->hist_stack[i][1] : 0); fflush(stdout);
-		if (cmdhist->hist_stack[i])
-			strlen = ft_strlen16(&cmdhist->hist_stack[i][2]);
-		else
-			strlen = 0;
-		size_t j = 2;
-		while (j < strlen + 2)
-		{
-			write(1, &cmdhist->hist_stack[i][j], 2);
-			j++;
-		}
-
-		// write(STDOUT_FILENO, "CMDHIST ", 7);
-		// printf("%zu: ", i);
-	 	// write(STDOUT_FILENO, cmdhist->hist_stack[i], strlen * sizeof(short));
-	 	printf("\n");
-	}
-	//DEBUG CODE
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = \
+	ft_del(cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2]);
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2] = \
+	clean_ft_memdup(active_line, \
+	(cmdhist->recalc_bufsize + 3) * sizeof(short), micli);
+	cmdhist->hist_stack[cmdhist->ptrs_in_hist - 2][1] = cmdhist->recalc_bufsize;
 }
+
+/*
+** Paste this debug code to the bottom of the function to get a readout of the
+** command history after every push.
+*/
+
+// //DEBUG CODE
+// size_t i = cmdhist->ptrs_in_hist + 1;
+// size_t strlen;
+// while (i--)
+// {
+// 	printf("CMDHIST %zu: ChrTot: %d BufSiz: %d ", i, cmdhist->hist_stack[i] ?
+// cmdhist->hist_stack[i][0] : 0, cmdhist->hist_stack[i] ? 
+// cmdhist->hist_stack[i][1] : 0); fflush(stdout);
+// 	if (cmdhist->hist_stack[i])
+// 		strlen = ft_strlen16(&cmdhist->hist_stack[i][2]);
+// 	else
+// 		strlen = 0;
+// 	size_t j = 2;
+// 	while (j < strlen + 2)
+// 	{
+// 		write(1, &cmdhist->hist_stack[i][j], 2);
+// 		j++;
+// 	}
+
+// 	// write(STDOUT_FILENO, "CMDHIST ", 7);
+// 	// printf("%zu: ", i);
+//  	// write(STDOUT_FILENO, cmdhist->hist_stack[i], strlen * sizeof(short));
+//  	printf("\n");
+// }
+// //DEBUG CODE

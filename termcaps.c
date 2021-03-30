@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/29 03:36:10 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 05:00:34 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,8 @@ static int	is_special(short chr, char esc_seq)
 static void	handle_unescaped_special(short chr, short *buf, short *char_total, \
 char *esc_seq)
 {
-	//char	esc;
 	char	cursor_pos;
 
-	//esc = 0;
 	if (chr == DEL && *char_total)
 	{
 		cursor_pos = check_horizontal_cursor_pos();
@@ -232,17 +230,25 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 ** (ESC[A, ESC[B, ESC[C and ESC[D for up, down, right and left, respectively).
 ** If they are up or down arrows then the scroll flag will be set accordingly to
 ** 1 or -1.
+**
+** SPECIAL NOTE: This function was written before I added the two data shorts to
+** the beginning of each line, which is why it adresses char_total - 1 as the
+** last character. Rather than change the function I now sent it the address
+** &hist_stack[index][2] as buf, so it continues to work as if the first two
+** data shorts didn't exist. Sorry if it's confusing. :p
+**
+** Insert this code at the beginning to display character codes:
+** 	//DEBUG CODE DISPLAY
+**	printf("%hd\n", chr);
+**	//DEBUG CODE DISPLAY
 */
 
-char	is_esc_seq(short *buf, short *char_total, char *scroll_flag)
+char	do_not_echo(short *buf, short *char_total, char *scroll_flag)
 {
 	static char		esc_seq = 0;
 	short			chr;
 
 	chr = buf[*char_total - 1];
-	// //DEBUG CODE DISPLAY
-	// printf("%hd\n", chr);
-	// //DEBUG CODE DISPLAY
 	if (is_special(chr, esc_seq))
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
