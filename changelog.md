@@ -1,3 +1,7 @@
+## Version 4.4
+
+- Norminette completed. Ready for testing and evaluation.
+
 ### Version 4.3
 
 - Multiline text in the terminal will now be overwritten properly when scrolling through the command history, regardless of window size.

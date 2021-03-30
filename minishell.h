@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/30 05:19:04 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/30 19:27:09 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,6 +182,7 @@ void			push_to_hist_stack(t_micli *micli, short *active_line, \
 */
 
 char			*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
+char			**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli);
 int				get_child_exit_status(int stat_loc);
 void			exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 void			exec_child_process(char *exec_path, char *builtin, char *cmd, \
