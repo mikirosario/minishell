@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/30 05:03:26 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/31 06:21:16 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ int	main(int argc, char **argv, char **envp)
 	delete_oldpwd(&micli);
 	if (LINUX == 1)
 		linux_compatibility_mode(&micli);
+	termcaps_init(&micli, &micli.termcaps);
 	micli_loop(&micli);
 	return (0);
 }

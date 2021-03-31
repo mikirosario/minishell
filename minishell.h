@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/30 05:19:04 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/31 06:26:17 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@
 # else
 #  define LINUX 0
 # endif
+
+typedef struct s_termcaps
+{
+	char	termbuf[2048];
+}				t_termcaps;
 
 typedef struct s_tokendata
 {
@@ -118,6 +123,7 @@ typedef struct s_micli
 	t_token			token;
 	t_builtins		builtins;
 	t_pipes			pipes;
+	t_termcaps		termcaps;
 	t_normis_fault	tonti;
 	struct winsize	winsize;
 	struct termios	orig_term;
@@ -160,6 +166,18 @@ char			micli_loop(t_micli *micli);
 
 /*
 ** Termcaps
+*/
+
+void			termcaps_init(t_micli *micli, t_termcaps *tcaps);
+int				tgetent (char *buffer, char *termtype);
+char			*tgetstr(char *id, char **area);
+int				tgetnum (char *name);
+int				tgetflag (char *name);
+int				tputs (const char *str, int affcnt, int (*putc)(int));
+void			termcaps(t_micli *micli, t_cmdhist *cmdhist);
+
+/*
+** Termios
 */
 
 void			enable_raw_mode(struct termios *raw_term, \

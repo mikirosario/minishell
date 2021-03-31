@@ -6,11 +6,52 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 18:05:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/30 04:28:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/03/31 06:24:22 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	termcaps_init_fail(t_micli *micli, int failure, char *termtype)
+{
+	if (!termtype || !*termtype)
+		printf("💥 TERM is unset. Set a terminal type: export TERM=<type>\n");
+	else if (failure == -1)
+		printf("💥 Could not access the termcap database.\n");
+	else if (failure == 0)
+		printf("💥 Terminal type '%s' not found in database.\n", termtype);
+	else
+		return ;
+	exit_failure(micli);
+}
+
+/*
+** First we use find_var to find the TERM environment variable. The find_var
+** function is my version of getenv, but unlike getenv it returns a pointer to
+** the key, rather than the value, so if the key is found we need to also skip
+** it and make sure the value exists after the key. If either of these checks
+** fail... that's a paddling.
+**
+** If a termtype is found at the TERM variable, we try to load its associated
+** database into the term buffer with tgetent. If that fails it will return 0 or
+** -1.
+**
+** We send all the results to termcaps_init_fail. If any failure happened along
+** the way, it will print the appropriate error message and abort the program.
+**
+** 
+*/
+
+void	termcaps_init(t_micli *micli, t_termcaps *tcaps)
+{
+	char	*termtype;
+	int		tgetent_result;
+
+	termtype = find_var("TERM", 4, micli->envp);
+	if (termtype && *(termtype += 5))
+		tgetent_result = tgetent(tcaps->termbuf, termtype);	
+	termcaps_init_fail(micli, tgetent_result, termtype);
+}
 
 /*
 ** Thus function uses ioctl to retrieve the terminal window size and store it

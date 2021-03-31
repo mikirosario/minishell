@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:52:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/31 05:43:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ int	broken_pipe_check(pid_t pid)
 void	sys_error(t_micli *micli)
 {
 	if (micli->syserror)
-		printf("\n%s\n", strerror(micli->syserror));
+		printf("%s\n", strerror(micli->syserror));
 	else
-		printf("\nUnknown error\n");
+		printf("General error\n");
 }
 
 /*
