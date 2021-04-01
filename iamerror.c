@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/31 05:43:42 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 21:45:43 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ void	sys_error(t_micli *micli)
 
 int	print_error(char *error_message, char *error_location, t_micli *micli)
 {
-	if (error_location[1])
+
+	if (!error_location)
+		printf("💥 %s\n", error_message);
+	else if (error_location[1])
 		printf("💥 %s '%.2s'\n", error_message, error_location);
 	else
 		printf("💥 %s '%.1s'\n", error_message, error_location);

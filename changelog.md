@@ -1,3 +1,7 @@
+### Version 4.412
+
+- Fixed cd bug when HOME unset.
+
 ### Version 4.411
 
 - Changed termcap string names to avoid conflicts with official curses library.

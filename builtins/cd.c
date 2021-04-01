@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 17:08:14 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/26 19:04:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/01 21:54:21 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ int	ft_cd(const char **argv, t_micli *micli)
 	(*argv[1] == '~' && (argv[1][1] == '/' || argv[1][1] == '\0')))
 	{
 		home = find_var("HOME", 4, micli->envp);
+		if (!home)
+			return (1);
 		if (argv[1] && ft_strlen(argv[1]) > 2)
 		{
 			home = clean_ft_strjoin((home + 5), &argv[1][1], micli);
