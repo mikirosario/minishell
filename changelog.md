@@ -2,6 +2,8 @@
 
 - Fixed cd bug when HOME unset.
 
+- Fixed bug that prevented escaped spaces or '>' or '<' characters from being registered as such.
+
 ### Version 4.411
 
 - Changed termcap string names to avoid conflicts with official curses library.

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/26 04:20:38 by miki              #+#    #+#             */
-/*   Updated: 2021/03/28 03:54:34 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/02 00:41:55 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,8 @@ char	process_char(char *chr, t_micli *micli)
 		*chr = DEL;
 	else
 	{
+		if (micli->tokdata.escape_flag)
+			micli->tokdata.tok_end_escape_flag = 1;
 		micli->tokdata.escape_flag = 0;
 		micli->tokdata.toksize++;
 	}

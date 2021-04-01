@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 21:54:00 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/02 00:53:50 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ typedef struct s_tokendata
 	unsigned char	quote_flag : 2;
 	unsigned char	redirect_flag : 2;
 	unsigned char	escape_flag : 1;
+	unsigned char	tok_end_escape_flag : 1;
 	unsigned char	cmd_flag : 1;
 }				t_tokendata;
 

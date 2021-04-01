@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/03/28 00:46:19 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/02 00:42:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,15 @@
 
 int	is_token_end(char *endl, t_micli *micli)
 {
-	if (((!micli->tokdata.quote_flag && !micli->tokdata.escape_flag) && \
+	int	result;
+
+	result = 0;
+	if (((!micli->tokdata.quote_flag && !micli->tokdata.tok_end_escape_flag) && \
 	(ft_isspace(*micli->tokdata.tok_end) || *micli->tokdata.tok_end == '>' \
 	 || *micli->tokdata.tok_end == '<')) || micli->tokdata.tok_end == endl)
-		return (1);
-	return (0);
+		result = 1;
+	micli->tokdata.tok_end_escape_flag = 0;
+	return (result);
 }
 
 /*

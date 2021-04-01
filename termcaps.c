@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   termcaps.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/01 10:52:33 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 20:19:15 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/01 23:29:40 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,9 +126,6 @@ int	character_insertion_caps(t_termcaps *tcaps, char **capbuf)
 
 int	misc_mandatory_caps(t_termcaps *tcaps, char **capbuf)
 {
-	char	*tmp;
-
-	tmp = tgetstr("pc", capbuf);
 	tcaps->cur_up = tgetstr("up", capbuf);
 	tcaps->cur_left = tgetstr("le", capbuf);
 	tcaps->cur_right = tgetstr("nd", capbuf);
@@ -170,7 +167,7 @@ int	misc_mandatory_caps(t_termcaps *tcaps, char **capbuf)
 ** the way, it will print the appropriate error message and abort the program.
 **
 ** DEBUG CODE TO WORK WITH VSCODE:
-	// //DEBUG REMOVE FROM FINAL
+	// // DEBUG REMOVE FROM FINAL
 	// char	*fake_argv[2];
 	// if (!termtype)
 	// {
@@ -190,6 +187,17 @@ void	termcaps_init(t_micli *micli, t_termcaps *tcaps)
 
 	capbuf = &tcaps->capbuf[0];
 	termtype = find_var("TERM", 4, micli->envp);
+	// DEBUG REMOVE FROM FINAL
+	char	*fake_argv[2];
+	if (!termtype)
+	{
+		fake_argv[0] = "export";
+		fake_argv[1] = "TERM=xterm-256color";
+		ft_export((const char **)fake_argv, micli);
+		termtype = find_var("TERM", 4, micli->envp);
+		printf("TERM: %s\n", termtype);
+	}
+	// //DEBUG REMOVE FROM FINAL
 	if (termtype)
 	{
 		termtype += 5;
