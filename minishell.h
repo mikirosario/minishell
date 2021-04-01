@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/31 06:26:17 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 10:47:01 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <termios.h>
+# ifdef __linux__
+#  include <termcap.h>
+# elif __APPLE__
+#  include <terminal.h>
+# endif
 # include <sys/ioctl.h>
 # include "libft.h"
 
@@ -42,9 +47,37 @@
 #  define LINUX 0
 # endif
 
+typedef struct s_insertcaps
+{
+	char	*insert_mode;
+	char	*exit_insert;
+	char	*insert_char;
+	char	*insert_pad;
+	char	*direct_insert;
+	int		mov_while_ins_flag;
+	int		spc_not_clr_flag;
+
+}				t_insertcaps;
+
+typedef struct s_deletecaps
+{
+	char	*delete_char;
+	char	*delete_mode;
+	char	*exit_delete;
+}				t_deletecaps;
+
 typedef struct s_termcaps
 {
-	char	termbuf[2048];
+	char			termbuf[2048];
+	char			capbuf[2048];
+	t_insertcaps	inscaps;
+	t_deletecaps	delcaps;
+	char			*cursor_up;
+	char			*cursor_left;
+	char			*cursor_right;
+	char			*carriage_ret;
+	char			*delete_line;
+	char			init_result;
 }				t_termcaps;
 
 typedef struct s_tokendata
@@ -156,25 +189,14 @@ char			*short_to_chars(short short_char);
 char			*ft_short_to_strdup(short *short_str);
 
 /*
-** Main Loop
+** Main Prompt Loop
 */
 
+void			linux_compatibility_mode(t_micli *micli);
 size_t			del_from_buf(short *chr, size_t num_chars);
 short			*micli_readline(t_micli *micli, t_cmdhist *cmdhist, \
 				short **hist_stack);
 char			micli_loop(t_micli *micli);
-
-/*
-** Termcaps
-*/
-
-void			termcaps_init(t_micli *micli, t_termcaps *tcaps);
-int				tgetent (char *buffer, char *termtype);
-char			*tgetstr(char *id, char **area);
-int				tgetnum (char *name);
-int				tgetflag (char *name);
-int				tputs (const char *str, int affcnt, int (*putc)(int));
-void			termcaps(t_micli *micli, t_cmdhist *cmdhist);
 
 /*
 ** Termios
@@ -185,7 +207,24 @@ void			enable_raw_mode(struct termios *raw_term, \
 int				get_window_size(t_micli *micli);
 char			check_horizontal_cursor_pos(void);
 void			remove_prompt_line(t_micli *micli, short char_total);
-char			do_not_echo(short *buf, short *char_total, char *move_flag);
+char			do_not_echo(short *buf, short *char_total, char *move_flag, \
+				t_micli *micli);
+
+/*
+** Termcaps
+*/
+
+void			termcaps_init(t_micli *micli, t_termcaps *tcaps);
+int				pchr(int chr);
+void			wrap_up_right(t_micli *micli, t_termcaps *tcaps);
+// int				tgetent (char *buffer, char *termtype);
+// char			*tgetstr(char *id, char **area);
+// int				tgetnum (char *name);
+// int				tgetflag (char *name);
+// int				tputs (const char *str, int affcnt, int (*putc)(int));
+void			del_from_screen(t_termcaps *tcaps);
+void			insert_char(t_termcaps *tcaps, short shortchr);
+void			termcaps(t_micli *micli, t_cmdhist *cmdhist);
 
 /*
 ** Command History
@@ -200,6 +239,7 @@ void			push_to_hist_stack(t_micli *micli, short *active_line, \
 */
 
 char			*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
+char			**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli);
 int				get_child_exit_status(int stat_loc);
 void			exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 void			exec_child_process(char *exec_path, char *builtin, char *cmd, \

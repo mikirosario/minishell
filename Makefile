@@ -6,7 +6,7 @@
 #    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/26 15:42:39 by mrosario          #+#    #+#              #
-#    Updated: 2021/03/31 06:28:14 by miki             ###   ########.fr        #
+#    Updated: 2021/04/01 10:53:53 by miki             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ cmd_execution.c env_var_handling.c iamerror.c signals.c pipe_handling.c \
 process_raw_line.c process_cmdline.c process_token.c process_char.c  envp_dup.c \
 char_check.c char_operations.c redirection.c child_process.c find_cmd_path.c \
 cmd_history_alloc.c terminal_settings.c cntrl_char_actions.c short_to_chars.c \
-cursor_juggling.c micli_readline.c reallocation.c generate_argv.c termcaps.c \
+cursor_juggling.c micli_readline.c reallocation.c generate_argv.c utils.c \
+termcaps.c \
 $(BUILTINS)/export.c \
 $(BUILTINS)/builtins_helper.c \
 $(BUILTINS)/cd.c \

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/30 01:08:17 by miki              #+#    #+#             */
-/*   Updated: 2021/03/31 02:41:49 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 11:21:45 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -369,17 +369,11 @@ short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 			exit_success(micli);
 		}
 		*cmdhist->char_total += 1;
-		//TERMCAPS TESTING DEBUG CODE
-		size_t ptrindex = cmdhist->index;
-		size_t charindex = *cmdhist->char_total + 1;
-		if (hist_stack[ptrindex][charindex] == '\x1b')
-			termcaps(micli, cmdhist);
-		//TERMCAPS TESTING DEBUG CODE
 		if (!do_not_echo(&hist_stack[cmdhist->index][2], \
-		cmdhist->char_total, &cmdhist->scroll))
+		cmdhist->char_total, &cmdhist->scroll, micli))
 		{
-			write(STDIN_FILENO, \
-			&hist_stack[cmdhist->index][*cmdhist->char_total + 1], 2);
+			insert_char(&micli->termcaps, \
+			hist_stack[cmdhist->index][*cmdhist->char_total + 1]);
 			if (hist_stack[cmdhist->index][*cmdhist->char_total + 1] == '\n')
 				return (send_to_parser(cmdhist, hist_stack));
 		}

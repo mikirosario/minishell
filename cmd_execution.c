@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:32:21 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/03/30 19:33:42 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,40 +69,20 @@ int	is_path(char *cmd)
 }
 
 /*
-** This function reserves memory for and copies the memory addresses to an array
-** of pointers wherein array[0] points to the command name, array[end] points to
-** NULL, and all pointers in between point to the successive command arguments.
-**
-** Memory is reserved for micli->tokdata.args + 2 pointers, that is, for all
-** arguments plus the command plus the null pointer. This array can be passed to
-** execve.
-**
-** The free_token function will free memory reserved for this array.
+** This function is another Norminette special. It checks to see if the
+** exec_path pointer returned by find_cmd_path was pointed to cmd, indicating
+** that it was found as a builtin. If it was found as abuiltin, the builtin
+** flag is set by pointing builtin to cmd. Otherwise it is left NULL. *sigh*
 */
 
-char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
+char	*builtin_check(char *exec_path, char *cmd)
 {
-	char	**argv;
-	size_t	i;
+	char	*builtin;
 
-	i = 0;
-	argv = clean_calloc(micli->tokdata.args + 2, sizeof(char *), micli);
-	while (i < micli->tokdata.args + 2)
-	{
-		if (!i)
-			argv[i++] = cmd;
-		else
-		{
-			if (arglst)
-			{
-				argv[i++] = arglst->content;
-				arglst = arglst->next;
-			}
-			else
-				argv[i++] = NULL;
-		}
-	}
-	return (argv);
+	builtin = NULL;
+	if (exec_path == cmd)
+		builtin = cmd;
+	return (builtin);
 }
 
 /*
@@ -135,6 +115,22 @@ char	**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli)
 ** stored in a string and the address of that string will be returned. Note in
 ** this case exec_path will have to be freed later. If neither a built-in nor a
 ** PATH binary matches the command name, a NULL pointer is returned.
+**
+** NOTE: The code
+**
+** else
+**	{
+**		exec_path = find_cmd_path(cmd, path_var, micli);
+**		builtin = builtin_check(exec_path, cmd);
+**	}
+**
+** Replaces a check that, before assignments in control structures were
+** banned, just looked like this:
+**
+** else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd)
+**		builtin = cmd;
+**
+** I even need the function to avoid running over the 25 line limit. Anyway...
 **
 ** Thus, if there is a directory path to the executable, it will be in exec_path
 ** If the command is among the builtins, exec_path will just point back to cmd,
@@ -195,8 +191,11 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else if ((exec_path = find_cmd_path(cmd, path_var, micli)) == cmd)
-		builtin = cmd;
+	else
+	{
+		exec_path = find_cmd_path(cmd, path_var, micli);
+		builtin = builtin_check(exec_path, cmd);
+	}
 	if (!exec_path)
 		micli->cmd_result = 127;
 	if (exec_local(exec_path, builtin, micli))

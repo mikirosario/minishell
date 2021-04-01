@@ -6,48 +6,12 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/31 06:21:16 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 11:06:19 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/stat.h>
-
-/*
-** For reasons I have yet to discover, Linux really seems get discombobulated
-** when the OLDPWD environmental variable is undefined, even though this is what
-** bash seems to do in Linux too... so clearly I am missing something about
-** this. With OLDPWD undefined in my Linux home computer, some commands, like
-** make, fail.
-**
-** This is a quick and dirty patch for that problem. If the program detects that
-** it is running on Linux, it launches "linux_compatibility_mode", which
-** basically just calls cd on '.' to set the current working directory as
-** OLDPWD. This fixes any issues.
-*/
-
-void	linux_compatibility_mode(t_micli *micli)
-{
-	const char	*fake_argv[2];
-
-	fake_argv[0] = "cd";
-	fake_argv[1] = ".";
-	ft_cd(fake_argv, micli);
-}
-
-/*
-** This function is like strlen, but for null-terminated 16 bit strings.
-*/
-
-size_t	ft_strlen16(short *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
 
 /*
 ** This function is the poster child of things that only exist because of the
@@ -129,6 +93,24 @@ char	micli_loop(t_micli *micli)
 	return (0);
 }
 
+/*
+** Eh! No TTY! If it's not a TTY, <Uncle Roger>FAILURE</Uncle Roger>.
+*/
+
+void	eh_notty(t_micli *micli)
+{
+	if (!isatty(STDIN_FILENO))
+	{
+		micli->syserror = ENOTTY;
+		exit_failure(micli);
+	}
+	if (tcgetattr(STDIN_FILENO, &micli->orig_term) == -1)
+	{
+		micli->syserror = errno;
+		exit_failure(micli);
+	}
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_micli	micli;
@@ -144,7 +126,7 @@ int	main(int argc, char **argv, char **envp)
 	micli.cmdhist.ptrs_in_hist = 1;
 	micli.cmdhist.cmdhist_buf = 1;
 	micli.envp = ft_envdup(envp, &micli);
-	tcgetattr(STDIN_FILENO, &micli.orig_term);
+	eh_notty(&micli);
 	norminette_made_me_do_it(&micli);
 	delete_oldpwd(&micli);
 	if (LINUX == 1)

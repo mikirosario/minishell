@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/31 02:20:32 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 11:20:57 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static int	is_special(short chr, char esc_seq)
 /*
 ** Unescaped special characters will be handled as follows.
 **
+** //THIS DESCRIPTION DESCRIBED THE PRE-TERMCAPS VERSION; NOW OBSOLETE\\
 ** A DEL will cause the preceding character on the screen to be deleted by
 ** writing the sequence "ESC[D ESC[D" to STDOUT, which moves the cursor left one
 ** space, writes a space moving the cursor right, and moves the cursor left
@@ -47,6 +48,17 @@ static int	is_special(short chr, char esc_seq)
 ** this should bring us to the right-most column in the screen without bothering
 ** to measure it using ioctl - sorry, nothing against ioctl. ;p It will also
 ** cause the preceding character in the buffer to be nulled.
+** \\THIS DESCRIPTION DESCRIBED THE PRE-TERMCAPS VERSION; NOW OBSOLETE//
+**
+** A DEL will now cause the preceding character on the screen to be deleted by
+** writing a terminal-appropriate sequence to STDOUT as determined by the
+** termcaps library. If the cursor is at column 1 (left-most column) then the
+** wrap_up_right function is called to move it up and to the right-most column
+** of the preceding line. Otherwise the cursor is moved left. In any case, the
+** character at the new cursor position is then deleted. Since behaviour in case
+** of moving past the edge of the screen is now undefined, as we won't
+** necessarily be using vt100, wrap_up_right now moves the cursor to exactly the
+** right-most column in the preceding row.
 **
 ** An ESC ('x1b') will cause the escape sequence flag esc_seq to be set to 1 to
 ** indicate that the next character will be part of escape sequence phase 1.
@@ -56,18 +68,21 @@ static int	is_special(short chr, char esc_seq)
 ** escape sequence phase 2.
 */
 
-static void	handle_unescaped_special(short chr, short *buf, short *char_total, \
-char *esc_seq)
+static void	handle_unescaped_special(short chr, short *buf, char *esc_seq, \
+t_micli *micli)
 {
+	short	*char_total;
 	char	cursor_pos;
 
+	char_total = micli->cmdhist.char_total;
 	if (chr == DEL && *char_total)
 	{
 		cursor_pos = check_horizontal_cursor_pos();
 		if (cursor_pos == 1)
-			write(STDOUT_FILENO, "\x1b[A\x1b[9999C ", 11);
+			wrap_up_right(micli, &micli->termcaps);
 		else
-			write(STDOUT_FILENO, "\x1b[D \x1b[D", 7);
+			tputs(micli->termcaps.cursor_left, 1, pchr);
+		del_from_screen(&micli->termcaps);
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 	}
 	else if (chr == '\x1b')
@@ -243,7 +258,8 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 **	//DEBUG CODE DISPLAY
 */
 
-char	do_not_echo(short *buf, short *char_total, char *scroll_flag)
+char	do_not_echo(short *buf, short *char_total, char *scroll_flag, \
+t_micli *micli)
 {
 	static char		esc_seq = 0;
 	short			chr;
@@ -253,7 +269,7 @@ char	do_not_echo(short *buf, short *char_total, char *scroll_flag)
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		if (!esc_seq)
-			handle_unescaped_special(chr, buf, char_total, &esc_seq);
+			handle_unescaped_special(chr, buf, &esc_seq, micli);
 		else if (esc_seq == 1)
 			handle_esc_seq_phase_1(chr, &esc_seq);
 		else if (esc_seq == 2)
