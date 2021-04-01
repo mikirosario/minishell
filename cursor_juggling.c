@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cursor_juggling.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 22:15:26 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 10:57:17 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 20:04:53 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ void	wrap_up_right(t_micli *micli, t_termcaps *tcaps)
 {
 	unsigned short	total_cols;
 
-	tputs(tcaps->cursor_up, 1, pchr);
+	tputs(tcaps->cur_up, 1, pchr);
 	tputs(tcaps->carriage_ret, 1, pchr);
 	get_window_size(micli);
 	total_cols = micli->winsize.ws_col;
 	while (total_cols-- != 1)
-		tputs(tcaps->cursor_right, 1, pchr);
+		tputs(tcaps->cur_right, 1, pchr);
 }
 
 /*
@@ -185,7 +185,7 @@ char	check_horizontal_cursor_pos(void)
 ** basically is like C3P0, it speaks every terminal language and encodes
 ** commands like 'cursor up' in ways the local terminal will understand. For our
 ** terminals though, quite frankly, it is probably just generating the same
-** VT100 codes I did manually... :p The delete_line command requires the cursor
+** VT100 codes I did manually... :p The del_line command requires the cursor
 ** to be at the left-most column according to its description, so that's why I
 ** do carriage return first for every line. I suppose that's because it uses
 ** \x1b[0K (clear line to right of cursor) instead of \x1b[2K (clear entire
@@ -211,8 +211,8 @@ void	remove_prompt_line(t_micli *micli, short char_total)
 	while (occupied_lines--)
 	{
 		tputs(micli->termcaps.carriage_ret, 1, pchr);
-		tputs(micli->termcaps.delete_line, 1, pchr);
+		tputs(micli->termcaps.del_line, 1, pchr);
 		if (occupied_lines)
-			tputs(micli->termcaps.cursor_up, 1, pchr);
+			tputs(micli->termcaps.cur_up, 1, pchr);
 	}	
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   terminal_settings.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 18:05:44 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 10:52:58 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 19:55:26 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,5 @@ void	enable_raw_mode(struct termios *raw_term, struct termios *orig_term)
 	raw_term->c_cflag |= (CS8);
 	raw_term->c_lflag &= ~(ECHO | ICANON);
 	tcsetattr(STDIN_FILENO, TCSADRAIN, raw_term);
-	ospeed = raw_term->c_ospeed;
+	write(STDOUT_FILENO, "\e[?1h\e=", 7);
 }

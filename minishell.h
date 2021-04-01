@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 14:29:54 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 20:02:30 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,13 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <termios.h>
+# include <term.h>
+# include <curses.h>
 # ifdef __linux__
 #  include <termcap.h>
-# elif __APPLE__
-#  include <terminal.h>
 # endif
 # include <sys/ioctl.h>
 # include "libft.h"
-
 # define READLINE_BUFSIZE 100
 # define CMDHIST_BUF 20
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
@@ -72,15 +71,18 @@ typedef struct s_termcaps
 	char			capbuf[2048];
 	t_insertcaps	inscaps;
 	t_deletecaps	delcaps;
-	char			*cursor_up;
-	char			*cursor_left;
-	char			*cursor_right;
+	char			*cur_up;
+	char			*cur_left;
+	char			*cur_right;
 	char			*carriage_ret;
-	char			*delete_line;
-	char			*ti;
-	char			*ks;
-	char			*ke;
-	char			*te;
+	char			*del_line;
+	char			*arrow_up;
+	char			*arrow_left;
+	char			*arrow_right;
+	char			*arrow_down;
+	short			cursor_keys_seq;
+	short			keypad_seq_up;
+	short			keypad_seq_down;
 	char			init_result;
 }				t_termcaps;
 
@@ -221,11 +223,7 @@ char			do_not_echo(short *buf, short *char_total, char *move_flag, \
 void			termcaps_init(t_micli *micli, t_termcaps *tcaps);
 int				pchr(int chr);
 void			wrap_up_right(t_micli *micli, t_termcaps *tcaps);
-// int				tgetent (char *buffer, char *termtype);
-// char			*tgetstr(char *id, char **area);
-// int				tgetnum (char *name);
-// int				tgetflag (char *name);
-// int				tputs (const char *str, int affcnt, int (*putc)(int));
+void			derive_esc_seq(t_termcaps *tcaps);
 void			del_from_screen(t_termcaps *tcaps);
 void			insert_char(t_termcaps *tcaps, short shortchr);
 void			termcaps(t_micli *micli, t_cmdhist *cmdhist);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit_handling.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:06:33 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 14:33:08 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 18:03:34 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 
 void	exit_failure(t_micli *micli)
 {
+	write(STDOUT_FILENO, "\e[?1l\e>", 7);
 	if (micli->syserror != ENOTTY && micli->termcaps.init_result != -3)
 		tcsetattr(STDIN_FILENO, TCSANOW, &micli->orig_term);
 	sys_error(micli);
@@ -44,6 +45,7 @@ void	exit_failure(t_micli *micli)
 
 void	exit_success(t_micli *micli)
 {
+	write(STDOUT_FILENO, "\e[?1l\e>", 7);
 	tcsetattr(STDIN_FILENO, TCSANOW, &micli->orig_term);
 	freeme(micli);
 	exit(EXIT_SUCCESS);

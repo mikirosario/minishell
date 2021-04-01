@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 20:42:08 by mrosario          #+#    #+#             */
-/*   Updated: 2021/01/28 18:39:29 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/01 20:03:43 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,6 @@ unsigned char	ft_isbitset(unsigned char byte, unsigned char bit)
 {
 	unsigned char	mask;
 
-	mask = (unsigned char)1 << bit;
+	mask = (unsigned char) 1 << bit;
 	return (mask & byte);
 }

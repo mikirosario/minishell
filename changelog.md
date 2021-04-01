@@ -1,3 +1,9 @@
+### Version 4.411
+
+- Changed termcap string names to avoid conflicts with official curses library.
+
+- Updated arrow keys to user termcaps. Eyeroll.
+
 ## Version 4.41
 
 - Updated to use termcaps. Dear. Turing. Termcaps. Why are you like this? O_O

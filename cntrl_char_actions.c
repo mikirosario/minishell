@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cntrl_char_actions.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 14:33:23 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 20:18:13 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@
 ** If the character is special 1 will be returned, otherwise 0 will be returned.
 */
 
-static int	is_special(short chr, char esc_seq)
+static int	is_special(short chr, char esc_seq, t_micli *micli)
 {
-	if (esc_seq || ((ft_iscntrl(chr) && chr != '\n') || chr == 23323))
+	if (esc_seq || ((ft_iscntrl(chr) && chr != '\n') || chr == 23323 \
+	 || chr == micli->termcaps.keypad_seq_up \
+	 || chr == micli->termcaps.keypad_seq_down))
 		return (1);
 	return (0);
 }
@@ -65,7 +67,15 @@ static int	is_special(short chr, char esc_seq)
 **
 ** 23323 is the value of ESC[ in memory, and will cause the escape sequence flag
 ** esc_seq to be set to 2 to indicate that the  next character will be part of
-** escape sequence phase 2.
+** escape sequence phase 2. 20251 is the value of ESCO in memory and will also
+** cause the escape sequence flag esc_seq to be set to 2.
+**
+** ESCO is the escape sequence the terminal sends when application mode (aka. 
+** keypad mode aka. smkx) is set. I really could have just hardcoded it, but
+** since it is OBLIGATORY to use termcaps with arrow keys in this project...
+** I derive it from the termcaps ku/kd/kr/kl. :p I didn't write this originally
+** to cope with escape sequences longer than 3 bytes, so I also ban longer
+** escape sequences. xD
 */
 
 static void	handle_unescaped_special(short chr, short *buf, char *esc_seq, \
@@ -81,13 +91,15 @@ t_micli *micli)
 		if (cursor_pos == 1)
 			wrap_up_right(micli, &micli->termcaps);
 		else
-			tputs(micli->termcaps.cursor_left, 1, pchr);
+			tputs(micli->termcaps.cur_left, 1, pchr);
 		del_from_screen(&micli->termcaps);
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 	}
-	else if (chr == '\x1b')
+	else if ((short)chr == '\x1b' || (short)chr == micli->termcaps.arrow_up[0] \
+	 || (short)chr == micli->termcaps.arrow_down[0])
 		*esc_seq = 1;
-	else if (chr == 20251 || chr == 23323)
+	else if (chr == micli->termcaps.keypad_seq_up || chr == micli->termcaps.keypad_seq_down \
+	 || chr == 23323)
 		*esc_seq = 2;
 }
 
@@ -96,9 +108,10 @@ t_micli *micli)
 ** phase 2. any other character will reset the escape sequence to 0.
 */
 
-static void	handle_esc_seq_phase_1(short chr, char *esc_seq)
+static void	handle_esc_seq_phase_1(short chr, char *esc_seq, t_micli *micli)
 {
-	if (chr == '[' || chr == 'O')
+	if ((short)chr == '[' || (short)chr == micli->termcaps.arrow_up[1] \
+	 || (short)chr == micli->termcaps.arrow_down[1])
 		*esc_seq = 2;
 	else
 		*esc_seq = 0;
@@ -265,19 +278,19 @@ t_micli *micli)
 	short			chr;
 
 	chr = buf[*char_total - 1];
-	if (is_special(chr, esc_seq))
+	if (is_special(chr, esc_seq, micli))
 	{
 		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		if (!esc_seq)
 			handle_unescaped_special(chr, buf, &esc_seq, micli);
 		else if (esc_seq == 1)
-			handle_esc_seq_phase_1(chr, &esc_seq);
+			handle_esc_seq_phase_1(chr, &esc_seq, micli);
 		else if (esc_seq == 2)
 		{
 			esc_seq = 0;
-			if (chr == 'A')
+			if (chr == micli->termcaps.arrow_up[2])
 				*scroll_flag = 1;
-			else if (chr == 'B')
+			else if (chr == micli->termcaps.arrow_down[2])
 				*scroll_flag = -1;
 		}
 		return (1);

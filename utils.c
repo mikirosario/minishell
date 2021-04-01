@@ -3,14 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/01 10:45:32 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 10:58:23 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 19:54:39 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+** Derives shorts containing the value equivalent to the first two characters
+** of the arrow_up and arrow_down sequences, since I use an array of shorts.
+**
+** These are both just going to be 20251. But... I calculate them using the
+** arrow termcaps. ;)
+**
+** //DEBUG CODE
+** printf("TEST: %d, %d\n", tcaps->keypad_seq_up, tcaps->keypad_seq_down);
+*/
+
+void	derive_esc_seq(t_termcaps *tcaps)
+{
+	tcaps->keypad_seq_up = (short)(((unsigned char)tcaps->arrow_up[0]) \
+	 | (((unsigned char)tcaps->arrow_up[1]) << 8));
+	tcaps->keypad_seq_down = (short)(((unsigned char)tcaps->arrow_down[0]) \
+	 | (((unsigned char)tcaps->arrow_down[1]) << 8));
+}
 
 /*
 ** Just a putchar for termcaps to use as described in man putchar.
