@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 10:47:01 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 14:29:54 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,10 @@ typedef struct s_termcaps
 	char			*cursor_right;
 	char			*carriage_ret;
 	char			*delete_line;
+	char			*ti;
+	char			*ks;
+	char			*ke;
+	char			*te;
 	char			init_result;
 }				t_termcaps;
 

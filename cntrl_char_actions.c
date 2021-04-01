@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 11:20:57 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/01 14:33:23 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ t_micli *micli)
 	}
 	else if (chr == '\x1b')
 		*esc_seq = 1;
-	else if (chr == 23323)
+	else if (chr == 20251 || chr == 23323)
 		*esc_seq = 2;
 }
 
@@ -98,7 +98,7 @@ t_micli *micli)
 
 static void	handle_esc_seq_phase_1(short chr, char *esc_seq)
 {
-	if (chr == '[')
+	if (chr == '[' || chr == 'O')
 		*esc_seq = 2;
 	else
 		*esc_seq = 0;

@@ -1,6 +1,8 @@
-## Version 4.1
+## Version 4.41
 
 - Updated to use termcaps. Dear. Turing. Termcaps. Why are you like this? O_O
+
+- Updated to support Application Mode.
 
 ## Version 4.4
 
