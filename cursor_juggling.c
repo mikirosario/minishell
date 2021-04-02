@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cursor_juggling.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/29 22:15:26 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 20:04:53 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/02 06:23:02 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	wrap_up_right(t_micli *micli, t_termcaps *tcaps)
 ** inserting. Then we free the character string.
 */
 
-void	insert_char(t_termcaps *tcaps, short shortchr)
+void	insert_char_scrn(t_termcaps *tcaps, short shortchr)
 {
 	char	*chr;
 
@@ -69,6 +69,7 @@ void	insert_char(t_termcaps *tcaps, short shortchr)
 	if (tcaps->inscaps.exit_insert)
 		tputs(tcaps->inscaps.exit_insert, 1, pchr);
 	chr = ft_del(chr);
+	tcaps->curpos_buf++;
 }
 
 /*
@@ -89,6 +90,7 @@ void	del_from_screen(t_termcaps *tcaps)
 	tputs(tcaps->delcaps.delete_char, 1, pchr);
 	if (tcaps->delcaps.delete_mode)
 		tputs(tcaps->delcaps.exit_delete, 1, pchr);
+	tcaps->curpos_buf--;
 }
 
 /*

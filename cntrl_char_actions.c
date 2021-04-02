@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cntrl_char_actions.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 20:51:11 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 20:18:13 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/02 05:48:03 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ t_micli *micli)
 		else
 			tputs(micli->termcaps.cur_left, 1, pchr);
 		del_from_screen(&micli->termcaps);
-		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
+		*char_total -= del_from_buf(&buf[micli->termcaps.curpos_buf], 1);
 	}
 	else if ((short)chr == '\x1b' || (short)chr == micli->termcaps.arrow_up[0] \
 	 || (short)chr == micli->termcaps.arrow_down[0])
@@ -271,16 +271,16 @@ size_t	del_from_buf(short *chr, size_t num_chars)
 **	//DEBUG CODE DISPLAY
 */
 
-char	do_not_echo(short *buf, short *char_total, char *scroll_flag, \
+char	do_not_echo(short *buf, short tmp, char *scroll_flag, \
 t_micli *micli)
 {
 	static char		esc_seq = 0;
 	short			chr;
 
-	chr = buf[*char_total - 1];
+	//chr = buf[*char_total - 1];
+	chr = tmp;
 	if (is_special(chr, esc_seq, micli))
 	{
-		*char_total -= del_from_buf(&buf[*char_total - 1], 1);
 		if (!esc_seq)
 			handle_unescaped_special(chr, buf, &esc_seq, micli);
 		else if (esc_seq == 1)
@@ -292,6 +292,10 @@ t_micli *micli)
 				*scroll_flag = 1;
 			else if (chr == micli->termcaps.arrow_down[2])
 				*scroll_flag = -1;
+			else if (chr == micli->termcaps.arrow_left[2])
+				move_cursor_left(micli);
+			else if (chr == micli->termcaps.arrow_right[2])
+				move_cursor_right(micli);
 		}
 		return (1);
 	}

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/30 03:34:16 by miki              #+#    #+#             */
-/*   Updated: 2021/03/30 05:03:38 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/02 04:15:08 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,17 @@ short **hist_stack)
 	}
 	else
 	{
-		write(STDOUT_FILENO, "\x1b[D \x1b[D\a", 8);
-		*cmdhist->char_total -= \
-		del_from_buf(&hist_stack[cmdhist->index][*cmdhist->char_total + 1], 1);
-		write(STDOUT_FILENO, BUF_OVERFLOW, 47);
+		
+		del_from_screen(&micli->termcaps);
+		//write(STDOUT_FILENO, "\x1b[D \x1b[D\a", 8);
+		*cmdhist->char_total -= del_from_buf(&hist_stack[cmdhist->index][micli->termcaps.curpos_buf], 1);
+		//del_from_buf(&hist_stack[cmdhist->index][*cmdhist->char_total + 1], 1);
+		//write(STDOUT_FILENO, BUF_OVERFLOW, 47);
+		tputs(BUF_OVERFLOW, 1, pchr);
+		if (micli->termcaps.ding)
+			tputs(micli->termcaps.ding, 1, pchr);
+		if (micli->termcaps.flash)
+			tputs(micli->termcaps.flash, 1, pchr);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/01 10:52:33 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 23:29:40 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/02 05:42:15 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,17 +129,22 @@ int	misc_mandatory_caps(t_termcaps *tcaps, char **capbuf)
 	tcaps->cur_up = tgetstr("up", capbuf);
 	tcaps->cur_left = tgetstr("le", capbuf);
 	tcaps->cur_right = tgetstr("nd", capbuf);
+	tcaps->cur_down = tgetstr("do", capbuf);
+	tcaps->scroll_up = tgetstr("sf", capbuf);
 	tcaps->carriage_ret = tgetstr("cr", capbuf);
 	tcaps->del_line = tgetstr("dl", capbuf);
 	tcaps->arrow_up = tgetstr("ku", capbuf);
 	tcaps->arrow_left = tgetstr("kl", capbuf);
 	tcaps->arrow_right = tgetstr("kr", capbuf);
 	tcaps->arrow_down = tgetstr("kd", capbuf);
+	tcaps->ding = tgetstr("bl", capbuf);
+	tcaps->flash = tgetstr("vb", capbuf);
 	derive_esc_seq(tcaps);
 	if (!tcaps->cur_up || !tcaps->cur_left || !tcaps->cur_right \
 	 || !tcaps->carriage_ret || !tcaps->del_line || !tcaps->arrow_up \
-	 || !tcaps->arrow_down || ft_strlen(tcaps->arrow_up) != 3 \
-	 || ft_strlen(tcaps->arrow_down) != 3)
+	 || !tcaps->arrow_down || !tcaps->cur_down || !tcaps->scroll_up \
+	 || ft_strlen(tcaps->arrow_up) != 3 || ft_strlen(tcaps->arrow_down) != 3 \
+	 || ft_strlen(tcaps->arrow_right) != 3 || ft_strlen(tcaps->arrow_left) != 3)
 		return (0);
 	return (1);
 }

@@ -1,3 +1,7 @@
+### Version 4.412-a
+
+- This is an attempt to add line edition to the project, but currently it is dysfunctional. It works sometimes, but moving around a lot the buffer copying seems to fail. Furthermore, it does not handle multi-row displacement. Probably will have to abandon before the evaluation, though the memory use is also more efficient now thanks to a sub-buffer, and I may incorporate that into main.
+
 ### Version 4.412
 
 - Fixed cd bug when HOME unset.

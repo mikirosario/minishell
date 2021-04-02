@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/02 00:53:50 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/02 05:45:30 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # endif
 # include <sys/ioctl.h>
 # include "libft.h"
-# define READLINE_BUFSIZE 100
+# define READLINE_BUFSIZE 1
 # define CMDHIST_BUF 20
 # define BUILTINS "exit,pwd,export,env,echo,cd,unset"
 # define DQUOTE_ESC_CHARS "\"$\\"
@@ -39,7 +39,7 @@
 # define SUB 26
 # define NUL ""
 # define SYN_ERROR "micli: syntax error near unexpected token"
-# define BUF_OVERFLOW "\nBAD BUNNY! TOO MANY CHARACTERS IN LINE BUFFER!"
+# define BUF_OVERFLOW "\nBAD BUNNY! TOO MANY CHARACTERS IN LINE BUFFER!\n"
 # ifdef __linux__
 #  define LINUX 1
 # else
@@ -74,16 +74,21 @@ typedef struct s_termcaps
 	char			*cur_up;
 	char			*cur_left;
 	char			*cur_right;
+	char			*cur_down;
+	char			*scroll_up;
 	char			*carriage_ret;
 	char			*del_line;
 	char			*arrow_up;
 	char			*arrow_left;
 	char			*arrow_right;
 	char			*arrow_down;
+	char			*ding;
+	char			*flash;
 	short			cursor_keys_seq;
 	short			keypad_seq_up;
 	short			keypad_seq_down;
 	char			init_result;
+	short			curpos_buf;
 }				t_termcaps;
 
 typedef struct s_tokendata
@@ -214,7 +219,7 @@ void			enable_raw_mode(struct termios *raw_term, \
 int				get_window_size(t_micli *micli);
 char			check_horizontal_cursor_pos(void);
 void			remove_prompt_line(t_micli *micli, short char_total);
-char			do_not_echo(short *buf, short *char_total, char *move_flag, \
+char			do_not_echo(short *buf, short char_total, char *move_flag, \
 				t_micli *micli);
 
 /*
@@ -223,11 +228,14 @@ char			do_not_echo(short *buf, short *char_total, char *move_flag, \
 
 void			termcaps_init(t_micli *micli, t_termcaps *tcaps);
 int				pchr(int chr);
+void			wrap_down_left(t_micli *micli, t_termcaps *tcaps);
 void			wrap_up_right(t_micli *micli, t_termcaps *tcaps);
+void			move_cursor_left(t_micli *micli);
+void			move_cursor_right(t_micli *micli);
 void			derive_esc_seq(t_termcaps *tcaps);
 void			del_from_screen(t_termcaps *tcaps);
-void			insert_char(t_termcaps *tcaps, short shortchr);
-void			termcaps(t_micli *micli, t_cmdhist *cmdhist);
+void			insert_char_scrn(t_termcaps *tcaps, short shortchr);
+//void			termcaps(t_micli *micli, t_cmdhist *cmdhist);
 
 /*
 ** Command History

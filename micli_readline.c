@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   micli_readline.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/30 01:08:17 by miki              #+#    #+#             */
-/*   Updated: 2021/04/01 18:00:49 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/02 05:20:29 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void	scratch_log_init(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 	cmdhist->char_total = &hist_stack[cmdhist->index][0];
 	cmdhist->bufsize = &hist_stack[cmdhist->index][1];
 	*cmdhist->bufsize = READLINE_BUFSIZE;
+	micli->termcaps.curpos_buf = *cmdhist->char_total + 2;
 }
 
 /*
@@ -180,6 +181,7 @@ void	do_scroll(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 	write(STDOUT_FILENO, "🚀 ", 5);
 	write(STDOUT_FILENO, &hist_stack[cmdhist->index][2], \
 	*cmdhist->char_total * sizeof(short));
+	micli->termcaps.curpos_buf = *cmdhist->char_total + 2;
 }
 
 /*
@@ -217,8 +219,8 @@ void	do_scroll(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 
 short	*send_to_parser(t_cmdhist *cmdhist, short **hist_stack)
 {
-	*cmdhist->char_total -= \
-	del_from_buf(&hist_stack[cmdhist->index][*cmdhist->char_total + 1], 1);
+	write(STDOUT_FILENO, "\n", 1);
+	hist_stack[cmdhist->index][*cmdhist->char_total + 2] = 0;
 	cmdhist->recalc_bufsize = READLINE_BUFSIZE;
 	while (cmdhist->recalc_bufsize / (*cmdhist->char_total + 1) == 0)
 		cmdhist->recalc_bufsize += READLINE_BUFSIZE;
@@ -351,31 +353,75 @@ short	*send_to_parser(t_cmdhist *cmdhist, short **hist_stack)
 ** mandatory... xD
 */
 
+void	insert_char_buf(t_micli *micli, short *buf, short tmp)
+{
+	//short	*right_seg;
+	size_t	strlen;
+
+	if (!buf[micli->termcaps.curpos_buf])
+		buf[micli->termcaps.curpos_buf] = tmp;
+	else
+	{
+		//right_seg = clean_ft_strdup(&buf[micli->termcaps.curpos_buf], micli);		
+		strlen = ft_strlen16(buf);
+		//printf("STRLEN: %zu\n", strlen);
+		//right_seg = clean_ft_memdup(&buf[micli->termcaps.curpos_buf], )
+		while (strlen > (size_t)micli->termcaps.curpos_buf)
+		{
+			buf[strlen] = buf[strlen - 1];
+			strlen--;
+		}
+		buf[micli->termcaps.curpos_buf] = tmp;
+		
+		// for (int i = 0; buf[i]; i++)
+		// {
+		// 	printf("%d | ", buf[i]);
+		// }
+		// printf("\n");
+		// char *str = ft_short_to_strdup(buf);
+		// printf("STR: %s\n", str);
+		// str = ft_del(str);
+		//right_seg = ft_del(right_seg);
+	}
+}
+
 short	*micli_readline(t_micli *micli, t_cmdhist *cmdhist, short **hist_stack)
 {
 	ssize_t	size;
+	short	tmp;
 
 	scratch_log_init(micli, cmdhist, hist_stack);
 	while (1)
 	{
+		tmp = 0;
 		if (must_scroll(cmdhist))
 			do_scroll(micli, cmdhist, hist_stack);
 		cmdhist->scroll = 0;
-		size = read(STDIN_FILENO, \
-		&hist_stack[cmdhist->index][*cmdhist->char_total + 2], 2);
-		if (hist_stack[cmdhist->index][*cmdhist->char_total + 2] == 4 || !size)
+		//printf("\nCUR POS: %d\n", micli->termcaps.curpos_buf);
+		//size = read(STDIN_FILENO, 
+		//&hist_stack[cmdhist->index][*cmdhist->char_total + 2], 2);
+		size = read(STDIN_FILENO, &tmp, 2);
+		//if (hist_stack[cmdhist->index][*cmdhist->char_total + 2] == 4 || !size)
+		if (tmp == 4 || !size)
 		{
 			write(1, "exit\n", 5);
 			exit_success(micli);
 		}
-		*cmdhist->char_total += 1;
-		if (!do_not_echo(&hist_stack[cmdhist->index][2], \
-		cmdhist->char_total, &cmdhist->scroll, micli))
+		//if (!do_not_echo(&hist_stack[cmdhist->index][2], 
+		//cmdhist->char_total, &cmdhist->scroll, micli))
+		if (!do_not_echo(&hist_stack[cmdhist->index][0], \
+		tmp, &cmdhist->scroll, micli))
 		{
-			insert_char(&micli->termcaps, \
-			hist_stack[cmdhist->index][*cmdhist->char_total + 1]);
-			if (hist_stack[cmdhist->index][*cmdhist->char_total + 1] == '\n')
+			//insert_char(&micli->termcaps, 
+			//hist_stack[cmdhist->index][*cmdhist->char_total + 1]);
+			//if (hist_stack[cmdhist->index][*cmdhist->char_total + 1] == '\n')
+			if (tmp == '\n')
 				return (send_to_parser(cmdhist, hist_stack));
+			//hist_stack[cmdhist->index][micli->termcaps.curpos_buf] = tmp;
+			insert_char_buf(micli, hist_stack[cmdhist->index], tmp);
+			insert_char_scrn(&micli->termcaps, \
+			hist_stack[cmdhist->index][micli->termcaps.curpos_buf]);
+			*cmdhist->char_total += 1;
 		}
 		if (*cmdhist->char_total == *cmdhist->bufsize)
 			reallocate_readline_buffer(micli, cmdhist, hist_stack);
