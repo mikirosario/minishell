@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:36:48 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/03 13:30:38 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,11 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	}
 	else if (varp)
 	{
-		varp = (ft_strchr(varp, '=') + 1);
+		varp = (ft_strchr(varp, '='));
+		if (varp)
+			varp++;
+		else
+			varp = NUL;
 		new = ft_lstnew(varp);
 	}
 	else

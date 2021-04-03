@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 05:11:36 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 10:47:13 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	broken_pipe_check(pid_t pid)
 	while (i < 1000000)
 		i++;
 	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-	return (get_child_exit_status(stat_loc));
+	return (get_child_exit_status(pid, stat_loc));
 }
 
 /*

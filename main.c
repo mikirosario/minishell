@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 18:17:50 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 11:06:19 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 12:18:14 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	norminette_made_me_do_it(t_micli *micli)
 	micli->tonti.perms = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 	micli->tonti.f_tr = O_WRONLY | O_CREAT | O_TRUNC;
 	micli->tonti.f_ap = O_WRONLY | O_CREAT | O_APPEND;
-	micli->tonti.f_re = O_RDONLY | O_CREAT;
+	micli->tonti.f_re = O_RDONLY;
 }
 
 /*

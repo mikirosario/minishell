@@ -1,3 +1,9 @@
+### Verson 4.414
+
+- Fixed a fatal bug that caused a segmentation fault! When resolving undefined variables in the env_var_handling function, it used to be that find_var would ignore them, but find_var was changed to detect them. This led the resolver to treat undefined variables assuming that they had a trailing '=' sign and moving the varp pointer past the result of strchr(varp, '='). In this case, however, strchr returned NULL, because the '=' was not found, and so varp was defined as 0x01. The segmentation fault happened in good old ft_strlen (aka. segmentation fault detector) when it attempted to get the "string length" of 0x01. :p This could have been a DISASTER!!!!!!! Conditions have been introduced to point varp safely to the NUL literal if strchr returns a NULL when searching for the '=' in varp.
+
+ Checked and fixed (as needed all reported bugs in the bug report up to Case 17):
+
 ### Version 4.413
 
 - Checked and fixed (as needed) all reported bugs in the bug report up to Case 10 (see bugreport.md).

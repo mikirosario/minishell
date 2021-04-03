@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 04:47:31 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 12:40:01 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,7 @@ void			push_to_hist_stack(t_micli *micli, short *active_line, \
 
 char			*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
 char			**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli);
-int				get_child_exit_status(int stat_loc);
+int				get_child_exit_status(pid_t pid, int stat_loc);
 void			exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
 void			exec_child_process(char **exec_path, char *builtin, char *cmd, \
 				t_micli *micli);
@@ -311,6 +311,7 @@ char			*find_redir_end(char *redir_str);
 ** Exit Handling
 */
 
+void			bad_read_fd_child_abort(int fd_out, t_micli *micli);
 void			exit_success(t_micli *micli);
 void			exit_failure(t_micli *micli);
 
@@ -320,6 +321,7 @@ void			exit_failure(t_micli *micli);
 
 int				syntax_check(char *line, t_micli *micli);
 int				print_error(char *error, char *error_location, t_micli *micli);
+void			print_not_found(char *exec_path, char *cmd);
 void			sys_error(t_micli *micli);
 int				broken_pipe_check(pid_t pid);
 

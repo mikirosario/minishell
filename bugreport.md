@@ -3,7 +3,7 @@
 #                                                         :::      ::::::::    #
 #    bugreport.md                                       :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: miki <miki@student.42.fr>                  +#+  +:+       +#+         #
+#    By: miki \<miki@student.42.fr\>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/04/02 21:50:32 by miki              #+#    #+#              #
 #    Updated: 2021/04/02 21:50:32 by miki             ###   ########.fr        #
@@ -98,7 +98,7 @@ ni bonus.
 
 export var=te"st
 
-bash espera con devolviendo "dquote>"
+bash espera con devolviendo "dquote\>"
 el nuesto lo exporta sin mas
 
 	RESPUESTA: Efectivamente, es así.
@@ -143,7 +143,7 @@ PD: Enséñale esto a Mario, le va a encantar. xD
 
 echo "12\"
 
-bash espera devolviendo "dquote>"
+bash espera devolviendo "dquote\>"
 el nuestro 12"
 
 	RESPUESTA: Efectivamente, es así.
@@ -216,7 +216,7 @@ bash devuelve "command not found"
 	RESPUESTA: Efectivamente, es así. No se escapaban los espacios.
 
 ## CONCLUSIÓN
-- No se detectaban los espacios escapados ni los '>' y '<' escapados por un
+- No se detectaban los espacios escapados ni los '\>' y '\<' escapados por un
 error de parseo, pero esto ya se arregló en versión 4.412 y ya no ocurre.
 
 # CASO 10 - 💥 UN BUG!
@@ -247,13 +247,12 @@ Lo he cambiado. No solo provocaba este bug, sino que he visto que dejaba los
 procesos hijos como zombies (sin cosechar al final de sus vidas). Ahora el
 padre va abriendo hijos y cuando los tiene todos, los espera a TODOS antes de
 continuar, como buen padre. Esto ha tenido el efecto de resolver el bug, y
-evitar que los hijos queden zombies, pero también elimina los mensajes de
-error que salían en caso de paths incorrectos dentro de pipes, y para
-recuperarlos tendría que crear un array que guardara el exit status de cada
-hijo.
+evitar que los hijos queden zombies. He movido la impresión del error si no se
+encuentra el path directamente al hijo, que al estar desviado STDOUT se imprime
+a STDERR (AHHHH, para ESO servía xD).
 
 Por desgracia, aún no me explico exactamente el por qué de este bug. Mi teoría
-es que ocurría lo siguiente: En un pipe SIN errores, como cat | cat | ls, los
+era que ocurría lo siguiente: En un pipe SIN errores, como cat | cat | ls, los
 cat se quedaban esperando a STDIN, y el pipeline terminaba en un comando (como
 ls) que NO espera a STDIN, con lo que el programa sale del pipeline y vuelve al
 prompt, que escribe a STDOUT con un write, provocando el cierre en cascada de
@@ -261,20 +260,153 @@ todos los cat abiertos cuando leen el prompt de STDIN. Si en medio había
 comandos 'rotos', al escribir sus respectos mensajes de error a STDOUT podían
 provocar lo mismo respecto a otros procesos al enviar sus mensajes de error.
 
-Pero esta teoría tiene un a laguna importante: cat | echo test. A pesar de que
-echo envía datos a STDOUT, cat no los lee de STDIN. Se imprime test en pantalla,
-pero cat se queda esperando... A menos que haya alguna explicación especial
-detrás de este comportamiento, mi teoría no puede ser cierta, y me quedo sin
-saber qué provocaba el bug. :/
+Pero esta teoría hace aguas. Una laguna es: cat | echo test. A pesar de que echo
+envía datos a STDOUT, cat no los lee de STDIN. Se imprime test en pantalla, pero
+cat se queda esperando. He hecho otras pruebas enviando datos a STDOUT desde el
+padre y esperando que el hijo los recogiera por STDIN, y en ninguna el hijo se
+ha descolgado.
+
+A menos que haya alguna explicación especial detrás de de este comportamiento,
+mi teoría no puede ser cierta, y me quedo sin saber qué provocaba el bug. :/
 
 En cualquier caso ahora hago que el padre espere a todos los hijos al final del
-pipe como un shell normal, y el error parece haberse curado. Lo de la falta de
-mensajes de error es menos grave, aunque ya miraré de volverlos a meter si hay
-tiempo.
+pipe como un shell normal, y el error parece haberse curado.
+
+# CASO 11 ? DISCUTIBLE
+
+ls | exit
+bash no hace nada
+el nuestro sale
+
+	RESPUESTA: Efectivamente, es así, pero vaya pijada... Aunque sé que se trata
+	de imitar bash, zsh lo hace como micli. No hace excepciones en la ejecución
+	de comandos de pipes con 'exit'. :p
+
+## CONCLUSIÓN
+- Podría modificar el comportamiento de exit en caso de que viera que se
+encuentra en medio de un pipe, pero de momento voy a seguir... no me parece muy
+prioritario al ser muy interpretable cuál es el comportamiento 'correcto' en ese
+caso.
+
+# CASO 12 ? DISCUTIBLE
+
+sleep 5 | exit
+bash esepra el sleep y luego no hace nada
+el nuestro no hace el sleep y sale
+
+	RESPUESTA: En realidad, el nuestro hace el sleep, y sale antes de que
+	termine el sleep, pero con 'ps' ves que el sleep, ahora huérfano, sigue en
+	el fondo hasta que acaban los cinco segundos. Nuevamente, este
+	comportamiento no es el que elige bash, pero sí zsh.
+## CONCLUSIÓN
+- Básicamente es idéntico al Caso 11.
+
+# CASO 13 ? DISCUTIBLE
+
+\<a cat \<b \<c
+bash devuelve "a: No such file or directory"
+el nuestro "syntax error near unexpected token '\<a'
+\> test | echo blabla; rm test
+bash devuelve "blabla"
+el nuestro "sysntax error near unexpected token '\> '
+\>a cat \<b \>\>c
+bash devuelve "b: no such file or directory"
+el nuestor "syntax error near unexpected token '\>a'
+\>a ls \>b \>\>c \>d
+bash no devuelve nada
+el nuestro "syntax error near unexpected token '\>a'
+\>a ls \<machin \>\>c \>d
+bash devuelve "machin: No such file or directory"
+el nuestro "syntax error near unexpected token '\>a'
+\>file
+bash no devuelve nada
+el nuestro "syntax error near unexpected token '\>f'
+
+	RESPUESTA: Esto ocurre por un asunto más de fondo... prohíbo que un '\<'
+	esté en la primera posición de una línea. Bash lo interpreta...
+
+## CONCLUSIÓN
+- Más que un bug, parte de una ingenuidad que tenía respecto al ordenamiento de
+comandos que emplean redirección, presuponiendo que el comando siempre debía
+estar al princpio. Técnicamente en ese aspecto no imita bash a la perfección,
+pero modificarlo ahora sería delicado, costaría tiempo, y correría el riesgo de
+introducir nuevos bugs...
+
+# CASO 14 💥 UN BUG!
+
+cat -e \> test1 \< test2
+bash devuelve "test2: No such file or directory"
+el nuestro no devuelve nada
+cat \< test
+bash no such file or directory
+el nuestro no devuelve nada
+
+	RESPUESTA: Efectivamente, es así. En este caso bash intenta usar test2 como
+	input de cat antes de intentar crearlo, y aborta al encontrar el error.
+	Micli tiene el comportamiento de crear todos los archivos si no existen ya.
+
+- He quitado el O_CREAT flag del open para los archivos con permisos de lectura.
+Además, he introducido un mensaje de error parecido al de bash en caso de fallar
+el open. Si falla open, devuelve -1. Esto provocaba que cat se colgara esperando
+STDIN al ejecutarse sin entrada de datos. Para evitarlo, he introducido una
+condición especial en los hijos que ahora si reciben un fd de lectura de valor
+-1 deben cerrar el fd de escritura y salir inmediatamente, devolviendo
+EXIT_FAILURE. Es un poco ñapa, pero ahora imitamos bash.
+
+# CASO 15 ? DISCUTIBLE
 
 
+export var="  truc"; echo $var
+bash devuelve "truc"
+el nuestro "  truc"
+export var="truc  "; echo $var | cat -e
+bash devuelve "truc$"
+el nuestr "truc  $"
 
+	RESPUESTA: Efectivamente, es así. Increíblemente, en export sí guarda los
+	valores con los espacios, y es bash el que decide quitarlos al resolver la
+	variable. El zsh se comporta igual que micli en el mismo caso.
 
+- Esa una diferencia de interpretación de lo correcto en la que, francamente, me
+pongo totalmente de lado de zsh. Lo de 'interpretar' que el usuario metió unos
+espacios que en realidad no quería me parece muy soberbio. En todo caso, es una
+de esas cosas que diría... podría ajustar, pero no me parece que valga el tiempo
+que le tendría que invertir, ni el riesgo de introducir nuevos bugs que entraña
+todo cambio.
+
+# CASO 16 🚀 NO ES UN BUG
+
+$bla (non-export)
+bash devuelve "syntax error near unexpected token 'non-export'
+el nuestro " : command not found"
+echo $var bonjour ($var non export)
+bash devuelve "syntax error near unexpected token '('
+el nuestro devuelve "bonjoun ( non export)
+
+	RESPUESTA: En realidad micli devuelve, si var existe:
+	test: bonjour: unexpected operator
+	Y si no existe:
+	micli: : command not found
+
+- Tiene pinta de tratarse de alguna funcionalidad exótica de las que no vienen
+en el enunciado. Pero micli gestiona estos casos con dignidad y de forma lógica.
+
+# CASO 17 💥 UN BUG!
+
+export test="file1 file2" ; >$test
+bash devuelve "$test: ambiguos redirect"
+el nuestr "micli: : command not found"
+
+	RESPUESTA: El mensaje de error es lo de menos, pero esta prueba ha destapado
+	un bugg gravísimos, que tiraba segmentation fault...
+
+- Por un lado, con esta prueba me di cuenta de un fallo grave. Al intentar
+resolver variables indefinidas, se trataban como variables definidas, provocando
+segmentation fault al salir más allá del nulo en busca de su valor. Esto se ha
+arreglado. Por otro lado, el parser considera que el  >$test es un comando e 
+intenta buscarlo.
+por eso devuelve command not found. En el segundo, parece saltarse el espacio.
+Pero no lo hace siempre.
 
 export "" test=a
 bash devuelve "export: not valid in this context:"
@@ -283,13 +415,13 @@ echo ~
 bash devuelve el directorio home
 el nuestro hace escribe ~
 export var=te"st
-bash espera con devolviendo "dquote>"
+bash espera con devolviendo "dquote\>"
 el nuesto lo exporta sin mas
 .
 bash devuelve ".: not enough arguments"
 el nuestro ".: No such file or directory"
 echo "12\"
-bash espera devolviendo "dquote>"
+bash espera devolviendo "dquote\>"
 el nuestro 12"
 $LESS$VAR
 bash no devuelve nada
@@ -308,28 +440,28 @@ el nuestro sale
 sleep 5 | exit
 bash esepra el sleep y luego no hace nada
 el nuestro no hace el sleep y sale
-<a cat <b <c
+\<a cat \<b \<c
 bash devuelve "a: No such file or directory"
-el nuestro "syntax error near unexpected token '<a'
-> test | echo blabla; rm test
+el nuestro "syntax error near unexpected token '\<a'
+\> test | echo blabla; rm test
 bash devuelve "blabla"
-el nuestro "sysntax error near unexpected token '> '
->a cat <b >>c
+el nuestro "sysntax error near unexpected token '\> '
+\>a cat \<b \>\>c
 bash devuelve "b: no such file or directory"
-el nuestor "syntax error near unexpected token '>a'
->a ls >b >>c >d
+el nuestor "syntax error near unexpected token '\>a'
+\>a ls \>b \>\>c \>d
 bash no devuelve nada
-el nuestro "syntax error near unexpected token '>a'
->a ls <machin >>c >d
+el nuestro "syntax error near unexpected token '\>a'
+\>a ls \<machin \>\>c \>d
 bash devuelve "machin: No such file or directory"
-el nuestro "syntax error near unexpected token '>a'
->file
+el nuestro "syntax error near unexpected token '\>a'
+\>file
 bash no devuelve nada
-el nuestro "syntax error near unexpected token '>f'
-cat -e > test1 < test2
+el nuestro "syntax error near unexpected token '\>f'
+cat -e \> test1 \< test2
 bash devuelve "test2: No such file or directory"
 el nuestro no devuelve nada
-cat < test
+cat \< test
 bash no such file or directory
 el nuestro no devuelve nada
 export var="  truc"; echo $var
@@ -344,16 +476,16 @@ el nuestro " : command not found"
 echo $var bonjour ($var non export)
 bash devuelve "syntax error near unexpected token '('
 el nuestro devuelve "bonjoun ( non export)
-export test="file1 file2" ; >$test
+export test="file1 file2" ; \>$test
 bash devuelve "$test: ambiguos redirect"
 el nuestr "micli: : command not found"
-export test="file1 file2" ; >"$test"
+export test="file1 file2" ; \>"$test"
 bash no devuelve nada
 el nuestro "micli: : command not found"
-echo bonjour > $test
+echo bonjour \> $test
 bash devuelve "$test: ambiguos redirect"
 el nuestro no devuelve nada
-echo bonjour > $test w/ test="o1 o2"
+echo bonjour \> $test w/ test="o1 o2"
 bash "$test ambiguos redirect"
 el nuestro nada
 unset "" test

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 05:12:14 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 12:41:38 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,9 @@ void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 	if (builtin == NULL)
 	{
 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
+		ft_putstr_fd("micli: ", STDERR_FILENO);
+		ft_putstr_fd(exec_path, STDERR_FILENO);
+		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
 		exit(127);
 	}
 	else
@@ -329,6 +332,8 @@ void	child_process(char *exec_path, char *builtin, t_micli *micli)
 	i = 0;
 	in = 0;
 	out = 0;
+	if (micli->cmdline.fd_redir_in == -1)
+		bad_read_fd_child_abort(micli->cmdline.fd_redir_out, micli);
 	get_new_stdin_stdout(&in, &out, micli);
 	if (out)
 		dup2(out, STDOUT_FILENO);
@@ -351,7 +356,7 @@ void	child_process(char *exec_path, char *builtin, t_micli *micli)
 ** WIFSTOPPED returns true if the process was stopped.
 */
 
-int	get_child_exit_status(int stat_loc)
+int	get_child_exit_status(pid_t pid, int stat_loc)
 {
 	int	exit_status;
 
@@ -365,7 +370,10 @@ int	get_child_exit_status(int stat_loc)
 			printf("HOSTIA UN COREDUMP O_O!!! RUN FOR YOUR LIVES!!\n");
 	}
 	else if (WIFSTOPPED(stat_loc))
+	{
 		exit_status = WSTOPSIG(stat_loc);
+		kill(pid, 9);
+	}
 	return (exit_status);
 }
 
@@ -477,8 +485,8 @@ t_micli *micli)
 		signal(SIGQUIT, sigquit);
 		signal(SIGINT, waiting);
 		while (cmd_num--)
-			waitpid(-1, &stat_loc, 0);
-		micli->cmd_result = get_child_exit_status(stat_loc);
+			pid = waitpid(-1, &stat_loc, 0);
+		micli->cmd_result = get_child_exit_status(pid, stat_loc);
 		micli->pipe_flag = 0;
 	}
 	if (*exec_path != cmd)

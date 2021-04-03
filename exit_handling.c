@@ -6,11 +6,18 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 12:06:33 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 18:03:34 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/03 12:41:34 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	bad_read_fd_child_abort(int fd_out, t_micli *micli)
+{
+	close(fd_out);
+	freeme(micli);
+	exit(EXIT_FAILURE);
+}
 
 /*
 ** Any program failure leading to program termination should immediately save
