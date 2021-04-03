@@ -1,3 +1,7 @@
+### Version 4.413
+
+- Checked and fixed (as needed) all reported bugs in the bug report up to Case 10 (see bugreport.md).
+
 ### Version 4.412
 
 - Fixed cd bug when HOME unset.

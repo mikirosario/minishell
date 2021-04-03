@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/02 00:53:50 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 04:47:31 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,7 @@ typedef struct s_pipes
 	size_t			array_size;
 	size_t			count;
 	size_t			cmd_index;
+	size_t			cmd_num;
 }				t_pipes;
 
 typedef struct s_normis_fault
@@ -245,7 +246,7 @@ char			*find_cmd_path(char *cmd, const char *paths, t_micli *micli);
 char			**create_micli_argv(char *cmd, t_list *arglst, t_micli *micli);
 int				get_child_exit_status(int stat_loc);
 void			exec_cmd(char *cmd, t_list *arglst, t_micli *micli);
-void			exec_child_process(char *exec_path, char *builtin, char *cmd, \
+void			exec_child_process(char **exec_path, char *builtin, char *cmd, \
 				t_micli *micli);
 
 /*

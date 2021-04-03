@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/27 21:30:02 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/03 05:12:14 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -412,9 +412,19 @@ int	get_child_exit_status(int stat_loc)
 ** purposes, we close them.
 **
 ** Next, we usually want to wait for our child to finish what it's doing.
-** However, in a pipeline we only want to wait for our *last* child to finish,
-** while we will not wait for any older children, because each child will wait
-** for its own older sibling.
+** However, in a pipeline we need to wait for all of the children to finish what
+** they are doing, and each child is essentially waiting for input from its next
+** oldest sibling to start and to stop. By executing waitpid cmd_num times with
+** -1, we tell waitpid to wait for and reap the exit status of any child as many
+** times as we have children, so we wait for all the children to exit and be
+** reaped, preventing zombie processes. This obsoletes the preceding broken_pipe
+** check, which was very janky anyway and I was reluctant to change because it
+** was working, but then I found it created zombie processes and incorrect
+** behaviour in some pipes during a bug test, so I was forced to do this
+** properly. ;)
+**
+** Only the exit status of the child that exited last will be reported now or
+** used to print errors.
 **
 ** If the pipe_flag is not set, this is an only child. If the pipe flag is set,
 ** then we are at the last child in the pipeline when the total number of pipes
@@ -444,30 +454,33 @@ int	get_child_exit_status(int stat_loc)
 ** would cause a double-free.
 */
 
-void	exec_child_process(char *exec_path, char *builtin, char *cmd, \
+void	exec_child_process(char **exec_path, char *builtin, char *cmd, \
 t_micli *micli)
 {
 	int		stat_loc;
+	size_t	cmd_num;
 	pid_t	pid;
 
 	pid = fork();
 	if (!pid)
-		child_process(exec_path, builtin, micli);
-	if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
-		micli->cmd_result = broken_pipe_check(pid);
+		child_process(*exec_path, builtin, micli);
+	//if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
+	//	micli->cmd_result = broken_pipe_check(pid);
 	if (micli->cmdline.fd_redir_out)
 		close(micli->cmdline.fd_redir_out);
 	if (micli->cmdline.fd_redir_in)
 		close(micli->cmdline.fd_redir_in);
 	if (!micli->pipe_flag || (micli->pipes.count - micli->pipes.cmd_index == 0))
 	{
+		cmd_num = micli->pipes.cmd_index + 1;
 		clear_pipes(&micli->pipes, micli);
 		signal(SIGQUIT, sigquit);
 		signal(SIGINT, waiting);
-		waitpid(pid, &stat_loc, WUNTRACED);
+		while (cmd_num--)
+			waitpid(-1, &stat_loc, 0);
 		micli->cmd_result = get_child_exit_status(stat_loc);
 		micli->pipe_flag = 0;
 	}
-	if (exec_path != cmd)
-		exec_path = ft_del(exec_path);
+	if (*exec_path != cmd)
+		*exec_path = ft_del(*exec_path);
 }
