@@ -1,3 +1,31 @@
+## Version 4.42
+
+- Patched bug that caused "No such file or directory" error message to be printed twice in some circumstances.
+
+- Norminette completed.
+
+### Version 4.416
+
+- Norminette applied.
+
+- Fixed bug that caused "declare -x" to be printed inside the double quotes with the export command due to printf buffering. Export printer now uses write exclusively.
+
+- Fixed bug that caused export | grep 'pattern' to return Binary file (standard input) matches error with undefined variables in envp. This bug happened because in the export print code the variable name was written as write(1, var_name, var_name_len + 1), that is, the byte after the variable name was always printed, assuming that it would be an '='. With undefined variables declared, however, this byte was a null terminator. Consequently, when passed to grep the line would end in a null terminator rather than a new line, causing grep to return the error. (Thanks, grep!) This has now been changed so that we only write var_name_len bytes. The '=' is written via hard-coding after the condition that reveals whether we have an undefined variable (str_len == var_name_len) or not (str_len != var_name_len).
+
+### Version 4.415
+
+- Checked and fixed (as needed) all reported bugs in the bug report (see bugreport.md).
+
+### Version 4.414
+
+- Fixed a fatal bug that caused a segmentation fault! When resolving undefined variables in the env_var_handling function, it used to be that find_var would ignore them, but find_var was changed to detect them. This led the resolver to treat undefined variables assuming that they had a trailing '=' sign and moving the varp pointer past the result of strchr(varp, '='). In this case, however, strchr returned NULL, because the '=' was not found, and so varp was defined as 0x01. The segmentation fault happened in good old ft_strlen (aka. segmentation fault detector) when it attempted to get the "string length" of 0x01. :p This could have been a DISASTER!!!!!!! Conditions have been introduced to point varp safely to the NUL literal if strchr returns a NULL when searching for the '=' in varp.
+
+- Checked and fixed (as needed) all reported bugs in the bug report up to Case 17 (see bugreport.md).
+
+### Version 4.413
+
+- Checked and fixed (as needed) all reported bugs in the bug report up to Case 10 (see bugreport.md).
+
 ### Version 4.412-a
 
 - This is an attempt to add line edition to the project, but currently it is dysfunctional. It works sometimes, but moving around a lot the buffer copying seems to fail. Furthermore, it does not handle multi-row displacement. Probably will have to abandon before the evaluation, though the memory use is also more efficient now thanks to a sub-buffer, and I may incorporate that into main.

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/01 20:47:05 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/28 00:47:47 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/03 12:26:06 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ void	open_redir_file(t_normis_fault *tonti, t_micli *micli)
 		if (micli->cmdline.redir_in)
 			close(micli->cmdline.fd_redir_in);
 		micli->cmdline.fd_redir_in = open(dst, tonti->f_re, tonti->perms);
+		if (micli->cmdline.fd_redir_in == -1)
+			printf("micli: No such file or directory: %s\n", dst);
 	}
 	dst = ft_del(dst);
 	micli->cmdline.redir_out_flag = 0;

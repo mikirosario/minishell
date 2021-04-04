@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 21:18:00 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/28 03:57:45 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 13:20:16 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	new_var(const char **argv, size_t str_len, t_micli *micli, int z)
 	}
 	free(tmp);
 	micli->envp[countarr] = clean_calloc(str_len + 1, sizeof(char), micli);
-	ft_memcpy(micli->envp[countarr], argv[z], str_len + 1);
+	ft_memcpy(micli->envp[countarr], argv[z], str_len);
 }
 
 /*
@@ -105,11 +105,11 @@ void	export_print(t_micli *micli)
 	{
 		name_len = ft_name_len(micli->envp[mask[i]]);
 		str_len = ft_strlen(micli->envp[mask[i]]);
-		printf("declare -x ");
-		write(1, micli->envp[mask[i]], name_len + 1);
+		write(1, "declare -x ", 11);
+		write(1, micli->envp[mask[i]], name_len);
 		if (str_len != name_len)
 		{
-			ft_putchar('\"');
+			write(1, "=\"", 2);
 			printf("%s\"\n", micli->envp[mask[i]] + name_len + 1);
 		}
 		else

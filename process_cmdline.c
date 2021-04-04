@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 15:32:51 by miki              #+#    #+#             */
-/*   Updated: 2021/04/02 00:42:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 12:17:35 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,7 @@ int	process_cmdline(char *startl, char *endl, t_micli *micli)
 	toggle_pipe_flag(*micli->tokdata.tok_end, micli->pipe_flag);
 	micli->tokdata.quote_flag = 0;
 	micli->tokdata.escape_flag = 0;
+	micli->cmd_result = 0;
 	exec_cmd(micli->cmdline.cmd, micli->cmdline.arguments, micli);
 	clear_cmdline(micli);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/03/30 19:33:42 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 23:26:10 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else
+	else if (is_valid_command(cmd, &path_var))
 	{
 		exec_path = find_cmd_path(cmd, path_var, micli);
 		builtin = builtin_check(exec_path, cmd);
@@ -201,7 +201,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	if (exec_local(exec_path, builtin, micli))
 		micli->cmd_result = exec_builtin(builtin, micli);
 	else if (exec_path != NULL)
-		exec_child_process(exec_path, builtin, cmd, micli);
+		exec_child_process(&exec_path, builtin, cmd, micli);
 	if (micli->cmd_result == 127)
 		print_not_found(exec_path, cmd);
 	if (micli->pipe_flag)

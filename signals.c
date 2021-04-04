@@ -6,7 +6,7 @@
 /*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/28 19:30:53 by mvillaes          #+#    #+#             */
-/*   Updated: 2021/03/28 16:49:12 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/03 11:07:50 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	sigrun(int signum)
 {
 	if (signum == SIGINT)
 	{
-		write (STDOUT_FILENO, "\n🚀 ", 6);
+		write(STDOUT_FILENO, "\n🚀 ", 6);
 		signal(SIGINT, sigrun);
 	}
 	else if (signum == SIGQUIT)

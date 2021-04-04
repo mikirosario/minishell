@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/01 10:52:33 by miki              #+#    #+#             */
-/*   Updated: 2021/04/02 05:42:15 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 23:48:49 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,17 +192,6 @@ void	termcaps_init(t_micli *micli, t_termcaps *tcaps)
 
 	capbuf = &tcaps->capbuf[0];
 	termtype = find_var("TERM", 4, micli->envp);
-	// DEBUG REMOVE FROM FINAL
-	char	*fake_argv[2];
-	if (!termtype)
-	{
-		fake_argv[0] = "export";
-		fake_argv[1] = "TERM=xterm-256color";
-		ft_export((const char **)fake_argv, micli);
-		termtype = find_var("TERM", 4, micli->envp);
-		printf("TERM: %s\n", termtype);
-	}
-	// //DEBUG REMOVE FROM FINAL
 	if (termtype)
 	{
 		termtype += 5;

@@ -3,38 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/01 21:45:43 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/04 23:41:46 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** At the beginning and in the middle of a pipeline, this function checks for
-** any child processes that may have exited with failure status to save their
-** exit status.
+** The command is valid if:
 **
-** The loop of shame happens here. I know now I should be using
-** while((-1, &stat_loc, WUNTRACED) > 0) to check all the children one by one
-** and save each of their results to some failure array or something, and not
-** this shamefulness, but I *really* need to get this project in and
-** implementing and testing that would set me back. Sorry. :( Don't copy this
-** method, it's awful. xD
+** It exists (cmd && *cmd), AND
+** It is not '.' OR '..',
+** The *path_var exists, AND
+** The character after PATH in the *path_var is an '='.
+**
+** If the path_var is valid we increment the path_var pointer to point to the
+** character after the '=' in PATH=.
 */
 
-int	broken_pipe_check(pid_t pid)
+int	is_valid_command(char *cmd, char **path_var)
 {
-	int		stat_loc;
-	size_t	i;
-
-	i = 0;
-	while (i < 1000000)
-		i++;
-	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-	return (get_child_exit_status(stat_loc));
+	if (cmd && *cmd && !(*cmd == '.' && ((*(cmd + 1) == '\0') \
+	 || (*(cmd + 1) == '.' && *(cmd + 2) == '\0'))) && *path_var \
+	 && *(*path_var + 4) == '=')
+	 {
+		*path_var += 5;
+		return (1);
+	 }
+	return (0);
 }
 
 /*
@@ -59,7 +58,6 @@ void	sys_error(t_micli *micli)
 
 int	print_error(char *error_message, char *error_location, t_micli *micli)
 {
-
 	if (!error_location)
 		printf("💥 %s\n", error_message);
 	else if (error_location[1])
