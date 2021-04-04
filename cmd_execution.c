@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/04 12:19:26 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 23:26:10 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else if (is_valid_command(cmd))
+	else if (is_valid_command(cmd, &path_var))
 	{
 		exec_path = find_cmd_path(cmd, path_var, micli);
 		builtin = builtin_check(exec_path, cmd);

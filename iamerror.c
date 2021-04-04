@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/04 12:14:11 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 23:41:46 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,23 @@
 ** The command is valid if:
 **
 ** It exists (cmd && *cmd), AND
-** It is not '.' OR '..'.
+** It is not '.' OR '..',
+** The *path_var exists, AND
+** The character after PATH in the *path_var is an '='.
+**
+** If the path_var is valid we increment the path_var pointer to point to the
+** character after the '=' in PATH=.
 */
 
-int	is_valid_command(char *cmd)
+int	is_valid_command(char *cmd, char **path_var)
 {
 	if (cmd && *cmd && !(*cmd == '.' && ((*(cmd + 1) == '\0') \
-	 || (*(cmd + 1) == '.' && *(cmd + 2) == '\0'))))
+	 || (*(cmd + 1) == '.' && *(cmd + 2) == '\0'))) && *path_var \
+	 && *(*path_var + 4) == '=')
+	 {
+		*path_var += 5;
 		return (1);
+	 }
 	return (0);
 }
 
