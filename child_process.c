@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/04 11:56:20 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 16:11:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,29 +160,28 @@ void	get_new_stdin_stdout(int *in, int *out, t_micli *micli)
 
 void	child_process_exec(char *builtin, char *exec_path, t_micli *micli)
 {
-	int	res;
+	int const	res = exec_builtin(exec_path, micli);
 
 	if (builtin == NULL)
 	{
 		execve(exec_path, micli->cmdline.micli_argv, micli->envp);
-		ft_putstr_fd("micli: ", STDERR_FILENO);
-		ft_putstr_fd(exec_path, STDERR_FILENO);
-		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		if (micli->cmdline.fd_redir_in == -1)
+		{
+			ft_putstr_fd("micli: ", STDERR_FILENO);
+			ft_putstr_fd(exec_path, STDERR_FILENO);
+			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		}
 		exit(127);
+	}
+	else if (!res)
+	{
+		freeme(micli);
+		exit(EXIT_SUCCESS);
 	}
 	else
 	{
-		res = exec_builtin(exec_path, micli);
-		if (!res)
-		{
-			freeme(micli);
-			exit(EXIT_SUCCESS);
-		}
-		else
-		{
-			freeme(micli);
-			exit(EXIT_FAILURE);
-		}
+		freeme(micli);
+		exit(EXIT_FAILURE);
 	}
 }
 
