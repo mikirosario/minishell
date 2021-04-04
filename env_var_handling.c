@@ -6,7 +6,7 @@
 /*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/05 15:55:31 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/04 10:31:23 by miki             ###   ########.fr       */
+/*   Updated: 2021/04/04 13:27:27 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,6 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 	t_list	*new;
 
 	varp = find_var(var_name, var_name_strlen, micli->envp);
-	if (varp && *(varp + var_name_strlen) != '=' )
-		varp = NULL;
 	if (*var_name == '?')
 	{
 		if (micli->cmd_result_str)
@@ -124,7 +122,7 @@ void	var_buffer(char *var_name, size_t var_name_strlen, t_micli *micli)
 		micli->cmd_result_str = ft_itoa(micli->cmd_result);
 		new = ft_lstnew(micli->cmd_result_str);
 	}
-	else if (varp)
+	else if (varp && *(varp + var_name_strlen) == '=')
 	{
 		varp = (ft_strchr(varp, '='));
 		if (varp)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/26 10:26:59 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 12:40:01 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/04 13:28:06 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -323,7 +323,7 @@ int				syntax_check(char *line, t_micli *micli);
 int				print_error(char *error, char *error_location, t_micli *micli);
 void			print_not_found(char *exec_path, char *cmd);
 void			sys_error(t_micli *micli);
-int				broken_pipe_check(pid_t pid);
+int				is_valid_command(char *cmd);
 
 /*
 ** Memory Freeing

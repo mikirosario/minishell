@@ -1,3 +1,13 @@
+### Version 4.416
+
+- Norminette applied.
+
+- Fixed bug that caused "declare -x" to be printed inside the double quotes with the export command due to printf buffering. Export printer now uses write exclusively.
+
+- Fixed bug that caused export | grep 'pattern' to return Binary file (standard input) matches error with undefined variables in envp. This bug happened because in the export print code the variable name was written as write(1, var_name, var_name_len + 1), that is, the byte after the variable name was always printed, assuming that it would be an '='. With undefined variables declared, however, this byte was a null terminator. Consequently, when passed to grep the line would end in a null terminator rather than a new line, causing grep to return the error. (Thanks, grep!)
+
+This has now been changed so that we only write var_name_len bytes. The '=' is written via hard-coding after the condition that reveals whether we have an undefined variable (str_len == var_name_len) or not (str_len != var_name_len).
+
 ### Version 4.415
 
 - Checked and fixed (as needed) all reported bugs in the bug report (see bugreport.md).

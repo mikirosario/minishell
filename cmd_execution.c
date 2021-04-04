@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_execution.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/04 19:33:19 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 11:11:14 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/04 12:19:26 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,14 +185,13 @@ void	exec_cmd(char *cmd, t_list *arglst, t_micli *micli)
 	char			*builtin;
 	char			*path_var;
 
-	micli->cmd_result = 0;
 	exec_path = NULL;
 	builtin = NULL;
 	micli->cmdline.micli_argv = create_micli_argv(cmd, arglst, micli);
 	path_var = find_var("PATH", 4, micli->envp);
 	if (is_path(cmd))
 		exec_path = cmd;
-	else if ( !(*cmd == '.' && ((*(cmd + 1) == '\0') || (*(cmd + 1) == '.' && *(cmd + 2) == '\0')) ) )
+	else if (is_valid_command(cmd))
 	{
 		exec_path = find_cmd_path(cmd, path_var, micli);
 		builtin = builtin_check(exec_path, cmd);

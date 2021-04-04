@@ -3,38 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   iamerror.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 19:25:04 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 10:47:13 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/04 12:14:11 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /*
-** At the beginning and in the middle of a pipeline, this function checks for
-** any child processes that may have exited with failure status to save their
-** exit status.
+** The command is valid if:
 **
-** The loop of shame happens here. I know now I should be using
-** while((-1, &stat_loc, WUNTRACED) > 0) to check all the children one by one
-** and save each of their results to some failure array or something, and not
-** this shamefulness, but I *really* need to get this project in and
-** implementing and testing that would set me back. Sorry. :( Don't copy this
-** method, it's awful. xD
+** It exists (cmd && *cmd), AND
+** It is not '.' OR '..'.
 */
 
-int	broken_pipe_check(pid_t pid)
-{ //OBSOLETED!! :D
-	int		stat_loc;
-	size_t	i;
-
-	i = 0;
-	while (i < 1000000)
-		i++;
-	waitpid(pid, &stat_loc, WNOHANG | WUNTRACED);
-	return (get_child_exit_status(pid, stat_loc));
+int	is_valid_command(char *cmd)
+{
+	if (cmd && *cmd && !(*cmd == '.' && ((*(cmd + 1) == '\0') \
+	 || (*(cmd + 1) == '.' && *(cmd + 2) == '\0'))))
+		return (1);
+	return (0);
 }
 
 /*
@@ -59,7 +49,6 @@ void	sys_error(t_micli *micli)
 
 int	print_error(char *error_message, char *error_location, t_micli *micli)
 {
-
 	if (!error_location)
 		printf("💥 %s\n", error_message);
 	else if (error_location[1])

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   child_process.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrosario <mrosario@student.42.fr>          +#+  +:+       +#+        */
+/*   By: miki <miki@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/14 21:17:29 by mrosario          #+#    #+#             */
-/*   Updated: 2021/04/03 12:41:38 by mrosario         ###   ########.fr       */
+/*   Updated: 2021/04/04 11:56:20 by miki             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -472,8 +472,6 @@ t_micli *micli)
 	pid = fork();
 	if (!pid)
 		child_process(*exec_path, builtin, micli);
-	//if (micli->pipe_flag == 1 || micli->pipe_flag == 3)
-	//	micli->cmd_result = broken_pipe_check(pid);
 	if (micli->cmdline.fd_redir_out)
 		close(micli->cmdline.fd_redir_out);
 	if (micli->cmdline.fd_redir_in)
