@@ -14,9 +14,9 @@
 
 # CASO 1 - 🚀 NO ES UN BUG
 
-export $var=test
-bash devuelve "export: not valid in this context: /bint/test
-el nuesto no devuelve nada
+export $var=test<br><br>
+bash devuelve "export: not valid in this context: /bint/test<br>
+el nuesto no devuelve nada<br>
 
 	RESPUESTA:
 	
@@ -39,9 +39,9 @@ unset var.
 
 # CASO 2 - 🚀 NO ES UN BUG
 
-export "" test=a
-bash devuelve "export: not valid in this context:"
-el nuestro devuelve "export '': not a valid identifier"
+export "" test=a<br><br>
+bash devuelve "export: not valid in this context:"<br>
+el nuestro devuelve "export '': not a valid identifier"<br>
 
 	RESPUESTA:
 
@@ -62,9 +62,9 @@ y Linux. No es un bug.
 
 # CASO 3 - 🚀 NO ES UN BUG
 
-echo ~
-bash devuelve el directorio home
-el nuestro hace escribe ~
+echo ~<br><br>
+bash devuelve el directorio home<br>
+el nuestro hace escribe ~<br>
 
 	RESPUESTA:
 
@@ -96,10 +96,9 @@ ni bonus.
 
 # CASO 4 - 🚀 NO ES UN BUG
 
-export var=te"st
-
-bash espera con devolviendo "dquote\>"
-el nuesto lo exporta sin mas
+export var=te"st<br><br>
+bash espera con devolviendo "dquote\>"<br>
+el nuesto lo exporta sin mas<br>
 
 	RESPUESTA: Efectivamente, es así.
 
@@ -113,10 +112,9 @@ metes export var=te"st" en bash hace lo mismo que minishell.
 
 # CASO 5 - 🚀 NO SOLO NO ES UN BUG, EL BASH DE MAC ES EL QUE TIENE EL 'BUG' xD
 
-.
-
-bash devuelve ".: not enough arguments"
-el nuestro ".: No such file or directory"
+.<br><br>
+bash devuelve ".: not enough arguments"<br>
+el nuestro ".: No such file or directory"<br>
 
 	RESPUESTA: Efectivamente, es así. Para ser más precisos, bash en Mac
 	devuelve ".: not enough arguments". Mi bash en Ubuntu dice:
@@ -141,10 +139,9 @@ PD: Enséñale esto a Mario, le va a encantar. xD
 
 # CASO 6 - 🚀 NO ES UN BUG
 
-echo "12\"
-
-bash espera devolviendo "dquote\>"
-el nuestro 12"
+echo "12\"<br><br>
+bash espera devolviendo "dquote\>"<br>
+el nuestro 12"<br>
 
 	RESPUESTA: Efectivamente, es así.
 
@@ -158,10 +155,9 @@ mismo que minishell.
 
 # CASO 7 - 🚀 NO ES UN BUG
 
-$LESS$VAR
-
-bash no devuelve nada
-el nuestro "micli: : command not found"
+$LESS$VAR<br><br>
+bash no devuelve nada<br>
+el nuestro "micli: : command not found"<br>
 
 	RESPUESTA: Efectivamente, es así.
 
@@ -176,9 +172,9 @@ menos eficiente que bash, también es más explícito para el usuario.
 
 # CASO 8 - 💥 UN BUG!
 
-..
-bash "..:command not found"
-el nuestro "..: No such file or directory"
+..<br><br>
+bash "..:command not found"<br>
+el nuestro "..: No such file or directory"<br>
 
 	RESPUESTA: Efectivamente, es así. Resulta que había un comportamiento raro.
 	Dos, en realidad, que han sido destapados gracias a este caso. :)
@@ -210,8 +206,8 @@ que en bash.
 
 # CASO 9 - 💥 UN BUG!
 
-echo\ a
-bash devuelve "command not found"
+echo\ a<br><br>
+bash devuelve "command not found"<br>
 
 	RESPUESTA: Efectivamente, es así. No se escapaban los espacios.
 
@@ -221,9 +217,9 @@ error de parseo, pero esto ya se arregló en versión 4.412 y ya no ocurre.
 
 # CASO 10 - 💥 UN BUG!
 
-cat | cat | cat | ls
-bash deja la terminal esperando
-la nuestra la devuelve
+cat | cat | cat | ls<br><br>
+bash deja la terminal esperando<br>
+la nuestra la devuelve<br>
 
 	RESPUESTA: Efectivamente, es así. Y va a ser jodido de entender... :p
 
@@ -274,9 +270,9 @@ pipe como un shell normal, y el error parece haberse curado.
 
 # CASO 11 ? DISCUTIBLE
 
-ls | exit
-bash no hace nada
-el nuestro sale
+ls | exit<br><br>
+bash no hace nada<br>
+el nuestro sale<br>
 
 	RESPUESTA: Efectivamente, es así, pero vaya pijada... Aunque sé que se trata
 	de imitar bash, zsh lo hace como micli. No hace excepciones en la ejecución
@@ -290,9 +286,9 @@ caso.
 
 # CASO 12 ? DISCUTIBLE
 
-sleep 5 | exit
-bash esepra el sleep y luego no hace nada
-el nuestro no hace el sleep y sale
+sleep 5 | exit<br><br>
+bash esepra el sleep y luego no hace nada<br>
+el nuestro no hace el sleep y sale<br>
 
 	RESPUESTA: En realidad, el nuestro hace el sleep, y sale antes de que
 	termine el sleep, pero con 'ps' ves que el sleep, ahora huérfano, sigue en
@@ -303,24 +299,24 @@ el nuestro no hace el sleep y sale
 
 # CASO 13 ? DISCUTIBLE
 
-\<a cat \<b \<c
-bash devuelve "a: No such file or directory"
-el nuestro "syntax error near unexpected token '\<a'
-\> test | echo blabla; rm test
-bash devuelve "blabla"
-el nuestro "sysntax error near unexpected token '\> '
-\>a cat \<b \>\>c
-bash devuelve "b: no such file or directory"
-el nuestor "syntax error near unexpected token '\>a'
-\>a ls \>b \>\>c \>d
-bash no devuelve nada
-el nuestro "syntax error near unexpected token '\>a'
-\>a ls \<machin \>\>c \>d
-bash devuelve "machin: No such file or directory"
-el nuestro "syntax error near unexpected token '\>a'
-\>file
-bash no devuelve nada
-el nuestro "syntax error near unexpected token '\>f'
+\<a cat \<b \<c<br>
+bash devuelve "a: No such file or directory"<br>
+el nuestro "syntax error near unexpected token '\<a'<br>
+\> test | echo blabla; rm test<br><br>
+bash devuelve "blabla"<br>
+el nuestro "sysntax error near unexpected token '\> '<br>
+\>a cat \<b \>\>c<br><br>
+bash devuelve "b: no such file or directory"<br>
+el nuestor "syntax error near unexpected token '\>a'<br>
+\>a ls \>b \>\>c \>d<br><br>
+bash no devuelve nada<br>
+el nuestro "syntax error near unexpected token '\>a'<br>
+\>a ls \<machin \>\>c \>d<br><br>
+bash devuelve "machin: No such file or directory"<br>
+el nuestro "syntax error near unexpected token '\>a'<br>
+\>file<br><br>
+bash no devuelve nada<br>
+el nuestro "syntax error near unexpected token '\>f'<br>
 
 	RESPUESTA: Esto ocurre por un asunto más de fondo... prohíbo que un '\<'
 	esté en la primera posición de una línea. Bash lo interpreta...
@@ -334,17 +330,18 @@ introducir nuevos bugs...
 
 # CASO 14 💥 UN BUG!
 
-cat -e \> test1 \< test2
-bash devuelve "test2: No such file or directory"
-el nuestro no devuelve nada
-cat \< test
-bash no such file or directory
-el nuestro no devuelve nada
+cat -e \> test1 \< test2<br><br>
+bash devuelve "test2: No such file or directory"<br>
+el nuestro no devuelve nada<br>
+cat \< test<br><br>
+bash no such file or directory<br>
+el nuestro no devuelve nada<br>
 
 	RESPUESTA: Efectivamente, es así. En este caso bash intenta usar test2 como
 	input de cat antes de intentar crearlo, y aborta al encontrar el error.
 	Micli tiene el comportamiento de crear todos los archivos si no existen ya.
 
+## CONCLUSIÓN
 - He quitado el O_CREAT flag del open para los archivos con permisos de lectura.
 Además, he introducido un mensaje de error parecido al de bash en caso de fallar
 el open. Si falla open, devuelve -1. Esto provocaba que cat se colgara esperando
@@ -356,17 +353,18 @@ EXIT_FAILURE. Es un poco ñapa, pero ahora imitamos bash.
 # CASO 15 ? DISCUTIBLE
 
 
-export var="  truc"; echo $var
-bash devuelve "truc"
-el nuestro "  truc"
-export var="truc  "; echo $var | cat -e
-bash devuelve "truc$"
-el nuestr "truc  $"
+export var="  truc"; echo $var<br><br>
+bash devuelve "truc"<br>
+el nuestro "  truc"<br>
+export var="truc  "; echo $var | cat -e<br><br>
+bash devuelve "truc$"<br>
+el nuestr "truc  $"<br>
 
 	RESPUESTA: Efectivamente, es así. Increíblemente, en export sí guarda los
 	valores con los espacios, y es bash el que decide quitarlos al resolver la
 	variable. El zsh se comporta igual que micli en el mismo caso.
 
+## CONCLUSIÓN
 - Esa una diferencia de interpretación de lo correcto en la que, francamente, me
 pongo totalmente de lado de zsh. Lo de 'interpretar' que el usuario metió unos
 espacios que en realidad no quería me parece muy soberbio. En todo caso, es una
@@ -376,121 +374,106 @@ todo cambio.
 
 # CASO 16 🚀 NO ES UN BUG
 
-$bla (non-export)
-bash devuelve "syntax error near unexpected token 'non-export'
-el nuestro " : command not found"
-echo $var bonjour ($var non export)
-bash devuelve "syntax error near unexpected token '('
-el nuestro devuelve "bonjoun ( non export)
+$bla (non-export)<br><br>
+bash devuelve "syntax error near unexpected token 'non-export'<br>
+el nuestro " : command not found"<br>
+echo $var bonjour ($var non export)<br><br>
+bash devuelve "syntax error near unexpected token '('<br>
+el nuestro devuelve "bonjoun ( non export)<br>
 
 	RESPUESTA: En realidad micli devuelve, si var existe:
 	test: bonjour: unexpected operator
 	Y si no existe:
 	micli: : command not found
 
+## CONCLUSIÓN
 - Tiene pinta de tratarse de alguna funcionalidad exótica de las que no vienen
 en el enunciado. Pero micli gestiona estos casos con dignidad y de forma lógica.
 
 # CASO 17 💥 UN BUG!
 
-export test="file1 file2" ; >$test
-bash devuelve "$test: ambiguos redirect"
-el nuestr "micli: : command not found"
+export test="file1 file2" ; >$test<br><br>
+bash devuelve "$test: ambiguos redirect"<br>
+el nuestr "micli: : command not found"<br>
+
 
 	RESPUESTA: El mensaje de error es lo de menos, pero esta prueba ha destapado
-	un bugg gravísimos, que tiraba segmentation fault...
+	un bug gravísimo, que tiraba segmentation fault...
 
-- Por un lado, con esta prueba me di cuenta de un fallo grave. Al intentar
-resolver variables indefinidas, se trataban como variables definidas, provocando
-segmentation fault al salir más allá del nulo en busca de su valor. Esto se ha
-arreglado. Por otro lado, el parser considera que el  >$test es un comando e 
-intenta buscarlo.
-por eso devuelve command not found. En el segundo, parece saltarse el espacio.
-Pero no lo hace siempre.
+## CONCLUSIÓN
+- Con esta prueba me di cuenta de un fallo grave. Al intentar resolver variables
+indefinidas, se trataban como variables definidas, provocando segmentation fault
+al salir más allá del nulo en busca de su valor. Esto se ha arreglado.
 
-export "" test=a
-bash devuelve "export: not valid in this context:"
-el nuestro devuelve "export '': not a valid identifier"
-echo ~
-bash devuelve el directorio home
-el nuestro hace escribe ~
-export var=te"st
-bash espera con devolviendo "dquote\>"
-el nuesto lo exporta sin mas
-.
-bash devuelve ".: not enough arguments"
-el nuestro ".: No such file or directory"
-echo "12\"
-bash espera devolviendo "dquote\>"
-el nuestro 12"
-$LESS$VAR
-bash no devuelve nada
-el nuestro "micli: : command not found"
-..
-bash "..:command not found"
-el nuestro "..: No such file or directory"
-echo\ a
-bash devuelve "command not found"
-cat | cat | cat | ls
-bash deja la terminal esperando
-la nuestra la devuelve
-ls | exit
-bash no hace nada
-el nuestro sale
-sleep 5 | exit
-bash esepra el sleep y luego no hace nada
-el nuestro no hace el sleep y sale
-\<a cat \<b \<c
-bash devuelve "a: No such file or directory"
-el nuestro "syntax error near unexpected token '\<a'
-\> test | echo blabla; rm test
-bash devuelve "blabla"
-el nuestro "sysntax error near unexpected token '\> '
-\>a cat \<b \>\>c
-bash devuelve "b: no such file or directory"
-el nuestor "syntax error near unexpected token '\>a'
-\>a ls \>b \>\>c \>d
-bash no devuelve nada
-el nuestro "syntax error near unexpected token '\>a'
-\>a ls \<machin \>\>c \>d
-bash devuelve "machin: No such file or directory"
-el nuestro "syntax error near unexpected token '\>a'
-\>file
-bash no devuelve nada
-el nuestro "syntax error near unexpected token '\>f'
-cat -e \> test1 \< test2
-bash devuelve "test2: No such file or directory"
-el nuestro no devuelve nada
-cat \< test
-bash no such file or directory
-el nuestro no devuelve nada
-export var="  truc"; echo $var
-bash devuelve "truc"
-el nuestro "  truc"
-export var="truc  "; echo $var | cat -e
-bash devuelve "truc$"
-el nuestr "truc $"
-$bla (non-export)
-bash devuelve "syntax error near unexpected token 'non-export'
-el nuestro " : command not found"
-echo $var bonjour ($var non export)
-bash devuelve "syntax error near unexpected token '('
-el nuestro devuelve "bonjoun ( non export)
-export test="file1 file2" ; \>$test
-bash devuelve "$test: ambiguos redirect"
-el nuestr "micli: : command not found"
-export test="file1 file2" ; \>"$test"
-bash no devuelve nada
-el nuestro "micli: : command not found"
-echo bonjour \> $test
-bash devuelve "$test: ambiguos redirect"
-el nuestro no devuelve nada
-echo bonjour \> $test w/ test="o1 o2"
-bash "$test ambiguos redirect"
-el nuestro nada
-unset "" test
-bash devuelve '': not a valid identifier
-el nuestro nada
-unset =
-bash devuelve '=': not a valid identifier
-el nuestro nada
+Por otro lado, al hacer esta prueba en bash de Ubuntu 20.04 no devuelve
+ambiguous redirect en este caso, porque primero ejecuta el export y después hace
+el redirect. Si en Mac no ejecuta el export antes del redirect y devuelve
+ambiguous redirect, puede ser otro fallo de bash en Mac. En cualquier caso, el
+redirect resulta ser un no-op, porque no hay nada que redirigir.
+
+El parser de micli considera que el primer token de una línea de comando siempre
+es el comando, y que los redirects deben estar después del comando (ya sé, bash
+no lo hace así), por lo que al encontrar el '>' en >$test busca el comando,
+esperando tenerlo ya recogido. Puesto que entre ';' o '|' la dirección del
+comando se reinicia a NULL y que no ha habido ningún comando recogido porque '>'
+es el primer token de la línea de comando, debe de encontrar el comando NULL al
+buscarlo. Por lo tanto, no hay comando. Por lo tanto, command not found. No es
+precisamente lo que hace *bash*, pero... creo que es defensible. :p
+
+# CASO 18 🚀 NO ES UN BUG, PERO...
+
+echo bonjour > $test<br><br>
+bash devuelve "$test: ambiguos redirect"<br>
+el nuestro no devuelve nada<br>
+
+	RESPUESTA: Esto debió de ocurrir por el bug anterior por el que micli no
+	gestionaba bien las variables indefinidas. Igual intentó crear un archivo
+	llamado '\0'. :p O eso o al hacer la prueba con bash no había una variable
+	de entorno llamada test definida, y al hacerlo con micli sí.
+	
+	En cualquier caso, el comportamiento actual post-bug es que si micli hace
+	redirect a una variable de entorno inexistente o indefinida, el resultado
+	del comando se dirige a STDOUT, por lo que devuelve: bonjour.
+
+## CONCLUSIÓN
+- Probablemente ocurrió por el bug del Caso 17. El comportamiento actual es que
+si la variable de entorno es inexistente o está indefinida, el redirect se
+ignora y el comando se ejecuta dirigiendo el resultado a STDOUT. Obtendrás el
+mismo resultado introduciendo el comando: *echo bonjour >""*. Para mí eso ya es
+vaĺido. Lo del ambiguous redirect es hilar muy fino para minishell.
+
+# CASO 19 🚀 NO ES UN BUG
+
+echo bonjour > $test w/ test="o1 o2"<br><br>
+bash "$test ambiguos redirect"<br>
+el nuestro nada<br>
+
+	RESPUESTA: Esto debió de ocurrir por el bug del Caso 17, ya resuelto, por el
+	que micli no gestionaba bien las variables indefinidas. Intentaría crear un
+	archivo llamado '\0' o parecido.
+
+## CONCLUSIÓN
+- El comportamiento actual es que, al no existir la variable 'test', ignora el
+redirect y dirige el echo a STDOUT, por lo que devuelve: bonjour w/ test=o1 o2.
+Para mí perfectamente válido y consistente.
+
+# CASO 20 🚀 NO ES UN BUG
+
+unset "" test<br><br>
+bash devuelve '': not a valid identifier<br>
+el nuestro nada<br>
+unset =<br><br>
+bash devuelve '=': not a valid identifier<br>
+el nuestro nada<br>
+
+	RESPUESTA: En bash unset tiene en cuenta la validez de los nombres de las
+	variables. En micli, aparte de ignorar explícitamente la variable '_',
+	simplemente busca lo que le pases y si no lo encuentra, lo ignora.
+
+## CONCLUSIÓN
+- Sería gentil avisar al usuario de que se ha ignorado su comando porque el
+nombre de la variable es inválido o está reservado, pero creo que no es
+estrictamente necesario. Las variables reservadas no salen en envp, por lo que
+no pueden designificarse, y export ya protege a envp de nombres inválidos o
+reservados. En todo caso, Miguel, si lo quieres meter, adelante... esto ya es
+cosa de los builtins, o sea de lo tuyo... ;)
